@@ -4,10 +4,6 @@ Framework xử lý và phát triển các ứng dụng AI.
 
 ## Cài đặt môi trường
 
-### Yêu cầu
-- Python 3.9 trở lên
-- pip
-
 ### Tạo môi trường ảo
 ```bash
 # Windows
@@ -47,6 +43,12 @@ AI/
       - router_node/    # Node điều hướng
       - tool_node/      # Node công cụ
       - utils/          # Các tiện ích
+  - api/                # Module API
+    - app.py            # Định nghĩa ứng dụng FastAPI
+    - main.py           # Điểm khởi chạy API
+    - models/           # Các mô hình dữ liệu
+    - routers/          # Các router API
+    - services/         # Các service xử lý logic
 ```
 
 ## Sử dụng
@@ -62,3 +64,36 @@ AI/
 ```bash
 streamlit run app.py
 ```
+
+## Chạy API
+
+### Khởi động API
+
+Để khởi động API FastAPI, hãy thực hiện lệnh sau:
+
+```bash
+python -m src.api.main
+```
+
+API sẽ khởi động ở địa chỉ http://localhost:8000
+
+### Tài liệu API
+
+FastAPI cung cấp tài liệu API được tạo tự động:
+
+1. **Swagger UI** - Giao diện tương tác để thử nghiệm các endpoint API:
+   - URL: http://localhost:8000/docs
+   - Tính năng: Cho phép gửi yêu cầu, xem phản hồi và kiểm tra schema
+
+2. **ReDoc** - Tài liệu API có thiết kế đẹp và thân thiện với người đọc:
+   - URL: http://localhost:8000/redoc
+   - Tính năng: Hiển thị tài liệu rõ ràng, dễ đọc, không có chức năng thử nghiệm
+
+### Các API endpoint
+
+Dự án hiện có các endpoint sau:
+
+- **GET /** - Endpoint gốc với thông báo chào mừng
+- **GET /health** - Kiểm tra trạng thái hoạt động của API
+- **GET /health/details** - Chi tiết về trạng thái hệ thống và tài nguyên
+- **POST /ai/process** - Xử lý yêu cầu AI

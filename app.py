@@ -4,6 +4,9 @@ from src.core.multi_agent import multi_agent_graph as graph
 import asyncio
 from typing import AsyncGenerator
 from src.core.config_loader import agent_config_loader
+from langfuse.langchain import CallbackHandler
+
+import os
 # Load biến môi trường
 load_dotenv()
 
@@ -17,12 +20,25 @@ if "messages" not in st.session_state:
 
 # Khởi tạo config trong session state nếu chưa có
 if "config" not in st.session_state:
+    # langfuse_handler = CallbackHandler(
+    #     public_key=os.getenv("LANGFUSE_PUBLIC_KEY"),
+    #     secret_key=os.getenv("LANGFUSE_SECRET_KEY"),
+    #     host=os.getenv("LANGFUSE_HOST"),
+    #     session_id=os.getenv("LANGFUSE_SESSION_ID"),
+    #     trace_name="AgentPlatform",
+    #     enable=True,
+    #     version="1.0.0"
+    # )
+    langfuse_handler = CallbackHandler()
+
     st.session_state.config = {
         'user_id': '1234567890',
         'user_name': 'Thang',
         'current_date': '06/06/2025',
         'language': 'vi-VN',
-        'agent_id': 'd4e12d5bb4014794fa3f956e2b0e01cf'
+        'agent_id': 'd4e12d5bb4014794fa3f956e2b0e01cf',
+        "callbacks": [langfuse_handler],
+        "recursion_limit": 10
     }
 
 async def process_message():
