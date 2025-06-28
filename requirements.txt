@@ -1,0 +1,9 @@
+langgraph==0.4.5
+langchain==0.3.19
+streamlit
+python-dotenv
+graphviz
+langchain_openai
+pydantic-settings
+langchain_google_genai
+langchain_community

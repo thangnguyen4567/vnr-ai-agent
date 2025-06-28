@@ -1,0 +1,44 @@
+agent_id: "d4e12d5bb4014794fa3f956e2b0e01cf"
+name: "Multi Agent"
+type: "multi"
+agents:
+  - id: "f4e9a767bf49f68a77f7afd783665df9"
+    name: "Google Agent"
+    description: "Agent tìm kiếm thông tin trên Google"
+  - id: "3653fbaadb65d15602f4dfd23a7a8599"
+    name: "Wikipedia Agent"
+    description: "Agent tìm kiếm thông tin trên Wikipedia"
+  - id: "f73bdfc06c6f2e9741826c1ce81a985d"
+    name: "Weather Agent"
+    description: "Agent tìm kiếm thông tin về thời tiết"
+    
+sub_agents:
+  - agent_id: "f4e9a767bf49f68a77f7afd783665df9"
+    name: "Google Agent"
+    type: "fc"
+    nodes:
+      llm:
+        model: "gpt-4o-mini"
+        temperature: 0.5
+        max_tokens: 1000
+        provider: "openai"
+
+  - agent_id: "3653fbaadb65d15602f4dfd23a7a8599"
+    name: "Wikipedia Agent"
+    type: "fc"
+    nodes:
+      llm:
+        model: "gpt-4o-mini"
+        temperature: 0.5
+        max_tokens: 1000
+        provider: "openai"
+
+  - agent_id: "f73bdfc06c6f2e9741826c1ce81a985d"
+    name: "Weather Agent"
+    type: "fc"
+    nodes:
+      llm:
+        model: "gpt-4o-mini"
+        temperature: 0.5
+        max_tokens: 1000
+        provider: "openai"
