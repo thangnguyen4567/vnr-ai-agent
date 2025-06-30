@@ -2,6 +2,8 @@ from langgraph.graph import StateGraph, END
 from src.core import AgentState
 from src.core.nodes import initialize, router_agent, switch_agent
 from IPython.display import Image
+from src.memory.mongodb import get_mongodb_checkpointer
+
 
 class MultiAgent(StateGraph):
 
@@ -18,20 +20,22 @@ class MultiAgent(StateGraph):
         self.workflow.add_edge("initialize", "router_agent")
         self.workflow.add_edge("router_agent", "switch_agent")
 
-        self.compiled_graph = self.workflow.compile()
+        # Sử dụng MongoDB checkpointer
+        mongodb_saver = get_mongodb_checkpointer()
+
+        self.compiled_graph = self.workflow.compile(checkpointer=mongodb_saver)
 
     def get_graph(self):
 
         return self.compiled_graph
-    
+
     def draw_workflow(self):
-        Image(self.compiled_graph.get_graph().draw_mermaid_png(output_file_path='MultiAgent.png'))
+        Image(
+            self.compiled_graph.get_graph().draw_mermaid_png(
+                output_file_path="MultiAgent.png"
+            )
+        )
 
 
 multi_agent_graph = MultiAgent().get_graph()
 # MultiAgent().draw_workflow()
-
-
-
-
-

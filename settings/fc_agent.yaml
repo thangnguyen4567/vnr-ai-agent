@@ -1,7 +1,9 @@
-agent_id: "fc_agent"
-name: "FC Agent"
+agent_id: "f73bdfc06c6f2e9741826c1ce81a985d"
+name: "Weather Agent"
 type: "fc"
-
-
-
-
+nodes:
+  llm:
+    model: "gpt-4o-mini"
+    temperature: 0.5
+    max_tokens: 1000
+    provider: "openai"

@@ -1,0 +1,51 @@
+# Git
+.git
+.gitignore
+.github
+
+# Virtual Environment
+venv/
+env/
+.env
+.env.*
+
+# Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+.coverage.*
+
+# Logs
+logs/
+*.log
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Các file không cần thiết khác
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.tar
+*.zip
+*.gz
+*.rar
+
+# Thư mục IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Thư mục MongoDB data (nếu có)
+data/
+mongodb_data/ 

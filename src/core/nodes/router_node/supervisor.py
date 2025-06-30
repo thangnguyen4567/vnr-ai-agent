@@ -7,6 +7,7 @@ import os
 import copy
 from langchain_core.messages import AIMessage, ToolMessage, HumanMessage
 from dotenv import load_dotenv
+
 load_dotenv()
 
 PREFIX_AGENT_KEY = "A"
@@ -23,18 +24,22 @@ Lịch sử hội thoại:
 Trả về chính xác một trong các giá trị trong list sau: {agent_keys} và KHÔNG CẦN giải thích gì thêm.
 """
 
+
 class RouterNode(BaseNode):
     def __init__(self):
         super().__init__()
 
         self.llm_router_agent = ChatOpenAI(
-            model="gpt-4o-mini", 
+            model="gpt-4o-mini",
             temperature=0,
             stream_usage=True,
-            api_key=os.getenv("OPENAI_API_KEY")
+            api_key=os.getenv("OPENAI_API_KEY"),
+            max_tokens=20,
         )
 
-    async def process(self, state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
+    async def process(
+        self, state: AgentState, config: RunnableConfig
+    ) -> Dict[str, Any]:
 
         routing_result = await self._router_agent(state, config)
 
@@ -43,29 +48,30 @@ class RouterNode(BaseNode):
 
         return await self._switch_agent(state)
 
-    def _router_agent(self, state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
-        
+    def _router_agent(
+        self, state: AgentState, config: RunnableConfig
+    ) -> Dict[str, Any]:
+
         sys_config = config.get("configurable", {})
         agent_id = sys_config.get("agent_id")
-        agent_config = state.get("configs",{}).get(agent_id,{})
-        agents = agent_config.get("agents",[])
+        agent_config = state.get("configs", {}).get(agent_id, {})
+        agents = agent_config.get("agents", [])
         default_agent = copy.deepcopy(agents[0])
 
         agent_desc = []
         agent_keys = []
         subgraph_mapping = {}
-        for i,a in enumerate(agents):
+        for i, a in enumerate(agents):
             _key = f"{PREFIX_AGENT_KEY}{i+1}"
             agent_keys.append(_key)
-            agent_desc.append(AGENT_DESC_TEMPLATE.format(
-                agent_key=_key,
-                agent_name=a["name"],
-                agent_description=a["description"]
-            ))
-            subgraph_mapping[_key] = {
-                "code": a["code"],
-                "id": a["id"]
-            }
+            agent_desc.append(
+                AGENT_DESC_TEMPLATE.format(
+                    agent_key=_key,
+                    agent_name=a["name"],
+                    agent_description=a["description"],
+                )
+            )
+            subgraph_mapping[_key] = {"code": a["code"], "id": a["id"]}
         agent_desc_str = "\n".join(agent_desc)
 
         messages = []
@@ -81,8 +87,8 @@ class RouterNode(BaseNode):
                 ROUTER_AGENT_PROMPT.format(
                     agent_keys=str(agent_keys),
                     agent_desc=agent_desc_str,
-                    chat_history="\n".join(messages[-4:])
-                )
+                    chat_history="\n".join(messages[-4:]),
+                ),
             )
         ]
 
@@ -97,7 +103,7 @@ class RouterNode(BaseNode):
                 if k in res:
                     next_agent = v
                     break
-            
+
             goto = subgraph_mapping[next_agent]["code"]
             agent_id = subgraph_mapping[next_agent]["id"]
         except:
@@ -105,7 +111,7 @@ class RouterNode(BaseNode):
             agent_id = default_agent["id"]
 
         return {"next": goto, "agent_id": agent_id}
-    
+
     async def _switch_agent(self, state: AgentState):
 
         from src.core.fc_agent import fc_agent_graph
@@ -114,7 +120,11 @@ class RouterNode(BaseNode):
         node_state = state.copy()
         node_state["messages"] = []
         for msg in state["messages"]:
-            if isinstance(msg, AIMessage) and not msg.content and msg.name != next_agent:
+            if (
+                isinstance(msg, AIMessage)
+                and not msg.content
+                and msg.name != next_agent
+            ):
                 continue
             if isinstance(msg, ToolMessage) and msg.name != next_agent:
                 continue
@@ -122,13 +132,12 @@ class RouterNode(BaseNode):
 
         result = await fc_agent_graph.ainvoke(node_state)
 
-        new_messages = result["messages"][len(node_state["messages"]):
-                                          ]
+        new_messages = result["messages"][len(node_state["messages"]) :]
         new_state = state.copy()
         new_state["messages"] = state["messages"]
 
         for msg in new_messages:
             msg.name = next_agent
-            new_state["messages"].append(msg)   
+            new_state["messages"].append(msg)
 
         return new_state

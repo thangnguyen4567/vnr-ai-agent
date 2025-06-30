@@ -1,8 +1,10 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter
 from typing import Any, Dict
-
-from ..models.chat_model import AIRequest, AIResponse
-from ..services.chat_service import chat_service
+from fastapi.encoders import jsonable_encoder
+from ..models.chat_model import PayloadRequest
+from ..services.chat_service import ChatService
+from sse_starlette.sse import EventSourceResponse
+from src.core.config_loader import agent_config_loader
 
 # Tạo router
 router = APIRouter(
@@ -10,24 +12,29 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-@router.post("/process", response_model=AIResponse)
-async def process_ai_request(request: AIRequest) -> Dict[str, Any]:
+
+@router.post("/process")
+async def dispatch(session_id: str, request_body: PayloadRequest) -> Dict[str, Any]:
     """
     Xử lý yêu cầu AI
-    
-    - **prompt**: Câu hỏi hoặc nhiệm vụ cho AI
-    - **context**: Ngữ cảnh bổ sung (tùy chọn)
-    - **model_params**: Tham số tùy chỉnh (tùy chọn)
+
+    - **input**: Câu hỏi hoặc nhiệm vụ cho AI
+    - **config**: Cấu hình cho AI
     """
-    try:
-        response = await chat_service.process_request(
-            prompt=request.prompt,
-            context=request.context,
-            model_params=request.model_params
+    input = jsonable_encoder(request_body.input)
+    config = jsonable_encoder(request_body.config)
+
+    agent_config_loader.set_agent_type(config["agent_type"])
+
+    langfuse_handler = ChatService.get_langfuse_handler(session_id, config)
+    config["callbacks"] = [langfuse_handler]
+    config["recursive_limit"] = 15
+    config["metadata"] = {
+        "langfuse_user_id": config["user_id"],
+    }
+
+    return EventSourceResponse(
+        ChatService.agent_stream_response(
+            input=input, config=config, session_id=session_id
         )
-        return response
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Lỗi xử lý yêu cầu AI: {str(e)}"
-        ) 
+    )

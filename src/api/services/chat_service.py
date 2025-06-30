@@ -1,42 +1,98 @@
-from typing import Dict, Any, Optional
 import logging
+from typing import Dict, Any
+from src.core.multi_agent import multi_agent_graph
+from src.core.fc_agent import fc_agent_graph
+from langfuse.langchain import CallbackHandler
+from dotenv import load_dotenv
+from src.utils.common import AgentType
+
+load_dotenv()
 
 # Logger
 logger = logging.getLogger(__name__)
 
+
 class ChatService:
     """Service xử lý các yêu cầu AI"""
-    
+
     def __init__(self):
         """Khởi tạo service"""
         logger.info("Khởi tạo AI Service")
-    
-    async def process_request(self, prompt: str, context: Optional[str] = None, 
-                             model_params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+
+    @staticmethod
+    def parse_start_event(event):
         """
-        Xử lý yêu cầu AI
-        
+        Parse event từ LangGraph để chuyển đổi thành JSON serializable
+
         Args:
-            prompt: Câu hỏi hoặc nhiệm vụ
-            context: Ngữ cảnh bổ sung (tùy chọn)
-            model_params: Tham số tùy chỉnh (tùy chọn)
-            
+            event: Sự kiện bắt đầu từ LangGraph
+
         Returns:
-            Dict chứa phản hồi và metadata
+            Dict/list/str: chứa thông tin về sự kiện đã được chuyển đổi
         """
-        logger.info(f"Xử lý yêu cầu: {prompt[:50]}...")
-        
-        # TODO: Tích hợp với core AI engine
-        
-        # Giả lập phản hồi
-        response = f"Phản hồi mẫu cho: {prompt}"
-        metadata = {"processed_at": "timestamp", "model": "sample_model"}
-        
-        return {
-            "response": response,
-            "metadata": metadata,
-            "status": "success"
-        }
-        
-# Tạo instance của service
-chat_service = ChatService() 
+        if isinstance(event, dict):
+            return {k: ChatService.parse_start_event(v) for k, v in event.items()}
+        elif isinstance(event, list):
+            return [ChatService.parse_start_event(item) for item in event]
+        elif isinstance(event, tuple):
+            return tuple(ChatService.parse_start_event(item) for item in event)
+        elif isinstance(event, str):
+            return event
+        else:
+            try:
+                return event.__dict__
+            except:
+                return event
+
+    @staticmethod
+    async def agent_stream_response(
+        input: Dict[str, Any], config: Dict[str, Any], session_id: str
+    ):
+        """
+        Xử lý yêu cầu AI với stream response
+
+        Args:
+            input: Câu hỏi hoặc nhiệm vụ cho AI
+            config: Cấu hình cho AI
+
+        Returns:
+            json: phản hồi từ AI
+        """
+        if config["agent_type"] == AgentType.SINGLE_AGENT.value:
+            graph = fc_agent_graph
+        elif config["agent_type"] == AgentType.MULTI_AGENT.value:
+            graph = multi_agent_graph
+
+        async for event in graph.astream_events(input, config=config):
+            kind = event["event"]
+
+            if kind == "on_custom_event":
+                thinking_content = event["data"]["data"]["text"]
+                yield thinking_content
+
+            elif kind == "on_chat_model_stream" and event["metadata"].get(
+                "langgraph_node"
+            ) not in ["research", "reflection"]:
+                answer_content = event["data"]["chunk"].content
+                if answer_content:
+                    yield answer_content
+
+    @staticmethod
+    def agent_response():
+        pass
+
+    @staticmethod
+    def get_langfuse_handler(
+        session_id: str, config: Dict[str, Any]
+    ) -> CallbackHandler:
+        langfuse_handler = CallbackHandler(
+            # public_key=os.getenv("LANGFUSE_PUBLIC_KEY"),
+            # secret_key=os.getenv("LANGFUSE_SECRET_KEY"),
+            # host=os.getenv("LANGFUSE_HOST"),
+            # trace_name="AgentPlatform",
+            # session_id=session_id,
+            # user_id=config.get("configurable", {}).get("user_id", ""),
+            # enable=True,
+            # version="1.0.0",
+        )
+        return langfuse_handler
