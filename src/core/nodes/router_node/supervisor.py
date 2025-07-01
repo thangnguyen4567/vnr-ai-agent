@@ -7,6 +7,7 @@ import os
 import copy
 from langchain_core.messages import AIMessage, ToolMessage, HumanMessage
 from dotenv import load_dotenv
+from src.config import settings
 
 load_dotenv()
 
@@ -30,10 +31,11 @@ class RouterNode(BaseNode):
         super().__init__()
 
         self.llm_router_agent = ChatOpenAI(
-            model="gpt-4o-mini",
-            temperature=0,
+            base_url=settings.LLM_CONFIG["router"]["base_url"],
+            model=settings.LLM_CONFIG["router"]["model"],
+            temperature=settings.LLM_CONFIG["router"]["temperature"],
             stream_usage=True,
-            api_key=os.getenv("OPENAI_API_KEY"),
+            api_key=settings.LLM_CONFIG["router"]["api_key"],
             max_tokens=20,
         )
 

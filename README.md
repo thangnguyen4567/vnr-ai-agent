@@ -42,7 +42,7 @@ Hoặc sử dụng MongoDB Atlas (đám mây):
 
 Hệ thống sử dụng Langfuse để theo dõi, phân tích và đánh giá hiệu suất của các agent AI. Langfuse là một nền tảng quan sát chuyên dụng cho các ứng dụng AI.
 
-Trong môi trường Docker, Langfuse được cài đặt tự động với PostgreSQL. Đối với cài đặt trực tiếp, bạn có thể:
+Trong môi trường Docker, Langfuse được cài đặt tự động để lưu trữ dữ liệu. Đối với cài đặt trực tiếp, bạn có thể:
 
 1. Tạo tài khoản tại [Langfuse](https://langfuse.com)
 2. Lấy API key (public và secret)
@@ -75,7 +75,7 @@ uvicorn src.api.app:app --reload
 
 ### Chạy với Docker
 
-Chúng tôi cung cấp Docker Compose để dễ dàng khởi chạy toàn bộ hệ thống, bao gồm MongoDB, PostgreSQL và Langfuse.
+Chúng tôi cung cấp Docker Compose để dễ dàng khởi chạy toàn bộ hệ thống, bao gồm MongoDB và Langfuse.
 
 1. Đảm bảo bạn đã cài đặt [Docker](https://www.docker.com/get-started) và [Docker Compose](https://docs.docker.com/compose/install/).
 
@@ -87,14 +87,13 @@ docker-compose up
 3. Hoặc chạy từng service riêng biệt:
 ```bash
 docker-compose up mongodb  # Chỉ chạy MongoDB
-docker-compose up postgres langfuse  # Chỉ chạy PostgreSQL và Langfuse
+docker-compose up langfuse  # Chỉ chạy Langfuse
 docker-compose up api      # Chỉ chạy API Server
 docker-compose up streamlit # Chỉ chạy Streamlit UI
 ```
 
 4. Truy cập các services:
    - MongoDB: mongodb://localhost:27017 (username: admin, password: adminpassword)
-   - PostgreSQL: localhost:5432 (username: postgres, password: postgres)
    - Langfuse UI: http://localhost:3000
    - API Server: http://localhost:8000
    - Streamlit UI: http://localhost:8501

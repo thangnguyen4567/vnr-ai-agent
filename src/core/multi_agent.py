@@ -21,9 +21,11 @@ class MultiAgent(StateGraph):
         self.workflow.add_edge("router_agent", "switch_agent")
 
         # Sử dụng MongoDB checkpointer
-        mongodb_saver = get_mongodb_checkpointer()
+        # mongodb_saver = get_mongodb_checkpointer()
 
-        self.compiled_graph = self.workflow.compile(checkpointer=mongodb_saver)
+        # mongodb_saver.put(("users"), {"user_id": "113"})
+
+        self.compiled_graph = self.workflow.compile()
 
     def get_graph(self):
 
@@ -38,4 +40,3 @@ class MultiAgent(StateGraph):
 
 
 multi_agent_graph = MultiAgent().get_graph()
-# MultiAgent().draw_workflow()

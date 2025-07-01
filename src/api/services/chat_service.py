@@ -5,6 +5,8 @@ from src.core.fc_agent import fc_agent_graph
 from langfuse.langchain import CallbackHandler
 from dotenv import load_dotenv
 from src.utils.common import AgentType
+from src.config import settings
+from langfuse import Langfuse
 
 load_dotenv()
 
@@ -17,6 +19,12 @@ class ChatService:
 
     def __init__(self):
         """Khởi tạo service"""
+        Langfuse(
+            public_key=settings.LANGFUSE_CONFIG["public_key"],
+            secret_key=settings.LANGFUSE_CONFIG["secret_key"],
+            host=settings.LANGFUSE_CONFIG["host"],
+            trace_name=settings.LANGFUSE_CONFIG["trace_name"],
+        )
         logger.info("Khởi tạo AI Service")
 
     @staticmethod
@@ -45,9 +53,7 @@ class ChatService:
                 return event
 
     @staticmethod
-    async def agent_stream_response(
-        input: Dict[str, Any], config: Dict[str, Any], session_id: str
-    ):
+    async def agent_stream_response(input: Dict[str, Any], config: Dict[str, Any]):
         """
         Xử lý yêu cầu AI với stream response
 
@@ -82,17 +88,18 @@ class ChatService:
         pass
 
     @staticmethod
-    def get_langfuse_handler(
-        session_id: str, config: Dict[str, Any]
-    ) -> CallbackHandler:
-        langfuse_handler = CallbackHandler(
-            # public_key=os.getenv("LANGFUSE_PUBLIC_KEY"),
-            # secret_key=os.getenv("LANGFUSE_SECRET_KEY"),
-            # host=os.getenv("LANGFUSE_HOST"),
-            # trace_name="AgentPlatform",
-            # session_id=session_id,
-            # user_id=config.get("configurable", {}).get("user_id", ""),
-            # enable=True,
-            # version="1.0.0",
-        )
+    def get_langfuse_handler() -> CallbackHandler:
+        """
+        Tạo Langfuse handler cho tracking
+
+        Args:
+            session_id: ID của phiên làm việc
+            config: Cấu hình cho AI
+            langfuse_config: Cấu hình Langfuse (nếu có)
+
+        Returns:
+            CallbackHandler hoặc None nếu không có đủ thông tin cấu hình
+        """
+
+        langfuse_handler = CallbackHandler()
         return langfuse_handler

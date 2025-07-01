@@ -1,0 +1,21 @@
+router:
+  base_url: 'https://api.openai.com/v1'
+  api_key: 'your-api-key'
+  model: 'gpt-4o-mini'
+  temperature: 0
+  provider: 'openai'
+
+gemini:
+  model: 'gemini-2.0-flash-001'
+  provider: 'google'
+  temperature: 0
+  api_key: 'your-api-key'
+  max_tokens: 1000
+
+openai:
+  model: 'gpt-4o-mini'
+  provider: 'openai'
+  temperature: 0
+  api_key: 'your-api-key'
+  max_tokens: 1000
+

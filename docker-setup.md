@@ -34,9 +34,9 @@ docker-compose up
 docker-compose up mongodb
 ```
 
-#### Chỉ khởi động PostgreSQL và Langfuse:
+#### Chỉ khởi động Langfuse:
 ```bash
-docker-compose up postgres langfuse
+docker-compose up langfuse
 ```
 
 #### Chỉ khởi động API server:
@@ -52,22 +52,20 @@ docker-compose up streamlit
 ## Truy cập các services
 
 - **MongoDB**: mongodb://localhost:27017 (username: admin, password: adminpassword)
-- **PostgreSQL**: localhost:5432 (username: postgres, password: postgres)
 - **Langfuse**: http://localhost:3000
 - **API Server**: http://localhost:8000
-- **Streamlit UI**: http://localhost:8501
 
 ## Cấu trúc Docker
 
 1. **MongoDB**: Lưu trữ checkpointer cho LangGraph
-2. **PostgreSQL**: Cơ sở dữ liệu cho Langfuse
-3. **Langfuse**: Nền tảng quan sát, phân tích và đánh giá cho ứng dụng AI
-4. **API Server**: Chạy FastAPI để cung cấp API
-5. **Streamlit UI**: Giao diện người dùng để tương tác với agent
+2. **Langfuse**: Nền tảng quan sát, phân tích và đánh giá cho ứng dụng AI (sử dụng SQLite tích hợp)
+3. **API Server**: Chạy FastAPI để cung cấp API
 
 ## Quản lý dữ liệu
 
-Dữ liệu MongoDB và PostgreSQL được lưu trong các volume Docker (mongodb_data và postgres_data) để đảm bảo dữ liệu không bị mất khi container bị xóa.
+Dữ liệu được lưu trữ trong các volume Docker để đảm bảo không bị mất khi container bị xóa:
+- **mongodb_data**: Lưu trữ dữ liệu MongoDB
+- **langfuse_data**: Lưu trữ dữ liệu SQLite của Langfuse
 
 ## Sử dụng Langfuse
 

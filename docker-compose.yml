@@ -7,9 +7,6 @@ services:
     container_name: agent-mongodb
     ports:
       - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=adminpassword
     volumes:
       - mongodb_data:/data/db
     restart: always
@@ -22,68 +19,25 @@ services:
       retries: 5
       start_period: 10s
 
-  # Service cho Langfuse
+  # Service cho Langfuse (với SQLite tích hợp)
   langfuse:
-    image: langfuse/langfuse:latest
+    image: langfuse/langfuse:2
     container_name: agent-langfuse
     ports:
       - "3000:3000"
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
-      - NEXTAUTH_SECRET=mysecret
-      - NEXTAUTH_URL=http://localhost:3000
-      - SALT=mysalt
-      - NEXT_PUBLIC_LANGFUSE_CLOUD_REGION=us
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - agent-network
-    restart: always
-
-  # Service cho PostgreSQL (phục vụ Langfuse)
-  postgres:
-    image: postgres:14
-    container_name: agent-postgres
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - langfuse_data:/app/data
     networks:
       - agent-network
     restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
 
   # Service cho API
   api:
-    build: .
+    build:
+      context: .
     container_name: agent-api
-    command: uvicorn src.api.app:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
-    environment:
-      - MONGODB_URI=mongodb://admin:adminpassword@mongodb:27017
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - LANGFUSE_PUBLIC_KEY=pk-lf-
-      - LANGFUSE_SECRET_KEY=sk-lf-
-      - LANGFUSE_HOST=http://langfuse:3000
-      - LANGFUSE_SESSION_ID=default-session
     volumes:
       - ./:/app
     depends_on:
@@ -95,37 +49,10 @@ services:
       - agent-network
     restart: always
 
-  # Service cho Streamlit UI
-  streamlit:
-    build: .
-    container_name: agent-streamlit
-    command: streamlit run app.py --server.port 8501 --server.address 0.0.0.0
-    ports:
-      - "8501:8501"
-    environment:
-      - MONGODB_URI=mongodb://admin:adminpassword@mongodb:27017
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - LANGFUSE_PUBLIC_KEY=pk-lf-
-      - LANGFUSE_SECRET_KEY=sk-lf-
-      - LANGFUSE_HOST=http://langfuse:3000
-      - LANGFUSE_SESSION_ID=default-session
-    volumes:
-      - ./:/app
-    depends_on:
-      mongodb:
-        condition: service_healthy
-      api:
-        condition: service_started
-    networks:
-      - agent-network
-    restart: always
-
 volumes:
   mongodb_data:
     driver: local
-  postgres_data:
+  langfuse_data:
     driver: local
 
 networks:

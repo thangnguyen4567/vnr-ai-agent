@@ -5,54 +5,67 @@ import asyncio
 from typing import AsyncGenerator
 from src.core.config_loader import agent_config_loader
 from langfuse.langchain import CallbackHandler
+from src.config import global_config
 
 import os
+
 # Load biến môi trường
 load_dotenv()
 
 # Thiết lập tiêu đề ứng dụng
 st.set_page_config(page_title="AI Chatbot", page_icon="🤖")
 st.title("🤖 AI Chatbot")
+
+# Thiết lập loại agent là multi_agent
 agent_config_loader.set_agent_type("multi")
+
 # Khởi tạo chat history trong session state nếu chưa có
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # Khởi tạo config trong session state nếu chưa có
 if "config" not in st.session_state:
-    # langfuse_handler = CallbackHandler(
-    #     public_key=os.getenv("LANGFUSE_PUBLIC_KEY"),
-    #     secret_key=os.getenv("LANGFUSE_SECRET_KEY"),
-    #     host=os.getenv("LANGFUSE_HOST"),
-    #     session_id=os.getenv("LANGFUSE_SESSION_ID"),
-    #     trace_name="AgentPlatform",
-    #     enable=True,
-    #     version="1.0.0"
-    # )
-    langfuse_handler = CallbackHandler()
+    # Cấu hình Langfuse
+    langfuse_handler = CallbackHandler(
+        public_key=global_config.LANGFUSE_PUBLIC_KEY,
+        secret_key=global_config.LANGFUSE_SECRET_KEY,
+        host=global_config.LANGFUSE_HOST,
+        session_id=global_config.LANGFUSE_SESSION_ID,
+        trace_name="AgentPlatform",
+        enable=(
+            True
+            if global_config.LANGFUSE_PUBLIC_KEY and global_config.LANGFUSE_SECRET_KEY
+            else False
+        ),
+        version="1.0.0",
+    )
 
     st.session_state.config = {
-        'user_id': '1234567890',
-        'user_name': 'Thang',
-        'current_date': '06/06/2025',
-        'language': 'vi-VN',
-        'agent_id': 'd4e12d5bb4014794fa3f956e2b0e01cf',
+        "user_id": "1234567890",
+        "user_name": "Thang",
+        "current_date": "06/06/2025",
+        "language": "vi-VN",
+        "agent_id": global_config.APP_CONFIG.multi_agent.agent_id,
         "callbacks": [langfuse_handler],
-        "recursion_limit": 10
+        "recursion_limit": 10,
     }
+
 
 async def process_message():
     async for event in graph.astream_events(inputs, config=st.session_state.config):
-        kind = event['event']
+        kind = event["event"]
 
         if kind == "on_custom_event":
-            thinking_content = event['data']['data']['text']
+            thinking_content = event["data"]["data"]["text"]
             yield thinking_content
 
-        elif kind == "on_chat_model_stream" and event["metadata"].get("langgraph_node") not in ["research","reflection"]:
-            answer_content = event['data']['chunk'].content
+        elif kind == "on_chat_model_stream" and event["metadata"].get(
+            "langgraph_node"
+        ) not in ["research", "reflection"]:
+            answer_content = event["data"]["chunk"].content
             if answer_content:
                 yield answer_content
+
 
 def to_sync_generator(async_gen: AsyncGenerator):
     # 1. Tạo mới một loop
@@ -81,18 +94,13 @@ for message in st.session_state.messages:
 if prompt := st.chat_input("Nhập tin nhắn của bạn..."):
     # Thêm tin nhắn người dùng vào lịch sử
     st.session_state.messages.append({"role": "user", "content": prompt})
-    
+
     # Hiển thị tin nhắn người dùng
     with st.chat_message("user"):
         st.markdown(prompt)
-    
+
     # Hiển thị đang xử lý
     with st.chat_message("assistant"):
         inputs = {"messages": [("user", prompt)]}
         message_placeholder = st.empty()
         response = st.write_stream(to_sync_generator(process_message()))
-
-
-
-
-

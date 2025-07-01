@@ -27,9 +27,9 @@ class FCAgent(StateGraph):
         self.workflow.add_edge("initialize", "llm")
 
         # Sử dụng MongoDB checkpointer
-        mongodb_saver = get_mongodb_checkpointer()
+        # mongodb_saver = get_mongodb_checkpointer()
 
-        self.compiled_graph = self.workflow.compile(checkpointer=mongodb_saver)
+        self.compiled_graph = self.workflow.compile()
 
     def get_graph(self):
 

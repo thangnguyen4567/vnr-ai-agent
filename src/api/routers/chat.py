@@ -5,6 +5,7 @@ from ..models.chat_model import PayloadRequest
 from ..services.chat_service import ChatService
 from sse_starlette.sse import EventSourceResponse
 from src.core.config_loader import agent_config_loader
+from src.config import settings
 
 # Tạo router
 router = APIRouter(
@@ -14,7 +15,7 @@ router = APIRouter(
 
 
 @router.post("/process")
-async def dispatch(session_id: str, request_body: PayloadRequest) -> Dict[str, Any]:
+async def dispatch(request_body: PayloadRequest) -> Dict[str, Any]:
     """
     Xử lý yêu cầu AI
 
@@ -24,17 +25,20 @@ async def dispatch(session_id: str, request_body: PayloadRequest) -> Dict[str, A
     input = jsonable_encoder(request_body.input)
     config = jsonable_encoder(request_body.config)
 
-    agent_config_loader.set_agent_type(config["agent_type"])
+    # Thiết lập loại agent dựa trên config đầu vào
+    agent_type = config.get("agent_type", "multi")
+    agent_config_loader.set_agent_type("single" if agent_type == "fc" else agent_type)
 
-    langfuse_handler = ChatService.get_langfuse_handler(session_id, config)
-    config["callbacks"] = [langfuse_handler]
-    config["recursive_limit"] = 15
+    # Cấu hình Langfuse từ global_config
+    langfuse_handler = ChatService.get_langfuse_handler()
+
+    # Bổ sung cấu hình
+    config["callbacks"] = [langfuse_handler] if langfuse_handler else []
+    config["recursion_limit"] = 15
     config["metadata"] = {
-        "langfuse_user_id": config["user_id"],
+        "langfuse_user_id": config.get("user_id", "anonymous"),
     }
 
     return EventSourceResponse(
-        ChatService.agent_stream_response(
-            input=input, config=config, session_id=session_id
-        )
+        ChatService.agent_stream_response(input=input, config=config)
     )
