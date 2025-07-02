@@ -4,13 +4,6 @@ from src.core.multi_agent import multi_agent_graph as graph
 import asyncio
 from typing import AsyncGenerator
 from src.core.config_loader import agent_config_loader
-from langfuse.langchain import CallbackHandler
-from src.config import global_config
-
-import os
-
-# Load biến môi trường
-load_dotenv()
 
 # Thiết lập tiêu đề ứng dụng
 st.set_page_config(page_title="AI Chatbot", page_icon="🤖")
@@ -25,28 +18,16 @@ if "messages" not in st.session_state:
 
 # Khởi tạo config trong session state nếu chưa có
 if "config" not in st.session_state:
-    # Cấu hình Langfuse
-    langfuse_handler = CallbackHandler(
-        public_key=global_config.LANGFUSE_PUBLIC_KEY,
-        secret_key=global_config.LANGFUSE_SECRET_KEY,
-        host=global_config.LANGFUSE_HOST,
-        session_id=global_config.LANGFUSE_SESSION_ID,
-        trace_name="AgentPlatform",
-        enable=(
-            True
-            if global_config.LANGFUSE_PUBLIC_KEY and global_config.LANGFUSE_SECRET_KEY
-            else False
-        ),
-        version="1.0.0",
-    )
 
     st.session_state.config = {
-        "user_id": "1234567890",
-        "user_name": "Thang",
-        "current_date": "06/06/2025",
-        "language": "vi-VN",
-        "agent_id": global_config.APP_CONFIG.multi_agent.agent_id,
-        "callbacks": [langfuse_handler],
+        "configurable": {
+            "user_id": "1234567890",
+            "user_name": "Thang",
+            "current_date": "06/06/2025",
+            "language": "vi-VN",
+            "agent_id": "",
+            "thread_id": "1234567890",
+        },
         "recursion_limit": 10,
     }
 

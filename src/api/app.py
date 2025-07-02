@@ -3,11 +3,19 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 from .routers.chat import router as chat_router
 from .routers.health import router as health_router
+from langfuse import Langfuse
+from src.config import settings
 
 # Cấu hình logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+
+Langfuse(
+    public_key=settings.LANGFUSE_CONFIG["public_key"],
+    secret_key=settings.LANGFUSE_CONFIG["secret_key"],
+    host=settings.LANGFUSE_CONFIG["host"],
 )
 
 app = FastAPI(

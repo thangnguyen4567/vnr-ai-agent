@@ -1,12 +1,11 @@
 import logging
+from sys import version
 from typing import Dict, Any
 from src.core.multi_agent import multi_agent_graph
 from src.core.fc_agent import fc_agent_graph
 from langfuse.langchain import CallbackHandler
 from dotenv import load_dotenv
 from src.utils.common import AgentType
-from src.config import settings
-from langfuse import Langfuse
 
 load_dotenv()
 
@@ -19,12 +18,6 @@ class ChatService:
 
     def __init__(self):
         """Khởi tạo service"""
-        Langfuse(
-            public_key=settings.LANGFUSE_CONFIG["public_key"],
-            secret_key=settings.LANGFUSE_CONFIG["secret_key"],
-            host=settings.LANGFUSE_CONFIG["host"],
-            trace_name=settings.LANGFUSE_CONFIG["trace_name"],
-        )
         logger.info("Khởi tạo AI Service")
 
     @staticmethod
@@ -69,7 +62,7 @@ class ChatService:
         elif config["agent_type"] == AgentType.MULTI_AGENT.value:
             graph = multi_agent_graph
 
-        async for event in graph.astream_events(input, config=config):
+        async for event in graph.astream_events(input, config=config, version="v2"):
             kind = event["event"]
 
             if kind == "on_custom_event":

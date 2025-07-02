@@ -2,12 +2,14 @@ from langgraph.graph import StateGraph, END
 from src.core import AgentState
 from src.core.nodes import initialize, router_agent, switch_agent
 from IPython.display import Image
-from src.memory.mongodb import get_mongodb_checkpointer
+from langgraph.checkpoint.memory import InMemorySaver
 
 
 class MultiAgent(StateGraph):
 
     def __init__(self):
+
+        memory = InMemorySaver()
 
         self.workflow = StateGraph(AgentState)
 
@@ -20,12 +22,7 @@ class MultiAgent(StateGraph):
         self.workflow.add_edge("initialize", "router_agent")
         self.workflow.add_edge("router_agent", "switch_agent")
 
-        # Sử dụng MongoDB checkpointer
-        # mongodb_saver = get_mongodb_checkpointer()
-
-        # mongodb_saver.put(("users"), {"user_id": "113"})
-
-        self.compiled_graph = self.workflow.compile()
+        self.compiled_graph = self.workflow.compile(checkpointer=memory)
 
     def get_graph(self):
 

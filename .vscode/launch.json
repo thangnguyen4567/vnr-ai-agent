@@ -1,38 +1,56 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "name": "🔍 Debug Streamlit",
-        "type": "python",
-        "request": "launch",
-        "module": "streamlit",
-        "args": [
-          "run",
-          "app.py",          // 👉 đổi thành tên file app của bạn
-          "--server.runOnSave", "true"
-        ],
-        "env": {
-          "PYTHONBREAKPOINT": "pdb.set_trace"
-        },
-        "console": "integratedTerminal"
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🔍 Debug Streamlit",
+      "type": "python",
+      "request": "launch",
+      "module": "streamlit",
+      "args": [
+        "run",
+        "app.py", // 👉 đổi thành tên file app của bạn
+        "--server.runOnSave",
+        "true"
+      ],
+      "env": {
+        "PYTHONBREAKPOINT": "pdb.set_trace"
       },
-      {
-        "name": "🔍 Debug API (uvicorn)",
-        "type": "python",
-        "request": "launch",
-        "module": "uvicorn",
-        "args": [
-          "src.api.app:app",
-          "--host", "0.0.0.0",
-          "--port", "8000",
-          "--reload"
-        ],
-        "env": {
-          "PYTHONBREAKPOINT": "pdb.set_trace"
-        },
-        "console": "integratedTerminal",
-        "justMyCode": false
-      }
-    ]
-  }
-  
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "🔍 Debug API (uvicorn)",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "src.api.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--reload"
+      ],
+      "env": {
+        "PYTHONBREAKPOINT": "pdb.set_trace"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "Python: Attach to Docker",
+      "type": "python",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "/app"
+        }
+      ],
+      "justMyCode": false
+    }
+  ]
+}

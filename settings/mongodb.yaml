@@ -1,5 +1,5 @@
 connection:
-  host: "mongodb://localhost:27017"
+  host: "mongodb://mongodb:27017"
   username: null
   password: null
 db_name: "AI_Agent"

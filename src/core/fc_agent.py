@@ -4,7 +4,7 @@ from src.core.nodes import initialize, llm_call, tool_call
 from src.core.edges import route_llm_to_tool
 from langgraph.graph import END
 from IPython.display import Image
-from src.memory.mongodb import get_mongodb_checkpointer
+from langgraph.checkpoint.memory import InMemorySaver
 
 
 class FCAgent(StateGraph):
@@ -26,10 +26,9 @@ class FCAgent(StateGraph):
         self.workflow.add_edge("tool", "llm")
         self.workflow.add_edge("initialize", "llm")
 
-        # Sử dụng MongoDB checkpointer
-        # mongodb_saver = get_mongodb_checkpointer()
+        memory = InMemorySaver()
 
-        self.compiled_graph = self.workflow.compile()
+        self.compiled_graph = self.workflow.compile(checkpointer=memory)
 
     def get_graph(self):
 
