@@ -25,6 +25,8 @@ COPY requirements.txt /app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+RUN pip install langfuse==3.0.8
+
 # Copy source code
 COPY . .
 

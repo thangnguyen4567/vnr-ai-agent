@@ -4,7 +4,7 @@ services:
   # Service cho MongoDB
   mongodb:
     image: mongo:latest
-    container_name: agent-mongodb
+    container_name: mongodb
     ports:
       - "27017:27017"
     volumes:
@@ -19,18 +19,6 @@ services:
       retries: 5
       start_period: 10s
 
-  # Service cho Langfuse (với SQLite tích hợp)
-  langfuse:
-    image: langfuse/langfuse:2
-    container_name: agent-langfuse
-    ports:
-      - "3000:3000"
-    volumes:
-      - langfuse_data:/app/data
-    networks:
-      - agent-network
-    restart: always
-
   # Service cho API
   api:
     build:
@@ -43,16 +31,12 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
-      langfuse:
-        condition: service_started
     networks:
       - agent-network
     restart: always
 
 volumes:
   mongodb_data:
-    driver: local
-  langfuse_data:
     driver: local
 
 networks:

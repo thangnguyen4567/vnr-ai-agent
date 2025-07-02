@@ -75,30 +75,7 @@ uvicorn src.api.app:app --reload
 
 ### Chạy với Docker
 
-Chúng tôi cung cấp Docker Compose để dễ dàng khởi chạy toàn bộ hệ thống, bao gồm MongoDB và Langfuse.
-
-1. Đảm bảo bạn đã cài đặt [Docker](https://www.docker.com/get-started) và [Docker Compose](https://docs.docker.com/compose/install/).
-
-2. Khởi chạy toàn bộ hệ thống:
-```bash
-docker-compose up
-```
-
-3. Hoặc chạy từng service riêng biệt:
-```bash
-docker-compose up mongodb  # Chỉ chạy MongoDB
-docker-compose up langfuse  # Chỉ chạy Langfuse
-docker-compose up api      # Chỉ chạy API Server
-docker-compose up streamlit # Chỉ chạy Streamlit UI
-```
-
-4. Truy cập các services:
-   - MongoDB: mongodb://localhost:27017 (username: admin, password: adminpassword)
-   - Langfuse UI: http://localhost:3000
-   - API Server: http://localhost:8000
-   - Streamlit UI: http://localhost:8501
-
-5. Để biết thêm chi tiết về cài đặt Docker, hãy xem file [docker-setup.md](docker-setup.md).
+Để biết chi tiết về cách cài đặt và chạy ứng dụng với Docker, vui lòng tham khảo [docker-setup.md](docker-setup.md).
 
 ## Cài đặt môi trường
 
