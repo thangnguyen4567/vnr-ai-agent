@@ -53,6 +53,7 @@ class ContextInitializer(BaseNode):
                 
                 for a in agents:
                     if not a.get("code"):
+                        # tạo code từ name của agent theo quy tắc 2 chữ cái đầu tiên của từng từ 
                         a["code"] = "".join([c[0].upper() for c in a.get("name", "").strip().split(" ") if c])
 
                 state["configs"][agent_id]["agents"] = agents

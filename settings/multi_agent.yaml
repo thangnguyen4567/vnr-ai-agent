@@ -5,9 +5,6 @@ agents:
   - id: "f4e9a767bf49f68a77f7afd783665df9"
     name: "Google Agent"
     description: "Agent tìm kiếm thông tin trên Google"
-  - id: "3653fbaadb65d15602f4dfd23a7a8599"
-    name: "Wikipedia Agent"
-    description: "Agent tìm kiếm thông tin trên Wikipedia"
   - id: "f73bdfc06c6f2e9741826c1ce81a985d"
     name: "Weather Agent"
     description: "Agent tìm kiếm thông tin về thời tiết"
@@ -22,16 +19,13 @@ sub_agents:
         temperature: 0.5
         max_tokens: 1000
         provider: "openai"
-
-  - agent_id: "3653fbaadb65d15602f4dfd23a7a8599"
-    name: "Wikipedia Agent"
-    type: "fc"
-    nodes:
-      llm:
-        model: "gpt-4o-mini"
-        temperature: 0.5
-        max_tokens: 1000
-        provider: "openai"
+      tools:
+      - type: built_in
+        name: search_google
+        description: "Tìm kiếm thông tin trên Google"
+      - type: built_in
+        name: get_weather
+        description: "Lấy thông tin thời tiết của một thành phố"
 
   - agent_id: "f73bdfc06c6f2e9741826c1ce81a985d"
     name: "Weather Agent"

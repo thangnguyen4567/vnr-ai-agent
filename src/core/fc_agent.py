@@ -20,7 +20,12 @@ class FCAgent(StateGraph):
         self.workflow.set_entry_point("initialize")
 
         self.workflow.add_conditional_edges(
-            "llm", route_llm_to_tool, {"continue": "tool", "end": END}
+            "llm", 
+            route_llm_to_tool, 
+            {
+                "continue": "tool", 
+                "end": END
+            }
         )
 
         self.workflow.add_edge("tool", "llm")

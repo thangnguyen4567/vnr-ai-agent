@@ -193,3 +193,8 @@ Dự án hiện có các endpoint sau:
 - **GET /health** - Kiểm tra trạng thái hoạt động của API
 - **GET /health/details** - Chi tiết về trạng thái hệ thống và tài nguyên
 - **POST /ai/process** - Xử lý yêu cầu AI
+
+# Hướng dẫn dùng langfuse
+
+email mặc định: admin@admin.com
+password mặc định: Vnr@1234

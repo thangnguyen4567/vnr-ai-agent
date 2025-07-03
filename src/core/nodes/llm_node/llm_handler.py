@@ -35,7 +35,7 @@ class LLMHandler(BaseNode):
         sys_config = config.get("configurable",{})
         user_info = sys_config.get("user_info",{})
         agent_id = state.get("agent_id")
-        agent_config = state.get("configs",{}).get(agent_id,{})
+        agent_config = state.get("configs",{}).get(agent_id)
 
         if not agent_config:
             raise ValueError(f"Agent config not found for agent_id: {agent_id}")

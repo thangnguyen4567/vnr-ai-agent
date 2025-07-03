@@ -53,7 +53,16 @@ class RouterNode(BaseNode):
     def _router_agent(
         self, state: AgentState, config: RunnableConfig
     ) -> Dict[str, Any]:
+        """
+        Phân tích cuộc hội thoại và xác định agent phù hợp
 
+        Args:
+            state: Trạng thái hiện tại của agent
+            config: Cấu hình của agent
+
+        Returns:
+            Kết quả routing với agent tiếp theo
+        """
         sys_config = config.get("configurable", {})
         agent_id = sys_config.get("agent_id")
         agent_config = state.get("configs", {}).get(agent_id, {})
@@ -115,6 +124,15 @@ class RouterNode(BaseNode):
         return {"next": goto, "agent_id": agent_id}
 
     async def _switch_agent(self, state: AgentState):
+        """
+        Chuyển sang agent được chỉ định và xử lý hội thoại
+
+        Args:
+            state: Trạng thái hiện tại của agent_id và next đã được cập nhật
+
+        Returns:
+            Trạng thái mới sau khi xử lý
+        """
 
         from src.core.fc_agent import fc_agent_graph
 
@@ -131,10 +149,15 @@ class RouterNode(BaseNode):
             if isinstance(msg, ToolMessage) and msg.name != next_agent:
                 continue
             node_state["messages"].append(msg)
+        #goi đồ thị tương ứng
+        agent_id = state.get("agent_id")
+        agent_config = state.get("configs", {}).get(agent_id)
 
         result = await fc_agent_graph.ainvoke(node_state)
-
+        # lấy message mới
         new_messages = result["messages"][len(node_state["messages"]) :]
+
+        # Cập nhật trạng thái với message mới
         new_state = state.copy()
         new_state["messages"] = state["messages"]
 
