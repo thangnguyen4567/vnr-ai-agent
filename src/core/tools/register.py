@@ -11,7 +11,7 @@ PARAM_TYPE = {
 
 class ToolInitializer:
     def __init__(self):
-        self.tool_built_in_tools_name = [tool.name for tool in built_in_tools]
+        self.built_in_tools_name = [tool.name for tool in built_in_tools]
 
     def _resolve_schema_references(self,schema_obj, full_schema):
         """
@@ -168,10 +168,10 @@ class ToolInitializer:
         http_tool_registry = {}
 
         for tool in raw_tools:
-            if tool["type"] == "built_in" and tool["name"] in self.tool_built_in_tools_name:
+            if tool["type"] == "built_in" and tool["name"] in self.built_in_tools_name:
                 built_in_tool = next((t for t in built_in_tools if t.name == tool["name"]), None)
                 if built_in_tool:
-                    tools.append(self.convert_to_schema([built_in_tool],llm_provider))
+                    tools.extend(self.convert_to_schema([built_in_tool],llm_provider))
             elif tool["type"] == "http":
                 tool_schema = self.convert_http_tool_to_schema(tool,llm_provider)
                 tools.append(tool_schema)
