@@ -38,4 +38,4 @@ ENV PYTHONPATH=/app
 
 # Command để chạy ứng dụng (có thể overwrite bằng docker-compose)
 CMD ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "src/main.py"]
-# CMD ["python", "src/main.py"]
+CMD ["streamlit", "run", "app.py"]

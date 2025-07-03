@@ -10,7 +10,6 @@ langgraph_checkpoint==2.1.0
 langgraph_checkpoint_mongodb==0.1.4
 langgraph_prebuilt==0.2.2
 langgraph_sdk==0.1.70
-
 langchain==0.3.26
 langchain_core==0.3.66
 langchain_google_genai==2.1.0
@@ -20,4 +19,5 @@ streamlit==1.46.1
 python_dotenv
 pydantic_settings==2.10.0
 pymongo==4.12.1
-debugpy
+httpx==0.28.1
+debugpy==1.8.14

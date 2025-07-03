@@ -32,6 +32,7 @@ if "config" not in st.session_state:
 
 
 async def process_message():
+    full_response = ""
     async for event in graph.astream_events(inputs, config=st.session_state.config):
         kind = event["event"]
 
@@ -44,7 +45,12 @@ async def process_message():
         ) not in ["research", "reflection"]:
             answer_content = event["data"]["chunk"].content
             if answer_content:
+                full_response += answer_content
                 yield answer_content
+    
+    # Lưu tin nhắn của bot vào lịch sử sau khi xử lý xong
+    if full_response:
+        st.session_state.messages.append({"role": "assistant", "content": full_response})
 
 
 def to_sync_generator(async_gen: AsyncGenerator):
@@ -82,5 +88,4 @@ if prompt := st.chat_input("Nhập tin nhắn của bạn..."):
     # Hiển thị đang xử lý
     with st.chat_message("assistant"):
         inputs = {"messages": [("user", prompt)]}
-        message_placeholder = st.empty()
         response = st.write_stream(to_sync_generator(process_message()))

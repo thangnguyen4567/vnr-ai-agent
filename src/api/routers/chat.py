@@ -9,6 +9,7 @@ from src.config import settings
 
 # Tạo router
 router = APIRouter(
+    prefix="/chat",
     tags=["Chat"],
     responses={404: {"description": "Not found"}},
 )
