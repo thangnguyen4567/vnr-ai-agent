@@ -1,12 +1,15 @@
 from src.core.nodes.tool_node.base_tool_handler import BaseToolHandler
-from typing import Any, Dict
+from typing import Any, Dict, List, Tuple
+from src.core.nodes.tool_node.utils import create_tool_response, create_error_response
+from src.core.nodes.tool_node.formatter import get_formatter
+from src.core.tools.builtin_tool.http_request_runner import do_async_http_request
 
 class HttpToolHandler(BaseToolHandler):
 
     async def process(
             self, 
-            tool_call_info: dict[str, Any], 
-            http_tool: dict[str, Any]
+            tool_call_info: Dict[str, Any], 
+            http_tool: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
         Process HTTP tool call
@@ -20,5 +23,175 @@ class HttpToolHandler(BaseToolHandler):
         """
         tool_name = tool_call_info.get("name","")
 
-        pass
+        try:
 
+            url, method, params = self._preprare_http_request_params(
+                tool_call_info,
+                http_tool
+            )
+
+            result = await do_async_http_request(
+                url,
+                method,
+                **params
+            )
+
+            output_params = http_tool.get("output_params", [])
+            formatter = get_formatter(result.data)
+            result_str = formatter.format(
+                result.data,
+                output_params,
+                tool_name,
+                http_tool.get("provider")
+            )
+
+            return create_tool_response(tool_call_info, result_str)
+        except Exception as e:
+
+            return create_error_response(tool_call_info, str(e))
+            
+    def _preprare_http_request_params(
+        self, 
+        tool_call_info: Dict[str, Any],
+        http_tool: Dict[str, Any]
+    ) -> Tuple[str, str, Dict[str, Any]]:
+        """
+        Prepare HTTP request parameters
+
+        Args:
+            tool_call_info: Tool call info
+            http_tool: HTTP tool config
+
+        Returns:
+            HTTP request parameters
+        """
+        # Lấy url và method
+        url = http_tool.get("url", "") or http_tool.get("tool_path", "")
+        method = http_tool.get("method", "GET").upper()
+
+        # Khởi tạo các tham số
+        path_params = {}
+        headers = {}
+        body = {}
+        query_params = {}
+
+        input_params = http_tool.get("input_params", {})
+        args = tool_call_info.get("args", {})
+
+        # Process default parameters
+        path_params, headers, query_params, body = self._process_default_params(
+            input_params,
+            path_params,
+            headers,
+            query_params,
+            body,
+        )
+
+        # Process args parameters from tool call info
+        path_params, headers, query_params, body = self._process_tool_args(
+            input_params,
+            args,
+            path_params,
+            headers,
+            query_params,
+            body,
+        )
+
+        params = {
+            "path_params": path_params,
+            "headers": headers,
+            "body": body,
+            "query_params": query_params
+        }
+
+        return url, method, params
+
+    def _process_default_params(
+        self,
+        input_params: List[Dict[str, Any]],
+        path_params: Dict[str, Any],
+        headers: Dict[str, Any],
+        query_params: Dict[str, Any],
+        body: Dict[str, Any],
+     ) -> Tuple[Dict[str, Any], Dict[str, str], Dict[str, Any], Dict[str, Any]]:
+        """
+        Xử lý tham số mặc định từ input_params
+
+        Args:
+            input_params: Danh sách tham số của tool
+            path_params: Tham số path
+            headers: Tham số header
+            query_params: Tham số query
+            body: Tham số body
+        """
+        for param in input_params:
+            param_name = param.get("name", "")
+            param_enabled = param.get("enabled", True)
+            param_default = param.get("default", "")
+            param_method = param.get("input_method", "").lower()
+
+            if not param_enabled and param_default:
+                # Phân loại tham số theo input_method
+                if param_method == "path":
+                    path_params[param_name] = param_default
+                elif param_method == "header":
+                    headers[param_name] = param_default
+                elif param_method == "body":
+                    body[param_name] = param_default
+                elif param_method == "query":
+                    query_params[param_name] = param_default
+
+        return path_params, headers, query_params, body
+
+
+    def _process_tool_args(
+        self,
+        input_params: List[Dict[str, Any]],
+        args: Dict[str, Any],
+        path_params: Dict[str, Any],
+        headers: Dict[str, Any],
+        query_params: Dict[str, Any],
+        body: Dict[str, Any],
+    ) -> Tuple[Dict[str, Any], Dict[str, str], Dict[str, Any], Dict[str, Any]]:
+        """
+        Xử lý tham số từ arguments của tool call 
+
+        Args:
+            input_params: Danh sách tham số của tool
+            args: Arguments từ tool call 
+            path_params: Tham số path
+            headers: Tham số header
+            query_params: Tham số query
+            body: Tham số body
+
+        Returns:
+            Path parameters
+            Headers
+            Query
+            Body
+        """
+        for param in input_params:
+            param_name = param.get("name", "")
+            param_enabled = param.get("enabled", True)
+            param_method = param.get("input_method", "").lower()
+
+            if param_enabled and param_name in args:
+                param_value = args[param_name]
+
+                if not param_value:
+                    continue
+                
+                if param_method == "path":
+                    path_params[param_name] = param_value
+                elif param_method == "header":
+                    headers[param_name] = param_value
+                elif param_method == "query":
+                    query_params[param_name] = param_value
+                elif param_method == "body":
+                    body[param_name] = param_value
+
+        return path_params, headers, query_params, body
+            
+            
+        
+    

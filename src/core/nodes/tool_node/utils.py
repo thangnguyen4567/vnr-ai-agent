@@ -43,26 +43,49 @@ def get_agent_config(state: AgentState) -> Dict[str, Any]:
     return agent_config
     
 
-def create_tool_response(tool_call_info: dict[str, Any], error_message: str) -> Dict[str, Any]:
+def create_tool_response(tool_call_info: dict[str, Any], content: str) -> Dict[str, Any]:
     """
     Tạo response cho tool call
+
+    Args:
+        tool_call_info: Thông tin tool call
+        content: Nội dung response
+
+    Returns:
+        Response cho tool call
+    """
+    return {
+        "messages": [
+            {
+                "role": "tool",
+                "tool_call_id": tool_call_info.get("id"),
+                "name": tool_call_info.get("name"),
+                "content": content
+            }
+        ]
+    }
+
+def create_error_response(tool_call_info: Optional[Dict[str, Any]], error_message: str) -> Dict[str, Any]:
+    """
+    Tạo response lỗi cho tool call
 
     Args:
         tool_call_info: Thông tin tool call
         error_message: Thông báo lỗi
 
     Returns:
-        Response cho tool call
+        Response lỗi cho tool call
     """
     if tool_call_info:
         return create_tool_response(tool_call_info, error_message)
-    return {
-        "messages": [
-            {
-                "role": "tool",
-                "tool_call_id": "",
-                "name": "unknown_tool",
-                "content": error_message
-            }
-        ]
-    }
+    else:
+        return {
+            "messages": [
+                {
+                    "role": "tool",
+                    "tool_call_id": "",
+                    "name": "unknown_tool",
+                    "content": error_message
+                }
+            ]
+        }

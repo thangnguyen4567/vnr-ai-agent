@@ -8,6 +8,7 @@ import copy
 from langchain_core.messages import AIMessage, ToolMessage, HumanMessage
 from dotenv import load_dotenv
 from src.config import settings
+import logging
 
 load_dotenv()
 
@@ -102,6 +103,8 @@ class RouterNode(BaseNode):
                 ),
             )
         ]
+        logging.info("messages: %s", agent_keys)
+        logging.info("agent_desc_str: %s", agent_desc_str)
 
         response = self.llm_router_agent.invoke(new_messages)
 
@@ -112,7 +115,7 @@ class RouterNode(BaseNode):
 
             for k, v in subgraph_mapping.items():
                 if k in res:
-                    next_agent = v
+                    next_agent = k
                     break
 
             goto = subgraph_mapping[next_agent]["code"]
