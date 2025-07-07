@@ -12,8 +12,6 @@ class DictFormatter(BaseFormatter):
         self, 
         result: Dict[str, Any],
         output_params: Optional[List[Dict[str, Any]]] = None,
-        tool_name: Optional[str] = None,
-        provider: Optional[str] = None
     ) -> str:
 
         try:
@@ -45,10 +43,9 @@ class DictFormatter(BaseFormatter):
         if output_params:
             for param in output_params:
                 param_name = param.get("name", "")
-                param_enabled = param.get("enabled", True)
                 param_description = param.get("description", "")
 
-                if param_enabled and param_name in result:
+                if param_name in result:
                     value = result[param_name]
                     if isinstance(value, dict):
                         filtered_result[param_name] = value[:MAX_CONTENT_LENGTH]

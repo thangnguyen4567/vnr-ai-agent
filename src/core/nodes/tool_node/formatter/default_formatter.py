@@ -9,8 +9,6 @@ class DefaultFormatter(BaseFormatter):
         self, 
         result: Any,
         output_params: Optional[List[Dict[str, Any]]] = None,
-        tool_name: Optional[str] = None,
-        provider: Optional[str] = None
     ) -> str:
 
         try:

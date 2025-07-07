@@ -3,6 +3,9 @@ from src.core.multi_agent import multi_agent_graph as graph
 import asyncio
 from typing import AsyncGenerator
 from src.core.config_loader import agent_config_loader
+from langfuse.langchain import CallbackHandler
+from src.config import settings
+from langfuse import Langfuse
 
 # Thiết lập tiêu đề ứng dụng
 st.set_page_config(page_title="AI Chatbot", page_icon="🤖")
@@ -17,16 +20,22 @@ if "messages" not in st.session_state:
 
 # Khởi tạo config trong session state nếu chưa có
 if "config" not in st.session_state:
-
+    Langfuse(
+        public_key=settings.LANGFUSE_CONFIG["public_key"],
+        secret_key=settings.LANGFUSE_CONFIG["secret_key"],
+        host=settings.LANGFUSE_CONFIG["host"],
+    )
+    langfuse_handler = CallbackHandler()
     st.session_state.config = {
         "configurable": {
-            "user_id": "1234567890",
+            "user_id": "113",
             "user_name": "Thang",
             "current_date": "06/06/2025",
             "language": "vi-VN",
             "agent_id": "",
-            "thread_id": "1234567890",
+            "thread_id": "113",
         },
+        "callbacks": [langfuse_handler],
         "recursion_limit": 10,
     }
 

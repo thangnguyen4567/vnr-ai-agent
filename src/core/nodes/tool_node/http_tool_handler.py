@@ -21,15 +21,14 @@ class HttpToolHandler(BaseToolHandler):
         Returns:
             Trạng thái đã cập nhật với kết quả tool call
         """
-        tool_name = tool_call_info.get("name","")
 
         try:
-
+            #chuẩn bị tham số cho request
             url, method, params = self._preprare_http_request_params(
                 tool_call_info,
                 http_tool
             )
-
+            #gửi request và lấy kết quả
             result = await do_async_http_request(
                 url,
                 method,
@@ -38,16 +37,15 @@ class HttpToolHandler(BaseToolHandler):
 
             output_params = http_tool.get("output_params", [])
             formatter = get_formatter(result.data)
+            #format kết quả theo output_params và đưa về dạng string
             result_str = formatter.format(
                 result.data,
-                output_params,
-                tool_name,
-                http_tool.get("provider")
+                output_params
             )
-
+            #format theo chuẩn của tool call
             return create_tool_response(tool_call_info, result_str)
         except Exception as e:
-
+            #format theo chuẩn của tool call
             return create_error_response(tool_call_info, str(e))
             
     def _preprare_http_request_params(
@@ -126,11 +124,10 @@ class HttpToolHandler(BaseToolHandler):
         """
         for param in input_params:
             param_name = param.get("name", "")
-            param_enabled = param.get("enabled", True)
             param_default = param.get("default", "")
             param_method = param.get("input_method", "").lower()
 
-            if not param_enabled and param_default:
+            if param_default:
                 # Phân loại tham số theo input_method
                 if param_method == "path":
                     path_params[param_name] = param_default

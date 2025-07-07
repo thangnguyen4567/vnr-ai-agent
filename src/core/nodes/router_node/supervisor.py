@@ -152,9 +152,6 @@ class RouterNode(BaseNode):
             if isinstance(msg, ToolMessage) and msg.name != next_agent:
                 continue
             node_state["messages"].append(msg)
-        #goi đồ thị tương ứng
-        agent_id = state.get("agent_id")
-        agent_config = state.get("configs", {}).get(agent_id)
 
         result = await fc_agent_graph.ainvoke(node_state)
         # lấy message mới

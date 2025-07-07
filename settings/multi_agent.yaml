@@ -3,15 +3,15 @@ name: "Multi Agent"
 type: "multi"
 agents:
   - id: "f4e9a767bf49f68a77f7afd783665df9"
-    name: "Google Agent"
-    description: "Agent tìm kiếm thông tin trên Google"
+    name: "Goal Agent"
+    description: "Agent tìm kiếm thông tin về mục tiêu KPI của phòng ban bộ phận"
   - id: "f73bdfc06c6f2e9741826c1ce81a985d"
     name: "Weather Agent"
     description: "Agent tìm kiếm thông tin về thời tiết"
     
 sub_agents:
   - agent_id: "f4e9a767bf49f68a77f7afd783665df9"
-    name: "Google Agent"
+    name: "Goal Agent"
     type: "fc"
     nodes:
       llm:
@@ -20,12 +20,13 @@ sub_agents:
         max_tokens: 1000
         provider: "openai"
       tools:
-      - type: built_in
-        name: search_google
-        description: "Tìm kiếm thông tin trên Google"
-      - type: built_in
-        name: get_weather
-        description: "Lấy thông tin thời tiết của một thành phố"
+        - type: built_in
+          name: get_goal
+          description: "Lấy danh sách mục tiêu KPI của phòng ban bộ phận"
+        - type: http
+          name: search_google
+          description: "Tìm kiếm thông tin google , tin tức mới nhất"
+          tool_path: https://www.goldapi.io/api/XAU/USD
 
   - agent_id: "f73bdfc06c6f2e9741826c1ce81a985d"
     name: "Weather Agent"
@@ -36,3 +37,28 @@ sub_agents:
         temperature: 0.5
         max_tokens: 1000
         provider: "openai"
+      tools:
+        - type: http
+          name: get_weather
+          description: "Lấy thông tin thời tiết của thành phố"
+          tool_path: https://api.open-meteo.com/v1/forecast
+          input_params:
+            - name: latitude
+              description: "Vĩ độ"
+              input_method: query
+              type: number
+              default: 21.03
+            - name: longitude
+              description: "Kinh độ"
+              input_method: query
+              type: number
+              default: 105.85
+            - name: current_weather
+              description: "Thời tiết hiện tại"
+              input_method: query
+              type: boolean
+              default: true
+          output_params:
+            - name: current_weather
+              type: string
+              description: "Thời tiết hiện tại"

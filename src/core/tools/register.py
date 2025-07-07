@@ -106,7 +106,7 @@ class ToolInitializer:
         properties = {}
         required = []
 
-        for param in tool["input_params"]:
+        for param in tool.get("input_params",[]):
             if param.get("enabled", True):
                 param_name = param.get("name")
                 param_type = PARAM_TYPE.get(param.get("type"), "string")
@@ -179,8 +179,8 @@ class ToolInitializer:
                     "url": tool["tool_path"],
                     "method": tool.get("method", "GET"),
                     "provider": tool.get("provider"),
-                    "input_params": tool["input_params"],
-                    "output_params": tool["output_params"]
+                    "input_params": tool.get("input_params",[]),
+                    "output_params": tool.get("output_params",[])
                 }
             else:
                 raise ValueError(f"Tool type {tool['type']} is not supported")
