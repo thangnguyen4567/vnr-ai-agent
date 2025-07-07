@@ -3,7 +3,7 @@ from src.core.tools.builtin_tool import built_in_tools
 from langgraph.prebuilt import ToolNode
 from typing import Optional, Dict, Any
 from src.core import AgentState
-from src.core.nodes.utils.message_utils import create_error_response
+from langchain_core.messages import ToolMessage
 
 class BuiltinToolHandler(BaseToolHandler):
     """
@@ -33,7 +33,8 @@ class BuiltinToolHandler(BaseToolHandler):
             return result
         
         except Exception as e:
-            return create_error_response(
-                tool_call_info,
-                f"Error processing tool call: {e}"
+            return ToolMessage(
+                tool_call_id="",
+                name="unknown_tool",
+                content=str(e)
             )

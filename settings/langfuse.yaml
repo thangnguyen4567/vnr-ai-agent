@@ -1,6 +1,6 @@
 public_key: pk-lf-e2451af2-ae0e-40c2-909b-37a1bda06212
 secret_key: sk-lf-978f8294-1268-40ba-8508-a9ad676719d1
-host: http://172.19.0.3:3000
+host: http://langfuse-web:3000
 trace_name: AgentPlatform
 
 

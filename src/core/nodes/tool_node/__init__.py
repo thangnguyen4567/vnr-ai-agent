@@ -36,7 +36,7 @@ async def tool_call(state: AgentState, config: RunnableConfig):
             
             #Phân loại tool
             if tool_name in http_tool_registry:
-                return await http_tool_handler.process(tool_call_info, http_tool_registry[tool_name])
+                return await http_tool_handler.process(tool_calls_info, http_tool_registry[tool_name])
             else:
                 return await builtin_tool_handler.process(state, tool_call_info)
             

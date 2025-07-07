@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List
 from langchain_core.messages import (
     AIMessage,
     ToolMessage,
@@ -119,50 +119,3 @@ def extract_text_content(content: any) -> str:
             texts.append(item)
 
     return "\n".join(texts).strip()
-
-def create_error_response(tool_call_info: Dict[str, Any], error_message: str) -> Dict[str, Any]:
-    """
-    Tạo phản hồi lỗi cho tool call
-
-    Args:
-        tool_call_info: Thông tin tool call
-        error_message: Thông báo lỗi
-
-    Returns:
-        Phản hồi lỗi cho tool call
-    """
-    if tool_call_info:
-        return create_tool_response(tool_call_info, error_message)
-    else:
-        return {
-            "messages": [
-                {
-                    "role": "tool",
-                    "tool_call_id": "",
-                    "name": "unknown_tool",
-                    "content": error_message,
-                }
-            ]
-        }
-    
-def create_tool_response(tool_call_info: Dict[str, Any], content: str) -> Dict[str, Any]:
-    """
-    Tạo phản hồi cho tool call.
-
-    Args:
-        tool_call_info: Thông tin tool call
-        error_message: Thông báo lỗi
-    
-    Returns:
-        Phản hồi cho tool call
-    """
-    return {
-        "messages": [
-            {
-                "role": "tool",
-                "tool_call_id": tool_call_info.get("id"),
-                "name": tool_call_info.get("name"),
-                "content": content
-            }
-        ]
-    }
