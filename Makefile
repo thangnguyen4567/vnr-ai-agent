@@ -16,3 +16,13 @@ down:
 
 up:
 	docker-compose up -d
+
+# Chạy test api 
+test:
+	docker exec -it agent-api pytest -v
+	
+# Kiểm tra độ bao phủ code của test
+test-cov:
+	docker exec -it agent-api pytest --cov=src tests/ --cov-report term-missing
+
+

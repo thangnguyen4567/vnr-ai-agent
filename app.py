@@ -6,6 +6,7 @@ from src.core.config_loader import agent_config_loader
 from langfuse.langchain import CallbackHandler
 from src.config import settings
 from langfuse import Langfuse
+import streamlit.components.v1 as components
 
 # Thiết lập tiêu đề ứng dụng
 st.set_page_config(page_title="AI Chatbot", page_icon="🤖")
@@ -51,7 +52,7 @@ async def process_message():
 
         elif kind == "on_chat_model_stream" and event["metadata"].get(
             "langgraph_node"
-        ) not in ["research", "reflection"]:
+        ) not in ["research", "reflection", "router_agent"]:
             answer_content = event["data"]["chunk"].content
             if answer_content:
                 full_response += answer_content
@@ -79,6 +80,17 @@ def to_sync_generator(async_gen: AsyncGenerator):
         # Trả lại setting ban đầu (nếu cần)
         asyncio.set_event_loop(None)
 
+# Hàm để tự động cuộn xuống cuối trang
+def auto_scroll_to_bottom():
+    js = '''
+    <script>
+        function scroll_to_bottom() {
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+        scroll_to_bottom();
+    </script>
+    '''
+    components.html(js, height=0)
 
 # Hiển thị tin nhắn trước đó
 for message in st.session_state.messages:
@@ -98,3 +110,6 @@ if prompt := st.chat_input("Nhập tin nhắn của bạn..."):
     with st.chat_message("assistant"):
         inputs = {"messages": [("user", prompt)]}
         response = st.write_stream(to_sync_generator(process_message()))
+        
+    # Tự động cuộn xuống cuối trang sau khi có phản hồi
+    auto_scroll_to_bottom()

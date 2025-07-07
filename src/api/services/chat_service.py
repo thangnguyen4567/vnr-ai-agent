@@ -71,7 +71,7 @@ class ChatService:
 
             elif kind == "on_chat_model_stream" and event["metadata"].get(
                 "langgraph_node"
-            ) not in ["research", "reflection"]:
+            ) not in ["research", "reflection", "router_agent"]:
                 answer_content = event["data"]["chunk"].content
                 if answer_content:
                     yield answer_content

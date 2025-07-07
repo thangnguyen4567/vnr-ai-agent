@@ -5,7 +5,6 @@ from ..models.chat_model import PayloadRequest
 from ..services.chat_service import ChatService
 from sse_starlette.sse import EventSourceResponse
 from src.core.config_loader import agent_config_loader
-from src.config import settings
 
 # Tạo router
 router = APIRouter(

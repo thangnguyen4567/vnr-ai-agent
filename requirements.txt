@@ -21,3 +21,8 @@ pydantic_settings==2.10.0
 pymongo==4.12.1
 httpx==0.28.1
 debugpy==1.8.14
+pytest==7.4.3
+pytest-asyncio==1.0.0
+pytest-cov==4.1.0
+black==24.2.0
+ruff==0.2.2
