@@ -1,6 +1,3 @@
-import pytest
-
-
 def test_chat_process(client):
     """
     Test endpoint chat/process xử lý request và trả về response stream
