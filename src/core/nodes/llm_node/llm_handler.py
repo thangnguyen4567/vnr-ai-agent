@@ -5,6 +5,7 @@ from typing import Dict, Any
 from src.core.nodes.utils.model_utils import get_model
 from langchain_core.messages import HumanMessage, SystemMessage
 from src.core.nodes.utils.message_utils import organize_messages, extract_text_content
+from src.config import settings
 
 SYSTEM_INFO_PROMPT = """
 #Thông tin hệ thống:
@@ -32,6 +33,7 @@ class LLMHandler(BaseNode):
             Trạng thái mới của agent sau khi xử lý
         """
 
+        # Lấy thông tin người dùng từ cấu hình xml
         sys_config = config.get("configurable",{})
         user_info = sys_config.get("user_info",{})
         agent_id = state.get("agent_id")
@@ -42,13 +44,14 @@ class LLMHandler(BaseNode):
         
         user_info_str = self.__format_user_info(user_info)
 
-        # Lấy cấu hình LLM
+        # Lấy cấu hình LLM từ cấu hình xml
         llm_config = agent_config["nodes"]["llm"]
-        system_prompt = llm_config.get("system_prompt","")
-        system_prompt = SYSTEM_INFO_PROMPT + user_info_str + system_prompt
+        agent_prompt = llm_config.get("agent_prompt","")
+        system_prompt = settings.HRM_PROMPT + SYSTEM_INFO_PROMPT + user_info_str + agent_prompt
         max_turns = llm_config.get("max_turns", 15)
         tools = agent_config.get("tools",[])
-
+        
+        # Sắp xếp tin nhắn theo thứ tự
         new_messages = organize_messages(state["messages"], max_turns)
 
         if new_messages and isinstance(new_messages[-1], HumanMessage):
@@ -60,6 +63,7 @@ class LLMHandler(BaseNode):
 
         prompt = system_prompt.format(**sys_config)
 
+        # Thêm Prompt hệ thống vào đầu tin nhắn
         messages = [SystemMessage(content=prompt)] + new_messages
 
         llm_model = get_model(**llm_config)

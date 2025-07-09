@@ -32,10 +32,8 @@ def test_chat_process(mock_get_langfuse, mock_stream_response, client):
             },
             "configurable": {
             "thread_id": "string",
-            "user_id": "string",
             "agent_id": "d4e12d5bb4014794fa3f956e2b0e01cf",
             "language": "vi-VN",
-            "user_name": "string",
             "current_date": "string"
             }
         }

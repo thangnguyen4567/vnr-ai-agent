@@ -35,9 +35,6 @@ async def dispatch(request_body: PayloadRequest) -> Dict[str, Any]:
     # Bổ sung cấu hình
     config["callbacks"] = [langfuse_handler] if langfuse_handler else []
     config["recursion_limit"] = 15
-    config["metadata"] = {
-        "langfuse_user_id": config.get("user_id", "anonymous"),
-    }
 
     return EventSourceResponse(
         ChatService.agent_stream_response(input=input, config=config)

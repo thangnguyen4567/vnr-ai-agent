@@ -29,8 +29,6 @@ if "config" not in st.session_state:
     langfuse_handler = CallbackHandler()
     st.session_state.config = {
         "configurable": {
-            "user_id": "113",
-            "user_name": "Thang",
             "current_date": "06/06/2025",
             "language": "vi-VN",
             "agent_id": "",

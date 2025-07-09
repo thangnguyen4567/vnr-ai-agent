@@ -18,13 +18,10 @@ class Message(BaseModel):
 class InputData(BaseModel):
     messages: List[Message] = Field(default_factory=list)
 
-
 class Configurable(BaseModel):
     thread_id: str = Field(..., description="ID thread")
-    user_id: str = Field(..., description="ID người dùng")
     agent_id: str = Field("d4e12d5bb4014794fa3f956e2b0e01cf", description="ID agent")
     language: str = Field("vi-VN", description="Ngôn ngữ")
-    user_name: str = Field(..., description="Tên người dùng")
     current_date: str = Field(..., description="Ngày hiện tại")
 
 class Config(BaseModel):

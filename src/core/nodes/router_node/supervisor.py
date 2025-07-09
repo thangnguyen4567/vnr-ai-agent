@@ -64,12 +64,14 @@ class RouterNode(BaseNode):
         Returns:
             Kết quả routing với agent tiếp theo
         """
+        # Lấy cấu hình từ cấu hình xml
         sys_config = config.get("configurable", {})
         agent_id = sys_config.get("agent_id")
         agent_config = state.get("configs", {}).get(agent_id, {})
         agents = agent_config.get("agents", [])
         default_agent = copy.deepcopy(agents[0])
 
+        # Lấy thông tin các agent từ cấu hình xml
         agent_desc = []
         agent_keys = []
         subgraph_mapping = {}

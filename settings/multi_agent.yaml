@@ -19,6 +19,7 @@ sub_agents:
         temperature: 0.5
         max_tokens: 1000
         provider: "openai"
+        agent_prompt: ""
       tools:
         - type: built_in
           name: get_goal
@@ -37,6 +38,7 @@ sub_agents:
         temperature: 0.5
         max_tokens: 1000
         provider: "openai"
+        agent_prompt: "12345"
       tools:
         - type: http
           name: get_weather
