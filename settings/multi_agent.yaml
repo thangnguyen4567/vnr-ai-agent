@@ -5,6 +5,9 @@ agents:
   - id: "f4e9a767bf49f68a77f7afd783665df9"
     name: "Goal Agent"
     description: "Agent tìm kiếm thông tin về mục tiêu KPI của phòng ban bộ phận"
+  - id: "f4e9a767bf49f68a77f7afd783665df2"
+    name: "Human Resource Agent"
+    description: "Agent tìm kiếm thông tin nhân sự"
   - id: "f73bdfc06c6f2e9741826c1ce81a985d"
     name: "Weather Agent"
     description: "Agent tìm kiếm thông tin về thời tiết"
@@ -38,7 +41,7 @@ sub_agents:
         temperature: 0.5
         max_tokens: 1000
         provider: "openai"
-        agent_prompt: "12345"
+        agent_prompt: ""
       tools:
         - type: http
           name: get_weather
@@ -64,3 +67,28 @@ sub_agents:
             - name: current_weather
               type: string
               description: "Thời tiết hiện tại"
+
+  - agent_id: "f4e9a767bf49f68a77f7afd783665df2"
+    name: "Human Resource Agent"
+    type: "fc"
+    nodes:
+      llm:
+        model: "gpt-4o-mini"
+        temperature: 0.5
+        max_tokens: 1000
+        provider: "openai"
+        agent_prompt: ""
+      tools:
+        - type: http
+          name: get_user_info
+          description: "Lấy thông tin nhân viên"
+          tool_path: https://reqres.in/api/users?page=2
+          input_params:
+            - name: x-api-key
+              description: "API key"
+              input_method: header
+              type: string
+              default: reqres-free-v1
+          output_params:
+            - name: data
+              type: json

@@ -5,15 +5,7 @@ from typing import Dict, Any
 from src.core.nodes.utils.model_utils import get_model
 from langchain_core.messages import HumanMessage, SystemMessage
 from src.core.nodes.utils.message_utils import organize_messages, extract_text_content
-from src.config import settings
-
-SYSTEM_INFO_PROMPT = """
-#Thông tin hệ thống:
-- **Hôm nay**: {current_date} (ngày/tháng/năm)
-- **Ngôn ngữ**: {language} \n\n
-"""
-
-USER_INFO_PROMPT = """# *Thông tin người dùng đang trò chuyện:*"""
+from src.prompt import HRM_CHATBOT_PROMPT, SYSTEM_INFO_PROMPT, USER_INFO_PROMPT
 
 class LLMHandler(BaseNode):
 
@@ -47,7 +39,7 @@ class LLMHandler(BaseNode):
         # Lấy cấu hình LLM từ cấu hình xml
         llm_config = agent_config["nodes"]["llm"]
         agent_prompt = llm_config.get("agent_prompt","")
-        system_prompt = settings.HRM_PROMPT + SYSTEM_INFO_PROMPT + user_info_str + agent_prompt
+        system_prompt = HRM_CHATBOT_PROMPT + SYSTEM_INFO_PROMPT + user_info_str + agent_prompt
         max_turns = llm_config.get("max_turns", 15)
         tools = agent_config.get("tools",[])
         
