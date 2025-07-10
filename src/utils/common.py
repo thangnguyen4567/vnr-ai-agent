@@ -1,6 +1,4 @@
-import os
 from enum import Enum
-
 
 class AgentType(Enum):
     """Loại agent"""

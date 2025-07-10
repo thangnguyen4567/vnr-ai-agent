@@ -2,6 +2,10 @@
 
 Nền tảng xây dựng và vận hành AI Agent với LangGraph và LangChain, giúp phát triển và triển khai các hệ thống AI thông minh.
 
+## Kiến trúc 
+
+https://langchain-ai.github.io/langgraph/tutorials/multi_agent/agent_supervisor/
+
 ## 🚀 Tính năng chính
 
 - **Multi-Agent Framework**: Xây dựng hệ thống đa agent với LangGraph
@@ -56,39 +60,112 @@ docker-compose up ai-agent -d
 
 ## ⚙️ Cấu hình
 
-### Biến môi trường
+Hệ thống cấu hình của VNR AI Agent Platform được quản lý thông qua các file YAML trong thư mục `settings/`:
 
-Tạo file `.env` ở thư mục gốc với các biến môi trường sau:
+- **settings/llm.yaml**: Cấu hình cho các mô hình ngôn ngữ lớn (LLM)
+- **settings/multi_agent.yaml**: Định nghĩa cấu trúc và thuộc tính của hệ thống đa agent
+- **settings/fc_agent.yaml**: Cấu hình cho function-calling agent
+- **settings/mongodb.yaml**: Thông số kết nối đến MongoDB
+- **settings/langfuse.yaml**: Cấu hình cho hệ thống giám sát Langfuse
 
+Các file cấu hình được tải tự động khi khởi động ứng dụng bởi `ConfigReaderInstance` trong module `src.utils`. Người dùng có thể chỉnh sửa các file này để thay đổi hành vi của hệ thống AI Agent.
+
+Để thêm mới hoặc cập nhật cấu hình:
+1. Chỉnh sửa file cấu hình tương ứng trong thư mục `settings/`
+2. Khởi động lại ứng dụng để áp dụng các thay đổi
+
+### Cấu trúc file multi_agent.yaml
+
+File `multi_agent.yaml` định nghĩa hệ thống đa agent với cấu trúc chi tiết như sau:
+
+#### Thông tin cơ bản
+```yaml
+agent_id: "d4e12d5bb4014794fa3f956e2b0e01cf"  # ID duy nhất của multi agent
+name: "Multi Agent"                            # Tên hiển thị
+type: "multi"                                 # Loại agent (multi/fc)
 ```
-# Cấu hình MongoDB
-MONGODB_URI=mongodb://localhost:27017
 
-# Cấu hình LLMs
-OPENAI_API_KEY=your_openai_api_key
-GOOGLE_API_KEY=your_google_api_key
-ANTHROPIC_API_KEY=your_anthropic_api_key
-
-# Langfuse
-LANGFUSE_PUBLIC_KEY=your_langfuse_public_key
-LANGFUSE_SECRET_KEY=your_langfuse_secret_key
-LANGFUSE_HOST=https://us.cloud.langfuse.com
-LANGFUSE_SESSION_ID=default-session
+#### Danh sách Agents
+Mỗi agent được định nghĩa với ID riêng và mô tả chức năng:
+```yaml
+agents:
+  - id: "f4e9a767bf49f68a77f7afd783665df9"    # ID duy nhất cho mỗi agent
+    name: "Goal Agent"                        # Tên hiển thị
+    description: "Agent tìm kiếm thông tin về mục tiêu KPI của phòng ban bộ phận" # Cần mô tả kỹ để AI phân tích chọn Agent phù hợp
 ```
 
-### MongoDB Checkpointer
+#### Cấu hình Sub-agents
+Mỗi sub-agent được định nghĩa chi tiết với:
+```yaml
+sub_agents:
+  - agent_id: "f4e9a767bf49f68a77f7afd783665df9"  # ID tham chiếu đến agent trong danh sách
+    name: "Goal Agent"                           # Tên hiển thị
+    type: "fc"                                  # Loại agent (fc = function calling)
+    nodes:
+      llm:                                      # Cấu hình LLM cho agent này
+        model: "gpt-4o-mini"                    # Mô hình LLM sử dụng
+        temperature: 0.5                        # Độ sáng tạo (0-1)
+        max_tokens: 1000                        # Giới hạn token đầu ra
+        provider: "openai"                      # Nhà cung cấp LLM
+        agent_prompt: ""                        # Prompt đặc biệt cho agent
+```
 
-Hệ thống sử dụng MongoDB để lưu trữ checkpointer của LangGraph, giúp lưu trữ trạng thái của agent trong quá trình thực thi.
+#### Định nghĩa Tools
+Mỗi agent có thể có nhiều tools, được chia làm 2 loại chính:
 
-**Cài đặt MongoDB:**
-- **Windows**: [Hướng dẫn cài đặt MongoDB trên Windows](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-windows/)
-- **Mac**: [Hướng dẫn cài đặt MongoDB trên macOS](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-os-x/)
-- **Linux**: [Hướng dẫn cài đặt MongoDB trên Linux](https://www.mongodb.com/docs/manual/administration/install-on-linux/)
+##### 1. Built-in Tools
+Tools được định nghĩa sẵn trong code của hệ thống:
+```yaml
+tools:
+  - type: built_in                            # Loại tool: built_in
+    name: get_goal                            # Tên của tool
+    description: "Lấy danh sách mục tiêu KPI của phòng ban bộ phận" # Mô tả
+```
 
-**Hoặc sử dụng MongoDB Atlas:**
-1. Tạo tài khoản tại [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Tạo một cluster mới
-3. Nhận connection string và thiết lập trong biến môi trường `MONGODB_URI`
+##### 2. HTTP Tools (API động)
+Tools kết nối đến API bên ngoài:
+```yaml
+tools:
+  - type: http                                # Loại tool: http
+    name: get_weather                         # Tên của tool
+    description: "Lấy thông tin thời tiết của thành phố"
+    tool_path: https://api.open-meteo.com/v1/forecast  # Endpoint API
+    
+    # Các tham số đầu vào
+    input_params:
+      - name: latitude                        # Tên tham số
+        description: "Vĩ độ"                  # Mô tả
+        input_method: query                   # Phương thức truyền: query, header, path, body
+        type: number                          # Kiểu dữ liệu
+        default: 21.03                        # Giá trị mặc định
+        
+      - name: x-api-key                       # Ví dụ về tham số header
+        description: "API key"
+        input_method: header                  # Phương thức truyền: header
+        type: string
+        default: reqres-free-v1
+    
+    # Định nghĩa output
+    output_params:
+      - name: current_weather                 # Tên trường dữ liệu trả về
+        type: string                          # Kiểu dữ liệu
+        description: "Thời tiết hiện tại"     # Mô tả
+```
+
+#### Phương thức truyền Input Params
+- **query**: Tham số được gửi qua query string trong URL (`?param=value`)
+- **header**: Tham số được gửi trong header của request
+- **path**: Tham số được truyền trong đường dẫn URL (`/api/{path_param}`)
+- **body**: Tham số được gửi trong phần thân của request (JSON/form-data)
+
+#### Output Params
+Định nghĩa cấu trúc dữ liệu trả về, có thể là:
+- **string**: Dữ liệu dạng chuỗi
+- **number**: Dữ liệu dạng số
+- **boolean**: Dữ liệu dạng boolean
+- **json**: Dữ liệu dạng JSON phức tạp
+
+Cấu trúc này cho phép hệ thống router định tuyến các câu hỏi của người dùng đến agent thích hợp và sử dụng các công cụ tương ứng để xử lý yêu cầu.
 
 ### Langfuse Analytics
 
@@ -103,7 +180,7 @@ Hệ thống tích hợp Langfuse để theo dõi, phân tích và đánh giá h
 - Email: admin@admin.com
 - Mật khẩu: Vnr@1234
 
-## 🏃‍♂️ Chạy ứng dụng
+## 🏃‍♂️ Chạy ứng dụng test chatbot
 
 ### Chạy Streamlit UI
 
@@ -148,21 +225,50 @@ API sẽ khởi động tại: http://localhost:8000
 │   │   ├── multi_agent.py  # Định nghĩa multi agent
 │   │   └── config_loader.py # Bộ nạp cấu hình
 │   ├── utils/              # Tiện ích
+|   ├── prompt/             # Các prompt hướng dẫn AI
 │   └── main.py             # Entry point
 ├── docker-compose.yml      # Cấu hình Docker
 ├── Dockerfile              # Định nghĩa Docker image
 └── requirements.txt        # Thư viện phụ thuộc
 ```
 
-## 📚 API Endpoints
-
-- **GET /** - Endpoint gốc với thông báo chào mừng
-- **GET /health** - Kiểm tra trạng thái hoạt động của API
-- **GET /health/details** - Chi tiết về trạng thái hệ thống và tài nguyên
-- **POST /ai/process** - Xử lý yêu cầu AI
-
 ## 🔍 Debug
 
 Để debug ứng dụng trong Docker:
 1. Ứng dụng có cấu hình sẵn debugpy port 5678
 2. Kết nối với debugger thông qua VS Code
+
+
+## Test
+
+### Chạy test API
+
+Hệ thống sử dụng pytest để chạy các test tự động kiểm tra tính đúng đắn của API endpoints.
+
+#### Sử dụng Docker (Khuyên dùng)
+
+```bash
+# Chạy tất cả test API
+make test
+
+# Kiểm tra độ bao phủ code của test
+make test-cov
+```
+
+#### Không dùng Docker
+
+```bash
+# Chạy tất cả test API
+pytest -v
+
+# Kiểm tra độ bao phủ code của test
+pytest --cov=src tests/ --cov-report term-missing
+```
+
+### Test API bằng công cụ
+
+Bạn cũng có thể sử dụng công cụ như Postman, cURL hoặc Swagger UI để test API:
+
+- **Swagger UI**: Truy cập `http://localhost:8000/docs` trong chế độ dev
+- **ReDoc**: Truy cập `http://localhost:8000/redoc` trong chế độ dev
+- **OpenAPI Spec**: Truy cập `http://localhost:8000/openapi.json` trong chế độ dev

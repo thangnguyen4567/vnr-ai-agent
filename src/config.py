@@ -35,6 +35,14 @@ class GlobalConfig(BaseSettings):
     FC_AGENT_CONFIG: Dict[str, Any] = Field(
         default_factory=lambda: load_config_from_file("settings/fc_agent.yaml")
     )
+
+    VECTORDB_CONFIG: Dict[str, Any] = Field(
+        default_factory=lambda: load_config_from_file("settings/vectordb.yaml")
+    )
+
+    DEV_MODE: bool = Field(
+        default=True
+    )
     
 # Khởi tạo cấu hình toàn cục
 settings = GlobalConfig()
