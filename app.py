@@ -33,6 +33,10 @@ if "config" not in st.session_state:
             "language": "vi-VN",
             "agent_id": "",
             "thread_id": "113",
+            "user_info": {
+                "name": "Nguyễn Văn A",
+                "employee_id": "EMP001"
+            }
         },
         "callbacks": [langfuse_handler],
         "recursion_limit": 10,

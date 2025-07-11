@@ -3,37 +3,23 @@ name: "Multi Agent"
 type: "multi"
 agents:
   - id: "f4e9a767bf49f68a77f7afd783665df9"
-    name: "Goal Agent"
-    description: "Agent tìm kiếm thông tin về mục tiêu KPI của phòng ban bộ phận"
+    name: "Attendance Agent"
+    description: "Agent tìm kiếm thông tin về lịch làm việc, tăng ca, đăng ký nghỉ của nhân viên hoặc các dữ liệu liên quan đến công lương"
   - id: "f4e9a767bf49f68a77f7afd783665df2"
     name: "Human Resource Agent"
-    description: "Agent tìm kiếm thông tin nhân sự"
-  - id: "f73bdfc06c6f2e9741826c1ce81a985d"
-    name: "Weather Agent"
-    description: "Agent tìm kiếm thông tin về thời tiết"
-    
+    description: "Agent tìm kiếm thông tin nhân sự, hồ sơ cá nhân, lịch sử công tác của nhân viên"
+  - id: "f73bdfc06c6f2e9741826c1ce81a985e"
+    name: "Recruitment Agent"
+    description: "Agent tìm kiếm thông tin về việc tuyển dụng, lịch phỏng vấn, đề xuất các ứng viên phù hợp"
+  - id: "f73bdfc06c6f2e9741826c1ce81a985a"
+    name: "Salary Agent"
+    description: "Agent tìm kiếm thông tin về công lương, thu nhập, phụ cấp, thuế của nhân viên"
+  - id: "f73bdfc06c6f2e9741826c1ce81a982b"
+    name: "Training Agent"
+    description: "Agent tìm kiếm thông tin về việc đào tạo, học tập, kỹ năng, chuyên môn của nhân viên"
 sub_agents:
   - agent_id: "f4e9a767bf49f68a77f7afd783665df9"
-    name: "Goal Agent"
-    type: "fc"
-    nodes:
-      llm:
-        model: "gpt-4o-mini"
-        temperature: 0.5
-        max_tokens: 1000
-        provider: "openai"
-        agent_prompt: ""
-      tools:
-        - type: built_in
-          name: get_goal
-          description: "Lấy danh sách mục tiêu KPI của phòng ban bộ phận"
-        - type: http
-          name: search_google
-          description: "Tìm kiếm thông tin google , tin tức mới nhất"
-          tool_path: https://www.goldapi.io/api/XAU/USD
-
-  - agent_id: "f73bdfc06c6f2e9741826c1ce81a985d"
-    name: "Weather Agent"
+    name: "Attendance Agent"
     type: "fc"
     nodes:
       llm:
@@ -44,29 +30,46 @@ sub_agents:
         agent_prompt: ""
       tools:
         - type: http
-          name: get_weather
-          description: "Lấy thông tin thời tiết của thành phố"
-          tool_path: https://api.open-meteo.com/v1/forecast
+          name: leave_request
+          description: "Đăng ký nghỉ phép"
+          method: POST
+          tool_path: http://localhost:8000/attendance/leave-request
           input_params:
-            - name: latitude
-              description: "Vĩ độ"
+            - name: employee_id
+              description: "ID của nhân viên"
               input_method: query
-              type: number
-              default: 21.03
-            - name: longitude
-              description: "Kinh độ"
-              input_method: query
-              type: number
-              default: 105.85
-            - name: current_weather
-              description: "Thời tiết hiện tại"
-              input_method: query
-              type: boolean
-              default: true
-          output_params:
-            - name: current_weather
               type: string
-              description: "Thời tiết hiện tại"
+              default: EMP001
+            - name: leave_type
+              description: "Loại nghỉ phép"
+              input_method: query
+              type: string
+              default: annual
+            - name: start_date
+              description: "Ngày bắt đầu nghỉ dd/mm/yyyy"
+              input_method: query
+              type: string
+              default: 11/07/2025
+            - name: end_date
+              description: "Ngày kết thúc nghỉ dd/mm/yyyy"
+              input_method: query
+              type: date
+              default: 12/07/2025
+            - name: reason
+              description: "Lý do nghỉ phép"
+              input_method: query
+              type: date
+              
+        - type: http
+          name: get_attendance_record
+          description: "Lấy thông tin lịch làm việc, tăng ca, ngày công, đăng ký nghỉ của nhân viên" 
+          tool_path: http://localhost:8000/attendance/attendance-record
+          input_params:
+            - name: month
+              description: "Tháng cần lấy thông tin"
+              input_method: query
+              type: number
+              default: 7
 
   - agent_id: "f4e9a767bf49f68a77f7afd783665df2"
     name: "Human Resource Agent"
@@ -80,15 +83,91 @@ sub_agents:
         agent_prompt: ""
       tools:
         - type: http
-          name: get_user_info
-          description: "Lấy thông tin nhân viên"
-          tool_path: https://reqres.in/api/users?page=2
+          name: get_employee_profile
+          description: "Lấy thông tin hồ sơ cá nhân của nhân viên"
+          tool_path: http://localhost:8000/hr/employee-profile
           input_params:
-            - name: x-api-key
-              description: "API key"
-              input_method: header
+            - name: employee_name
+              description: "Tên nhân viên"
+              input_method: query
               type: string
-              default: reqres-free-v1
-          output_params:
-            - name: data
-              type: json
+              default: Nguyễn Văn A
+        - type: http
+          name: get_work_history
+          description: "Lấy lịch sử công tác của nhân viên"
+          tool_path: http://localhost:8000/hr/work-history
+          input_params:
+            - name: employee_name
+              description: "Tên nhân viên"
+              input_method: query
+              type: string
+              default: Nguyễn Văn A
+
+  - agent_id: "f73bdfc06c6f2e9741826c1ce81a985e"
+    name: "Recruitment Agent"
+    type: "fc"
+    nodes:
+      llm:
+        model: "gpt-4o-mini"
+        temperature: 0.5
+        max_tokens: 1000
+        provider: "openai"
+        agent_prompt: ""
+      tools:
+        - type: http
+          name: get_candidate_status
+          description: "Lấy thông tin trạng thái các ứng viên dựa vào tên"
+          tool_path: http://localhost:8000/recruitment/candidate-status
+          input_params:
+            - name: candidate_name
+              description: "Tên ứng viên"
+              input_method: query
+              type: string
+        - type: http
+          name: get_interview_reminders
+          description: "Lấy thông tin lịch phỏng vấn"
+          tool_path: http://localhost:8000/recruitment/interview-reminders
+          input_params:
+            - name: days_ahead
+              description: "Số ngày để lấy thông tin lịch phỏng vấn"
+              input_method: query
+              type: number
+              default: 1
+            
+  - agent_id: "f73bdfc06c6f2e9741826c1ce81a985a"
+    name: "Salary Agent"
+    type: "fc"
+    nodes:
+      llm:
+        model: "gpt-4o-mini"
+        temperature: 0.5
+        max_tokens: 1000
+        provider: "openai"
+        agent_prompt: ""
+      tools:
+        - type: http
+          name: get_salary_details
+          description: "Lấy thông tin công lương của nhân viên"
+          tool_path: http://localhost:8000/salary/salary-details
+          input_params:
+            - name: month
+              description: "Tháng cần lấy thông tin"
+              input_method: query
+              type: number
+              default: 6
+
+  - agent_id: "f73bdfc06c6f2e9741826c1ce81a982b"
+    name: "Training Agent"
+    type: "fc"
+    nodes:
+      llm:
+        model: "gpt-4o-mini"
+        temperature: 0.5
+        max_tokens: 1000
+        provider: "openai"
+        agent_prompt: ""
+      tools:
+        - type: http
+          name: get_courses
+          description: "Lấy thông tin khóa học"
+          tool_path: http://localhost:8000/training/courses

@@ -6,18 +6,26 @@ from .routers.health import router as health_router
 from .routers.generate import router as generate_router
 from langfuse import Langfuse
 from src.config import settings
+from src.vectordb.vectordb import VectorDBManager
+from .routers.test_api.attendance import router as attendance_router
+from .routers.test_api.human_resources import router as human_resources_router
+from .routers.test_api.recruit import router as recruit_router
+from .routers.test_api.salary import router as salary_router
+from .routers.test_api.training import router as training_router
 
 # Cấu hình logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
-
+# Khởi tạo Langfuse để tracking các request
 Langfuse(
     public_key=settings.LANGFUSE_CONFIG["public_key"],
     secret_key=settings.LANGFUSE_CONFIG["secret_key"],
     host=settings.LANGFUSE_CONFIG["host"],
 )
+# Khởi tạo VectorDBManager
+VectorDBManager()
 
 app = FastAPI(
     title="AI Agent API",
@@ -46,3 +54,8 @@ app.add_middleware(
 app.include_router(chat_router)
 app.include_router(generate_router)
 app.include_router(health_router)
+app.include_router(attendance_router)
+app.include_router(human_resources_router)
+app.include_router(recruit_router)
+app.include_router(salary_router)
+app.include_router(training_router)

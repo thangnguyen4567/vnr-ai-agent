@@ -152,6 +152,7 @@ Tools kết nối đến API bên ngoài:
 tools:
   - type: http                                # Loại tool: http
     name: get_weather                         # Tên của tool
+    method: POST                              # Phương thức mặc định là get
     description: "Lấy thông tin thời tiết của thành phố"
     tool_path: https://api.open-meteo.com/v1/forecast  # Endpoint API
     
@@ -296,3 +297,27 @@ Bạn cũng có thể sử dụng công cụ như Postman, cURL hoặc Swagger U
 - **Swagger UI**: Truy cập `http://localhost:8000/docs` trong chế độ dev
 - **ReDoc**: Truy cập `http://localhost:8000/redoc` trong chế độ dev
 - **OpenAPI Spec**: Truy cập `http://localhost:8000/openapi.json` trong chế độ dev
+
+
+## Trực quan hóa 
+
+### Hiển thị workflow của Multi-agent bằng Mermaid
+
+Multi-agent workflow có thể được trực quan hóa dưới dạng biểu đồ Mermaid, giúp dễ dàng hiểu được cấu trúc và luồng hoạt động của hệ thống.
+
+#### Sử dụng script graph.py
+
+Chúng tôi cung cấp script `graph.py` để chuyển đổi file cấu hình YAML thành biểu đồ Mermaid:
+
+```bash
+python graph.py
+```
+
+#### Hiển thị với Mermaid Live Editor
+
+1. Truy cập [https://mermaid.live/](https://mermaid.live/)
+2. Sao chép nội dung từ cmd
+3. Dán vào khung soạn thảo bên trái của Mermaid Live Editor
+4. Biểu đồ sẽ được hiển thị ở khung bên phải
+
+Trực quan hóa giúp người dùng và nhà phát triển dễ dàng hiểu cấu trúc phức tạp của hệ thống Multi-agent. 

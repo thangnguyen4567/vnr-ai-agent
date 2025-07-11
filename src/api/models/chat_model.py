@@ -23,6 +23,7 @@ class Configurable(BaseModel):
     agent_id: str = Field("d4e12d5bb4014794fa3f956e2b0e01cf", description="ID agent")
     language: str = Field("vi-VN", description="Ngôn ngữ")
     current_date: str = Field(..., description="Ngày hiện tại")
+    user_info: Dict[str, str] = Field(..., description="Thông tin người dùng")
 
 class Config(BaseModel):
     recursion_limit: int = Field(10, description="Giới hạn đệ quy")
