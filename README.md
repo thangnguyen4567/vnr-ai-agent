@@ -1,10 +1,36 @@
 # VNR AI Agent Platform
 
+## 🤖 Giới thiệu
 Nền tảng xây dựng và vận hành AI Agent với LangGraph và LangChain, giúp phát triển và triển khai các hệ thống AI thông minh.
 
-## Kiến trúc 
+### Kiến trúc Multi-agent supervisor
 
-https://langchain-ai.github.io/langgraph/tutorials/multi_agent/agent_supervisor/
+<img src="https://langchain-ai.github.io/langgraph/tutorials/multi_agent/assets/diagram.png" alt="Kiến trúc Multi-agent supervisor" width="500"/>
+
+Tham khảo: https://langchain-ai.github.io/langgraph/tutorials/multi_agent/agent_supervisor/
+
+### VectorDB
+
+VNR AI Agent Platform sử dụng Qdrant làm Vector Database để lưu trữ và truy vấn các vector embeddings, giúp agent có thể tìm kiếm thông tin liên quan dựa trên ngữ nghĩa.
+
+#### Cách hoạt động
+
+1. **Embedding Generation**: Dữ liệu văn bản được chuyển đổi thành vector embeddings thông qua các mô hình như OpenAI Ada, BERT hoặc các mô hình tương tự.
+   
+2. **Vector Storage**: Các vector được lưu trữ trong Qdrant cùng với metadata để dễ dàng truy xuất.
+   
+3. **Semantic Search**: Khi cần tìm kiếm thông tin, câu truy vấn được chuyển đổi thành vector và so sánh với các vector trong cơ sở dữ liệu để tìm ra kết quả có độ tương đồng cao nhất.
+
+#### Sử dụng trong Multi-Agent
+
+Agent sử dụng VectorDB để:
+- **Truy xuất kiến thức**: Tìm kiếm thông tin từ kho dữ liệu lớn
+- **Ghi nhớ hội thoại**: Lưu trữ và truy vấn các phiên trò chuyện trước đó
+- **Context Augmentation**: Bổ sung ngữ cảnh để agent đưa ra quyết định chính xác hơn
+
+#### Cài đặt và sử dụng
+- Đã được cấu hình trong `docker-compose.yml`, chỉ cần chạy `docker-compose up -d`
+- Truy cập dashboard Qdrant tại: http://localhost:6333/dashboard
 
 ## 🚀 Tính năng chính
 
@@ -12,14 +38,13 @@ https://langchain-ai.github.io/langgraph/tutorials/multi_agent/agent_supervisor/
 - **Giao diện Streamlit**: Tương tác trực quan với agent qua giao diện chat
 - **API FastAPI**: Tích hợp agent vào các ứng dụng thông qua RESTful API
 - **Giám sát với Langfuse**: Theo dõi và phân tích hiệu suất agent trong thời gian thực
-- **Lưu trữ trạng thái**: Hỗ trợ checkpointing với MongoDB
+- **Lưu trữ trạng thái**: Hỗ trợ checkpointing 
 
 ## 🔧 Cài đặt
 
 ### Yêu cầu
 
 - Python 3.11+ (khuyên dùng Python 3.13)
-- MongoDB (cơ sở dữ liệu để lưu trữ checkpointing)
 - API key cho các LLM (OpenAI, Google AI, Anthropic)
 
 ### Cài đặt trực tiếp
@@ -51,7 +76,7 @@ pip install -e .
 ### Cài đặt với Docker
 
 ```bash
-# Khởi chạy toàn bộ hệ thống (bao gồm MongoDB và Langfuse)
+# Khởi chạy toàn bộ hệ thống (bao gồm vectorDB và Langfuse)
 docker-compose up -d
 
 # Chỉ khởi chạy dịch vụ AI Agent
@@ -65,7 +90,6 @@ Hệ thống cấu hình của VNR AI Agent Platform được quản lý thông 
 - **settings/llm.yaml**: Cấu hình cho các mô hình ngôn ngữ lớn (LLM)
 - **settings/multi_agent.yaml**: Định nghĩa cấu trúc và thuộc tính của hệ thống đa agent
 - **settings/fc_agent.yaml**: Cấu hình cho function-calling agent
-- **settings/mongodb.yaml**: Thông số kết nối đến MongoDB
 - **settings/langfuse.yaml**: Cấu hình cho hệ thống giám sát Langfuse
 
 Các file cấu hình được tải tự động khi khởi động ứng dụng bởi `ConfigReaderInstance` trong module `src.utils`. Người dùng có thể chỉnh sửa các file này để thay đổi hành vi của hệ thống AI Agent.
