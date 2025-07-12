@@ -7,6 +7,7 @@ from langfuse.langchain import CallbackHandler
 from src.config import settings
 from langfuse import Langfuse
 import streamlit.components.v1 as components
+from datetime import datetime
 
 # Thiết lập tiêu đề ứng dụng
 st.set_page_config(page_title="AI Chatbot", page_icon="🤖")
@@ -29,7 +30,7 @@ if "config" not in st.session_state:
     langfuse_handler = CallbackHandler()
     st.session_state.config = {
         "configurable": {
-            "current_date": "06/06/2025",
+            "current_date": datetime.now().strftime("%d/%m/%Y"),
             "language": "vi-VN",
             "agent_id": "",
             "thread_id": "113",

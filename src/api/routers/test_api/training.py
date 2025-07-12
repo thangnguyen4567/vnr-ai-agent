@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter
 from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
-from datetime import date, datetime, timedelta
+from typing import List
+from datetime import date, timedelta
 from enum import Enum
 
 router = APIRouter(prefix="/training", tags=["training"])

@@ -17,6 +17,9 @@ agents:
   - id: "f73bdfc06c6f2e9741826c1ce81a982b"
     name: "Training Agent"
     description: "Agent tìm kiếm thông tin về việc đào tạo, học tập, kỹ năng, chuyên môn của nhân viên"
+  - id: "f73bdfc06c6f2e9741826c1ce81a982c"
+    name: "Goal Agent"
+    description: "Agent tìm kiếm thông tin về mục tiêu KPI của công ty"
 sub_agents:
   - agent_id: "f4e9a767bf49f68a77f7afd783665df9"
     name: "Attendance Agent"
@@ -171,3 +174,18 @@ sub_agents:
           name: get_courses
           description: "Lấy thông tin khóa học"
           tool_path: http://localhost:8000/training/courses
+
+  - agent_id: "f73bdfc06c6f2e9741826c1ce81a982c"
+    name: "Goal Agent"
+    type: "fc"
+    nodes:
+      llm:
+        model: "gpt-4o-mini"
+        temperature: 0.5
+        max_tokens: 1000
+        provider: "openai"
+        agent_prompt: ""
+      tools:
+        - type: built_in
+          name: get_goal
+          description: "Lấy thông tin mục tiêu KPI của công ty"

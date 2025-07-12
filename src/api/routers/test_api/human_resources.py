@@ -82,7 +82,7 @@ async def get_employee_profile(employee_name: str):
     Example: "Cho tôi xem hồ sơ nhân sự của Nguyễn Văn A"
     """
     for employee in mock_employees.values():
-        if employee["full_name"].lower() == employee_name.lower():
+        if employee_name.lower() in employee["full_name"].lower():
             return employee
     raise HTTPException(status_code=404, detail="Employee not found")
 
@@ -93,7 +93,7 @@ async def get_work_history(employee_name: str):
     Example: "Lịch sử thăng chức của tôi ra sao?"
     """
     for employee in mock_employees.values():
-        if employee["full_name"].lower() == employee_name.lower():
+        if employee_name.lower() in employee["full_name"].lower():
             return {
                 "full_name": employee["full_name"],
                 "history": mock_work_history[employee["id"]]

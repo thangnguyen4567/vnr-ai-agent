@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Literal, Union, Dict, Any
+from datetime import datetime
 
 class TextContent(BaseModel):
     type: Literal["text"] = Field(..., description="Loại nội dung")
@@ -22,7 +23,7 @@ class Configurable(BaseModel):
     thread_id: str = Field(..., description="ID thread")
     agent_id: str = Field("d4e12d5bb4014794fa3f956e2b0e01cf", description="ID agent")
     language: str = Field("vi-VN", description="Ngôn ngữ")
-    current_date: str = Field(..., description="Ngày hiện tại")
+    current_date: str = Field(datetime.now().strftime("%d/%m/%Y"), description="Ngày hiện tại")
     user_info: Dict[str, str] = Field(..., description="Thông tin người dùng")
 
 class Config(BaseModel):

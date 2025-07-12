@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
-from datetime import date, datetime, timedelta
+from typing import List, Optional
+from datetime import date, timedelta
 from enum import Enum
 
 router = APIRouter(prefix="/recruitment", tags=["recruitment"])
@@ -197,12 +197,10 @@ async def get_candidate_status(candidate_name: str = Query(..., description="Ful
     Tra cứu trạng thái ứng viên
     Example: "Ứng viên Nguyễn Văn A đang ở bước nào?"
     """
-    # Search for candidate by name (case-insensitive)
-    candidate_name_lower = candidate_name.lower()
     found_candidate = None
     
     for candidate in candidates.values():
-        if candidate_name_lower in candidate["full_name"].lower():
+        if candidate_name.lower() in candidate["full_name"].lower():
             found_candidate = candidate
             break
     
