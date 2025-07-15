@@ -188,7 +188,8 @@ tools:
 - **string**: Dữ liệu dạng chuỗi
 - **number**: Dữ liệu dạng số
 - **boolean**: Dữ liệu dạng boolean
-- **json**: Dữ liệu dạng JSON phức tạp
+- **array**: Dữ liệu dạng mảng
+- **object**: Dữ liệu dạng object
 
 Cấu trúc này cho phép hệ thống router định tuyến các câu hỏi của người dùng đến agent thích hợp và sử dụng các công cụ tương ứng để xử lý yêu cầu.
 

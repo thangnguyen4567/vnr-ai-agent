@@ -28,8 +28,8 @@ class FCAgent(StateGraph):
             }
         )
 
-        self.workflow.add_edge("tool", "llm")
         self.workflow.add_edge("initialize", "llm")
+        self.workflow.add_edge("tool", "llm")
 
         memory = InMemorySaver()
 

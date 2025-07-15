@@ -26,9 +26,6 @@ sub_agents:
     type: "fc"
     nodes:
       llm:
-        model: "gpt-4o-mini"
-        temperature: 0.5
-        max_tokens: 1000
         provider: "openai"
         agent_prompt: ""
       tools:
@@ -79,9 +76,6 @@ sub_agents:
     type: "fc"
     nodes:
       llm:
-        model: "gpt-4o-mini"
-        temperature: 0.5
-        max_tokens: 1000
         provider: "openai"
         agent_prompt: ""
       tools:
@@ -111,9 +105,6 @@ sub_agents:
     type: "fc"
     nodes:
       llm:
-        model: "gpt-4o-mini"
-        temperature: 0.5
-        max_tokens: 1000
         provider: "openai"
         agent_prompt: ""
       tools:
@@ -142,9 +133,6 @@ sub_agents:
     type: "fc"
     nodes:
       llm:
-        model: "gpt-4o-mini"
-        temperature: 0.5
-        max_tokens: 1000
         provider: "openai"
         agent_prompt: ""
       tools:
@@ -164,9 +152,6 @@ sub_agents:
     type: "fc"
     nodes:
       llm:
-        model: "gpt-4o-mini"
-        temperature: 0.5
-        max_tokens: 1000
         provider: "openai"
         agent_prompt: ""
       tools:
@@ -180,9 +165,6 @@ sub_agents:
     type: "fc"
     nodes:
       llm:
-        model: "gpt-4o-mini"
-        temperature: 0.5
-        max_tokens: 1000
         provider: "openai"
         agent_prompt: ""
       tools:

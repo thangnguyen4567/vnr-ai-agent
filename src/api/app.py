@@ -54,6 +54,7 @@ app.add_middleware(
 app.include_router(chat_router)
 app.include_router(generate_router)
 app.include_router(health_router)
+# Test api
 app.include_router(attendance_router)
 app.include_router(human_resources_router)
 app.include_router(recruit_router)

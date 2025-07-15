@@ -25,7 +25,7 @@ test:
 test-cov:
 	docker exec -it agent-api pytest --cov=src tests/ --cov-report term-missing
 
-streamlit:
+st:
 	docker exec -it agent-api streamlit run app.py
 
 graph:

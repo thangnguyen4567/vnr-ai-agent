@@ -103,6 +103,7 @@ class ToolInitializer:
 
     def convert_http_tool_to_schema(self,tool: dict,llm_provider: str):
         """Convert tools to schema format base on model provider"""
+        # Tạo properties từ input_params
         properties = {}
         required = []
 
@@ -111,6 +112,7 @@ class ToolInitializer:
                 param_name = param.get("name")
                 param_type = PARAM_TYPE.get(param.get("type"), "string")
 
+                # Xây dựng schema cho từng tham số
                 param_schema = {
                     "type": param_type,
                     "description": param.get("description", "")
@@ -121,14 +123,17 @@ class ToolInitializer:
                         "type": "number" if param.get("items_type") == "number" else "string"
                     }
 
+                # Thêm default nếu có
                 if "default" in param:
                     param_schema["default"] = param.get("default")
 
                 properties[param_name] = param_schema
 
+                # Thêm required nếu có
                 if param.get("required", False) and "default" not in param:
                     required.append(param_name)
 
+        # Tạo schema cho tool
         parameters = {
             "type": "object",
             "properties": properties,
@@ -144,7 +149,7 @@ class ToolInitializer:
         }
 
         if llm_provider == "google":
-            for k, v in parameters["parameters"]["properties"].items():
+            for k, v in schema["parameters"]["properties"].items():
                 if "anyOf" in v:
                     v.update(v["anyOf"][0])
                     v.pop("anyOf", None)
@@ -154,6 +159,7 @@ class ToolInitializer:
                     v.pop("default", None)
             return schema
         else:
+            # Cho các model khác ( openai, anthropic, ...)
             return {
                 "type": "function",
                 "function": schema
@@ -173,6 +179,7 @@ class ToolInitializer:
                 if built_in_tool:
                     tools.extend(self.convert_to_schema([built_in_tool],llm_provider))
             elif tool["type"] == "http":
+                # Chuyển đổi tool http thành schema
                 tool_schema = self.convert_http_tool_to_schema(tool,llm_provider)
                 tools.append(tool_schema)
                 http_tool_registry[tool["name"]] = {
