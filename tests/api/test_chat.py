@@ -19,7 +19,12 @@ def test_chat_process(client):
                 "thread_id": "string",
                 "agent_id": "d4e12d5bb4014794fa3f956e2b0e01cf",
                 "language": "vi-VN",
-                "current_date": "string"
+                "current_date": "string",
+                "user_info": {
+                    "name": "Nguyễn Văn A",
+                    "employee_id": "EMP001",
+                    "role": "HR Manager",
+                }
             }
         }
     }

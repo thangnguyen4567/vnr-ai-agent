@@ -9,7 +9,7 @@ class HttpToolHandler(BaseToolHandler):
     async def process(
             self, 
             tool_calls_info: List[Dict[str, Any]], 
-            http_tool: Dict[str, Any]
+            http_tool_registry: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
         Process HTTP tool call
@@ -28,7 +28,7 @@ class HttpToolHandler(BaseToolHandler):
                 #chuẩn bị tham số cho request
                 url, method, params = self._preprare_http_request_params(
                     tool_call_info,
-                    http_tool
+                    http_tool_registry[tool_call_info.get("name")]
                 )
                 #gửi request và lấy kết quả
                 result = await do_async_http_request(
@@ -37,7 +37,7 @@ class HttpToolHandler(BaseToolHandler):
                     **params
                 )
 
-                output_params = http_tool.get("output_params", [])
+                output_params = http_tool_registry[tool_call_info.get("name")].get("output_params", [])
                 formatter = get_formatter(result.data)
                 #format kết quả theo output_params và đưa về dạng string
                 result_str = formatter.format(

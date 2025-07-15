@@ -36,7 +36,8 @@ if "config" not in st.session_state:
             "thread_id": "113",
             "user_info": {
                 "name": "Nguyễn Văn A",
-                "employee_id": "EMP001"
+                "employee_id": "EMP001",
+                "role": "HR Manager",
             }
         },
         "callbacks": [langfuse_handler],

@@ -5,7 +5,7 @@ from typing import Dict, Any
 from src.core.nodes.utils.model_utils import get_model
 from langchain_core.messages import HumanMessage, SystemMessage
 from src.core.nodes.utils.message_utils import organize_messages, extract_text_content
-from src.prompt import HRM_CHATBOT_PROMPT, SYSTEM_INFO_PROMPT, USER_INFO_PROMPT
+from src.prompt import HRM_CHATBOT_PROMPT, SYSTEM_INFO_PROMPT, USER_INFO_PROMPT, HRM_TOOL_CALL_PROMPT
 
 class LLMHandler(BaseNode):
 
@@ -15,7 +15,7 @@ class LLMHandler(BaseNode):
         config: RunnableConfig
     ) -> Dict[str, Any]:
         """
-        Xử lý tin nhắn người dùng và trả về kết quả
+        Bước xử lý tin nhắn người dùng và trả về kết quả của tool call
 
         Args:
             state: Trạng thái hiện tại của agent
@@ -39,7 +39,7 @@ class LLMHandler(BaseNode):
         # Lấy cấu hình LLM từ cấu hình xml
         llm_config = agent_config["nodes"]["llm"]
         agent_prompt = llm_config.get("agent_prompt","")
-        system_prompt = HRM_CHATBOT_PROMPT + SYSTEM_INFO_PROMPT + user_info_str + agent_prompt
+        system_prompt =  SYSTEM_INFO_PROMPT + user_info_str + agent_prompt
         max_turns = llm_config.get("max_turns", 15)
         tools = agent_config.get("tools",[])
         
@@ -63,6 +63,51 @@ class LLMHandler(BaseNode):
 
         return {"messages": [response]}
     
+
+    async def aggregate_result(
+        self, 
+        state: AgentState, 
+        config: RunnableConfig
+    ) -> Dict[str, Any]:
+        """
+        Xử lý tin nhắn người dùng và trả về kết quả cuối cùng
+        Args:
+            state: Trạng thái hiện tại của agent
+            config: Cấu hình của agent
+
+        Returns:
+            Trạng thái mới của agent sau khi xử lý
+        """
+        # Xử lý thông tin config
+        sys_config = config.get("configurable",{})
+        user_info = sys_config.get("user_info",{})
+        llm_config = {"provider": "openai"}
+        user_info_str = self.__format_user_info(user_info)
+        max_turns = 15
+
+        # Tạo prompt hệ thống
+        system_prompt = HRM_CHATBOT_PROMPT + SYSTEM_INFO_PROMPT + user_info_str
+
+        # Sắp xếp tin nhắn theo thứ tự
+        new_messages = organize_messages(state["messages"], max_turns)
+
+        if new_messages and isinstance(new_messages[-1], HumanMessage):
+            last_message = new_messages[-1]
+            message_content = extract_text_content(last_message.content)
+
+            if message_content.strip() == "/restart":
+                return {"messages": []}
+
+        prompt = system_prompt.format(**sys_config)
+
+        # Thêm Prompt hệ thống vào đầu tin nhắn
+        messages = [SystemMessage(content=prompt)] + new_messages
+
+        llm_model = get_model(config=llm_config)
+        response = llm_model.invoke(messages)
+
+        return {"messages": [response]}
+
     def __format_user_info(
         self, 
         user_info: Dict[str, Any]

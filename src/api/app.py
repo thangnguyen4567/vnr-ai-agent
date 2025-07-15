@@ -40,6 +40,7 @@ origins = [
     "http://localhost:4200", # Test localhost
     "https://demo33.vnresource.net:3339", # Test demo33
     "https://qc-core.vnrlocal.com:3009/", # Test qc-core
+    "http://127.0.0.1:8000", # Test localhost
 ]
 
 # Cấu hình CORS

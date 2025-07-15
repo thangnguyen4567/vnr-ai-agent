@@ -7,5 +7,6 @@ async def llm_call(state: AgentState, config: RunnableConfig):
     return await llm_handler.process(state, config)
 
 
-
+async def llm_aggregate_result(state: AgentState, config: RunnableConfig):
+    return await llm_handler.aggregate_result(state, config)
 

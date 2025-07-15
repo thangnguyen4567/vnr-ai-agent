@@ -8,13 +8,16 @@ from langgraph.checkpoint.memory import InMemorySaver
 
 
 class FCAgent(StateGraph):
-
+    """
+    Sub workflow của multi agent được gọi ở node switch agent
+    """
     def __init__(self):
-
         self.workflow = StateGraph(AgentState)
-
+        # Khởi tạo trạng thái ban đầu
         self.workflow.add_node("initialize", initialize)
+        # Gọi LLM để xử lý tin nhắn người dùng và trả về kết quả của tool call
         self.workflow.add_node("llm", llm_call)
+        # Gọi tool để lấy dữ liệu từ bên ngoài
         self.workflow.add_node("tool", tool_call)
 
         self.workflow.set_entry_point("initialize")
@@ -29,10 +32,11 @@ class FCAgent(StateGraph):
         )
 
         self.workflow.add_edge("initialize", "llm")
-        self.workflow.add_edge("tool", "llm")
-
+        
+        # Khởi tạo bộ nhớ đệm để lưu trạng thái của workflow theo thread_id
         memory = InMemorySaver()
 
+        # Compile workflow
         self.compiled_graph = self.workflow.compile(checkpointer=memory)
 
     def get_graph(self):
