@@ -42,5 +42,4 @@ class MultiAgent(StateGraph):
             )
         )
 
-
 multi_agent_graph = MultiAgent().get_graph()

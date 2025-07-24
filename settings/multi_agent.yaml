@@ -70,6 +70,8 @@ sub_agents:
               input_method: query
               type: number
               default: 7
+        - type: built_in
+          name: empty_tool
 
   - agent_id: "f4e9a767bf49f68a77f7afd783665df2"
     name: "Human Resource Agent"
@@ -99,6 +101,8 @@ sub_agents:
               input_method: query
               type: string
               default: Nguyễn Văn A
+        - type: built_in
+          name: empty_tool
 
   - agent_id: "f73bdfc06c6f2e9741826c1ce81a985e"
     name: "Recruitment Agent"
@@ -127,7 +131,9 @@ sub_agents:
               input_method: query
               type: number
               default: 1
-            
+        - type: built_in
+          name: empty_tool
+
   - agent_id: "f73bdfc06c6f2e9741826c1ce81a985a"
     name: "Salary Agent"
     type: "fc"
@@ -146,6 +152,8 @@ sub_agents:
               input_method: query
               type: number
               default: 6
+        - type: built_in
+          name: empty_tool
 
   - agent_id: "f73bdfc06c6f2e9741826c1ce81a982b"
     name: "Training Agent"
@@ -159,6 +167,8 @@ sub_agents:
           name: get_courses
           description: "Lấy thông tin khóa học"
           tool_path: http://localhost:8000/training/courses
+        - type: built_in
+          name: empty_tool
 
   - agent_id: "f73bdfc06c6f2e9741826c1ce81a982c"
     name: "Goal Agent"
@@ -169,5 +179,69 @@ sub_agents:
         agent_prompt: ""
       tools:
         - type: built_in
-          name: get_goal
-          description: "Lấy thông tin mục tiêu KPI của công ty"
+          name: empty_tool
+        - type: http
+          name: get_assigned_goals
+          description: "Lấy thông tin mục tiêu KPI đã được giao cho nhân viên"
+          tool_path: http://localhost:8000/goals/view
+          input_params:
+            - name: department
+              description: "Bộ phận cần lấy thông tin"
+              input_method: query
+              type: string
+            - name: employee_name
+              description: "Tên nhân viên cần lấy thông tin"
+              input_method: query
+              type: string
+            - name: employee_id
+              description: "ID nhân viên cần lấy thông tin"
+              input_method: query
+              type: string
+        - type: http
+          name: get_unassigned_goals
+          description: "Lấy thông tin những nhân viên chưa có mục tiêu KPI"
+          tool_path: http://localhost:8000/goals/unassigned
+        - type: http
+          name: get_preset_goals
+          description: "Lấy thông tin danh sách mục tiêu KPI nằm trong kho mục tiêu ( dùng để tham khảo hoặc gợi ý mục tiêu cho nhân viên)"
+          tool_path: http://localhost:8000/goals/presets
+          input_params:
+            - name: department
+              description: "Bộ phận cần lấy thông tin"
+              input_method: query
+              type: string
+        - type: http
+          name: remind_employees
+          description: "Nhắc nhở nhân viên chưa có mục tiêu KPI"
+          tool_path: http://localhost:8000/goals/remind
+          input_params:
+            - name: employee_ids
+              description: "Danh sách ID nhân viên cần nhắc nhở"
+              input_method: query
+              type: array
+        - type: http
+          name: get_pending_approvals
+          description: "Lấy thông tin mục tiêu KPI chưa được phê duyệt"
+          tool_path: http://localhost:8000/goals/pending-approvals
+        - type: http
+          name: assign_goal
+          description: "Giao mục tiêu KPI cho nhân viên"
+          tool_path: http://localhost:8000/goals/assign
+          input_params:
+            - name: employee_id
+              description: "ID nhân viên cần giao mục tiêu KPI"
+              input_method: query
+              type: string
+            - name: goal_id
+              description: "ID mục tiêu KPI cần giao"
+              input_method: query
+              type: string
+        - type: http
+          name: approve_goal
+          description: "Phê duyệt mục tiêu KPI"
+          tool_path: http://localhost:8000/goals/approve
+          input_params:
+            - name: goal_id
+              description: "ID mục tiêu KPI cần phê duyệt"
+              input_method: query
+              type: string

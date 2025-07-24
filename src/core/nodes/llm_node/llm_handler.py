@@ -39,7 +39,7 @@ class LLMHandler(BaseNode):
         # Lấy cấu hình LLM từ cấu hình xml
         llm_config = agent_config["nodes"]["llm"]
         agent_prompt = llm_config.get("agent_prompt","")
-        system_prompt =  SYSTEM_INFO_PROMPT + user_info_str + agent_prompt
+        system_prompt =  HRM_TOOL_CALL_PROMPT + SYSTEM_INFO_PROMPT + user_info_str + agent_prompt
         max_turns = llm_config.get("max_turns", 15)
         tools = agent_config.get("tools",[])
         

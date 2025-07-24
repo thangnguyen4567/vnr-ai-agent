@@ -12,7 +12,7 @@ from .routers.test_api.human_resources import router as human_resources_router
 from .routers.test_api.recruit import router as recruit_router
 from .routers.test_api.salary import router as salary_router
 from .routers.test_api.training import router as training_router
-
+from .routers.test_api.goal import router as goal_router
 # Cấu hình logging
 logging.basicConfig(
     level=logging.INFO,
@@ -61,3 +61,4 @@ app.include_router(human_resources_router)
 app.include_router(recruit_router)
 app.include_router(salary_router)
 app.include_router(training_router)
+app.include_router(goal_router)
