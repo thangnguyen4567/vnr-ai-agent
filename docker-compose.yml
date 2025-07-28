@@ -25,6 +25,18 @@ services:
         - agent-network
       restart: always
 
+  redis-stack: # Redis database
+    image: redis/redis-stack
+    container_name: redis-stack
+    ports:
+      - "6381:6379"
+      - "8001:8001"
+    volumes:
+      - ./redis-stack:/data
+    restart: always
+    networks:
+      - agent-network
+
   langfuse-worker:
     image: langfuse/langfuse-worker:3
     container_name: langfuse-worker

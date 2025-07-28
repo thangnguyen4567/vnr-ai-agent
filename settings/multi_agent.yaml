@@ -16,10 +16,10 @@ agents:
     description: "Agent tìm kiếm thông tin về công lương, thu nhập, phụ cấp, thuế của nhân viên"
   - id: "f73bdfc06c6f2e9741826c1ce81a982b"
     name: "Training Agent"
-    description: "Agent tìm kiếm thông tin về việc đào tạo, học tập, kỹ năng, chuyên môn của nhân viên"
+    description: "Agent tìm kiếm thông tin về việc đào tạo, khóa học, tài liệu, bài giảng và tài liệu hướng dẫn sử dụng hệ thống elearning"
   - id: "f73bdfc06c6f2e9741826c1ce81a982c"
     name: "Goal Agent"
-    description: "Agent tìm kiếm thông tin về mục tiêu KPI của công ty"
+    description: "Agent tìm kiếm thông tin về mục tiêu KPI của công ty, nhân viên, bộ phận"
 sub_agents:
   - agent_id: "f4e9a767bf49f68a77f7afd783665df9"
     name: "Attendance Agent"
@@ -163,10 +163,15 @@ sub_agents:
         provider: "openai"
         agent_prompt: ""
       tools:
-        - type: http
+        - type: built_in
           name: get_courses
-          description: "Lấy thông tin khóa học"
-          tool_path: http://localhost:8000/training/courses
+          description: "Lấy danh sách khóa học"
+        - type: built_in
+          name: get_documents
+          description: "Lấy tài liệu trong khóa học, bài giảng .."
+        - type: built_in
+          name: get_hdsd
+          description: "Lấy tài liệu hướng dẫn sử dụng hệ thống" 
         - type: built_in
           name: empty_tool
 
@@ -182,7 +187,7 @@ sub_agents:
           name: empty_tool
         - type: http
           name: get_assigned_goals
-          description: "Lấy thông tin mục tiêu KPI đã được giao cho nhân viên"
+          description: "Lấy thông tin mục tiêu KPI đã được giao cho nhân viên hoặc bộ phận"
           tool_path: http://localhost:8000/goals/view
           input_params:
             - name: department

@@ -1,2 +1,9 @@
-host: qdrant
-port: 6333
+# provider: qdrant
+# host: qdrant
+# port: 6333
+# name: qdrant
+
+provider: redis
+host: redis-stack
+port: 6379
+name: redis
