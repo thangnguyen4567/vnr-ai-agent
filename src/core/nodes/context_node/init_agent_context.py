@@ -46,7 +46,7 @@ class ContextInitializer(BaseNode):
                     state["configs"][agent_id]["http_tool_registry"] = http_tool_registry
 
             elif agent_type == "multi":
-                agents = agent_config.get("agents", [])
+                agents = agent_config.get("sub_agents", [])
                 if not agents:
                     error_message = f"Agent config not found for agent_id: {agent_id}"
                     raise ValueError(error_message)
@@ -59,8 +59,8 @@ class ContextInitializer(BaseNode):
                 state["configs"][agent_id]["agents"] = agents
 
                 for a in agents:
-                    if a["id"] not in state["configs"]:
-                        self._init_agent_context(state, a["id"], env)
+                    if a["agent_id"] not in state["configs"]:
+                        self._init_agent_context(state, a["agent_id"], env)
                 
             return state
         

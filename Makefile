@@ -26,7 +26,7 @@ test-cov:
 	docker exec -it agent-api pytest --cov=src tests/ --cov-report term-missing
 
 st:
-	docker exec -it agent-api streamlit run app.py
+	docker exec -it agent-api streamlit run ui/main.py --server.port 8501
 
 graph:
 	docker exec -it agent-api python graph.py

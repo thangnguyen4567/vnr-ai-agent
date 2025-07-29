@@ -1,28 +1,10 @@
 agent_id: "d4e12d5bb4014794fa3f956e2b0e01cf"
 name: "Multi Agent"
 type: "multi"
-agents:
-  - id: "f4e9a767bf49f68a77f7afd783665df9"
-    name: "Attendance Agent"
-    description: "Agent tìm kiếm thông tin về lịch làm việc, tăng ca, đăng ký nghỉ của nhân viên hoặc các dữ liệu liên quan đến công lương"
-  - id: "f4e9a767bf49f68a77f7afd783665df2"
-    name: "Human Resource Agent"
-    description: "Agent tìm kiếm thông tin nhân sự, hồ sơ cá nhân, lịch sử công tác của nhân viên"
-  - id: "f73bdfc06c6f2e9741826c1ce81a985e"
-    name: "Recruitment Agent"
-    description: "Agent tìm kiếm thông tin về việc tuyển dụng, lịch phỏng vấn, đề xuất các ứng viên phù hợp"
-  - id: "f73bdfc06c6f2e9741826c1ce81a985a"
-    name: "Salary Agent"
-    description: "Agent tìm kiếm thông tin về công lương, thu nhập, phụ cấp, thuế của nhân viên"
-  - id: "f73bdfc06c6f2e9741826c1ce81a982b"
-    name: "Training Agent"
-    description: "Agent tìm kiếm thông tin về việc đào tạo, khóa học, tài liệu, bài giảng và tài liệu hướng dẫn sử dụng hệ thống elearning"
-  - id: "f73bdfc06c6f2e9741826c1ce81a982c"
-    name: "Goal Agent"
-    description: "Agent tìm kiếm thông tin về mục tiêu KPI của công ty, nhân viên, bộ phận"
 sub_agents:
   - agent_id: "f4e9a767bf49f68a77f7afd783665df9"
     name: "Attendance Agent"
+    description: "Agent tìm kiếm thông tin về lịch làm việc, tăng ca, đăng ký nghỉ của nhân viên hoặc các dữ liệu liên quan đến công lương"
     type: "fc"
     nodes:
       llm:
@@ -75,6 +57,7 @@ sub_agents:
 
   - agent_id: "f4e9a767bf49f68a77f7afd783665df2"
     name: "Human Resource Agent"
+    description: "Agent tìm kiếm thông tin nhân sự, hồ sơ cá nhân, lịch sử công tác của nhân viên"
     type: "fc"
     nodes:
       llm:
@@ -106,6 +89,7 @@ sub_agents:
 
   - agent_id: "f73bdfc06c6f2e9741826c1ce81a985e"
     name: "Recruitment Agent"
+    description: "Agent tìm kiếm thông tin về việc tuyển dụng, lịch phỏng vấn, đề xuất các ứng viên phù hợp"
     type: "fc"
     nodes:
       llm:
@@ -136,6 +120,7 @@ sub_agents:
 
   - agent_id: "f73bdfc06c6f2e9741826c1ce81a985a"
     name: "Salary Agent"
+    description: "Agent tìm kiếm thông tin về công lương, thu nhập, phụ cấp, thuế của nhân viên"
     type: "fc"
     nodes:
       llm:
@@ -157,6 +142,7 @@ sub_agents:
 
   - agent_id: "f73bdfc06c6f2e9741826c1ce81a982b"
     name: "Training Agent"
+    description: "Agent tìm kiếm thông tin về việc đào tạo, khóa học, tài liệu, bài giảng và tài liệu hướng dẫn sử dụng hệ thống elearning"
     type: "fc"
     nodes:
       llm:
@@ -177,6 +163,7 @@ sub_agents:
 
   - agent_id: "f73bdfc06c6f2e9741826c1ce81a982c"
     name: "Goal Agent"
+    description: "Agent tìm kiếm thông tin về mục tiêu KPI của công ty, nhân viên, bộ phận"
     type: "fc"
     nodes:
       llm:

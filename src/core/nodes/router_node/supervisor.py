@@ -76,7 +76,7 @@ class RouterNode(BaseNode):
                     agent_description=a["description"],
                 )
             )
-            subgraph_mapping[_key] = {"code": a["code"], "id": a["id"]}
+            subgraph_mapping[_key] = {"code": a["code"], "id": a["agent_id"]}
         agent_desc_str = "\n".join(agent_desc)
 
         messages = []
