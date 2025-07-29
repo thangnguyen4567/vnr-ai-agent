@@ -1,0 +1,304 @@
+agent_id: 5e02b315-c808-450c-8205-de88e30edae1
+name: Multi Agent
+type: multi
+agents:
+- id: f4e9a767bf49f68a77f7afd783665df9
+  name: Attendance Agent
+  description: Agent tìm kiếm thông tin về lịch làm việc, tăng ca, đăng ký nghỉ của
+    nhân viên hoặc các dữ liệu liên quan đến công lương
+- id: f4e9a767bf49f68a77f7afd783665df2
+  name: Human Resource Agent
+  description: Agent tìm kiếm thông tin nhân sự, hồ sơ cá nhân, lịch sử công tác của
+    nhân viên
+- id: f73bdfc06c6f2e9741826c1ce81a985e
+  name: Recruitment Agent
+  description: Agent tìm kiếm thông tin về việc tuyển dụng, lịch phỏng vấn, đề xuất
+    các ứng viên phù hợp
+- id: f73bdfc06c6f2e9741826c1ce81a985a
+  name: Salary Agent
+  description: Agent tìm kiếm thông tin về công lương, thu nhập, phụ cấp, thuế của
+    nhân viên
+- id: f73bdfc06c6f2e9741826c1ce81a982b
+  name: Training Agent
+  description: Agent tìm kiếm thông tin về việc đào tạo, khóa học, tài liệu, bài giảng
+    và tài liệu hướng dẫn sử dụng hệ thống elearning
+- id: f73bdfc06c6f2e9741826c1ce81a982c
+  name: Goal Agent
+  description: Agent tìm kiếm thông tin về mục tiêu KPI của công ty, nhân viên, bộ
+    phận
+sub_agents:
+- agent_id: f4e9a767bf49f68a77f7afd783665df9
+  name: Attendance Agent
+  type: fc
+  nodes:
+    llm:
+      provider: openai
+      agent_prompt: ''
+    tools:
+    - type: http
+      name: leave_request
+      description: Đăng ký nghỉ phép
+      method: POST
+      tool_path: http://localhost:8000/attendance/leave-request
+      input_params:
+      - name: employee_id
+        description: ID của nhân viên
+        input_method: query
+        type: string
+        default: EMP001
+        required: false
+      - name: leave_type
+        description: Loại nghỉ phép
+        input_method: query
+        type: string
+        default: annual
+        required: false
+      - name: start_date
+        description: Ngày bắt đầu nghỉ dd/mm/yyyy
+        input_method: query
+        type: string
+        default: 11/07/2025
+        required: false
+      - name: end_date
+        description: Ngày kết thúc nghỉ dd/mm/yyyy
+        input_method: query
+        type: date
+        default: 12/07/2025
+        required: false
+      - name: reason
+        description: Lý do nghỉ phép
+        input_method: query
+        type: date
+        default: ''
+        required: false
+    - type: http
+      name: get_attendance_record
+      description: Lấy thông tin lịch làm việc, tăng ca, ngày công, đăng ký nghỉ của
+        nhân viên
+      tool_path: http://localhost:8000/attendance/attendance-record
+      input_params:
+      - name: month
+        description: Tháng cần lấy thông tin
+        input_method: query
+        type: number
+        default: '7'
+        required: false
+      method: GET
+    - type: built_in
+      name: empty_tool
+      description: ''
+- agent_id: f4e9a767bf49f68a77f7afd783665df2
+  name: Human Resource Agent
+  type: fc
+  nodes:
+    llm:
+      provider: openai
+      agent_prompt: ''
+    tools:
+    - type: http
+      name: get_employee_profile
+      description: Lấy thông tin hồ sơ cá nhân của nhân viên
+      tool_path: http://localhost:8000/hr/employee-profile
+      input_params:
+      - name: employee_name
+        description: Tên nhân viên
+        input_method: query
+        type: string
+        default: Nguyễn Văn A
+        required: false
+      method: GET
+    - type: http
+      name: get_work_history
+      description: Lấy lịch sử công tác của nhân viên
+      tool_path: http://localhost:8000/hr/work-history
+      input_params:
+      - name: employee_name
+        description: Tên nhân viên
+        input_method: query
+        type: string
+        default: Nguyễn Văn A
+        required: false
+      method: GET
+    - type: built_in
+      name: empty_tool
+      description: ''
+- agent_id: f73bdfc06c6f2e9741826c1ce81a985e
+  name: Recruitment Agent
+  type: fc
+  nodes:
+    llm:
+      provider: openai
+      agent_prompt: ''
+    tools:
+    - type: http
+      name: get_candidate_status
+      description: Lấy thông tin trạng thái các ứng viên dựa vào tên
+      tool_path: http://localhost:8000/recruitment/candidate-status
+      input_params:
+      - name: candidate_name
+        description: Tên ứng viên
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      method: GET
+    - type: http
+      name: get_interview_reminders
+      description: Lấy thông tin lịch phỏng vấn
+      tool_path: http://localhost:8000/recruitment/interview-reminders
+      input_params:
+      - name: days_ahead
+        description: Số ngày để lấy thông tin lịch phỏng vấn
+        input_method: query
+        type: number
+        default: '1'
+        required: false
+      method: GET
+    - type: built_in
+      name: empty_tool
+      description: ''
+- agent_id: f73bdfc06c6f2e9741826c1ce81a985a
+  name: Salary Agent
+  type: fc
+  nodes:
+    llm:
+      provider: openai
+      agent_prompt: ''
+    tools:
+    - type: http
+      name: get_salary_details
+      description: Lấy thông tin công lương của nhân viên
+      tool_path: http://localhost:8000/salary/salary-details
+      input_params:
+      - name: month
+        description: Tháng cần lấy thông tin
+        input_method: query
+        type: number
+        default: '6'
+        required: false
+      method: GET
+    - type: built_in
+      name: empty_tool
+      description: ''
+- agent_id: f73bdfc06c6f2e9741826c1ce81a982b
+  name: Training Agent
+  type: fc
+  nodes:
+    llm:
+      provider: openai
+      agent_prompt: ''
+    tools:
+    - type: built_in
+      name: get_courses
+      description: Lấy danh sách khóa học
+    - type: built_in
+      name: get_documents
+      description: Lấy tài liệu trong khóa học, bài giảng ..
+    - type: built_in
+      name: get_hdsd
+      description: Lấy tài liệu hướng dẫn sử dụng hệ thống
+    - type: built_in
+      name: empty_tool
+      description: ''
+- agent_id: f73bdfc06c6f2e9741826c1ce81a982c
+  name: Goal Agent
+  type: fc
+  nodes:
+    llm:
+      provider: openai
+      agent_prompt: ''
+    tools:
+    - type: built_in
+      name: empty_tool
+      description: ''
+    - type: http
+      name: get_assigned_goals
+      description: Lấy thông tin mục tiêu KPI đã được giao cho nhân viên hoặc bộ phận
+      tool_path: http://localhost:8000/goals/view
+      input_params:
+      - name: department
+        description: Bộ phận cần lấy thông tin
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      - name: employee_name
+        description: Tên nhân viên cần lấy thông tin
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      - name: employee_id
+        description: ID nhân viên cần lấy thông tin
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      method: GET
+    - type: http
+      name: get_unassigned_goals
+      description: Lấy thông tin những nhân viên chưa có mục tiêu KPI
+      tool_path: http://localhost:8000/goals/unassigned
+      method: GET
+      input_params: []
+    - type: http
+      name: get_preset_goals
+      description: Lấy thông tin danh sách mục tiêu KPI nằm trong kho mục tiêu ( dùng
+        để tham khảo hoặc gợi ý mục tiêu cho nhân viên)
+      tool_path: http://localhost:8000/goals/presets
+      input_params:
+      - name: department
+        description: Bộ phận cần lấy thông tin
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      method: GET
+    - type: http
+      name: remind_employees
+      description: Nhắc nhở nhân viên chưa có mục tiêu KPI
+      tool_path: http://localhost:8000/goals/remind
+      input_params:
+      - name: employee_ids
+        description: Danh sách ID nhân viên cần nhắc nhở
+        input_method: query
+        type: array
+        default: ''
+        required: false
+      method: GET
+    - type: http
+      name: get_pending_approvals
+      description: Lấy thông tin mục tiêu KPI chưa được phê duyệt
+      tool_path: http://localhost:8000/goals/pending-approvals
+      method: GET
+      input_params: []
+    - type: http
+      name: assign_goal
+      description: Giao mục tiêu KPI cho nhân viên
+      tool_path: http://localhost:8000/goals/assign
+      input_params:
+      - name: employee_id
+        description: ID nhân viên cần giao mục tiêu KPI
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      - name: goal_id
+        description: ID mục tiêu KPI cần giao
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      method: GET
+    - type: http
+      name: approve_goal
+      description: Phê duyệt mục tiêu KPI
+      tool_path: http://localhost:8000/goals/approve
+      input_params:
+      - name: goal_id
+        description: ID mục tiêu KPI cần phê duyệt
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      method: GET

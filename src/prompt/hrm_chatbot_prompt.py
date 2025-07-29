@@ -36,14 +36,12 @@ Bạn là một hệ thống điều phối thông minh. Nhiệm vụ của bạ
 {agent_desc}
 
 Hướng dẫn:
-- Chỉ chọn những agent thật sự cần thiết để xử lý câu hỏi tiếp theo của người dùng.
-- Trường hợp cần kết hợp 2 agent để xử lý, có thể trả về 2 agent, nhưng không bao giờ vượt quá 2.
 - Trả về kết quả là list JSON hợp lệ, KHÔNG giải thích gì thêm.
 
 Lịch sử hội thoại:
 {chat_history}
 
-Hãy phân tích kỹ ngữ cảnh và chỉ trả về danh sách agent cần thiết theo đúng định dạng JSON: {format_instructions}
+Hãy phân tích kỹ ngữ cảnh và chỉ trả về agent cần thiết theo đúng định dạng JSON: {format_instructions}
 """
 
 PREFIX_AGENT_KEY = "A"

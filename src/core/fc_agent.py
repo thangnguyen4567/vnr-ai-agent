@@ -21,7 +21,7 @@ class FCAgent(StateGraph):
         self.workflow.add_node("tool", tool_call)
 
         self.workflow.set_entry_point("initialize")
-
+    
         self.workflow.add_conditional_edges(
             "llm", 
             route_llm_to_tool, 
@@ -32,6 +32,8 @@ class FCAgent(StateGraph):
         )
 
         self.workflow.add_edge("initialize", "llm")
+
+        self.workflow.add_edge("tool", "llm")
         
         # Khởi tạo bộ nhớ đệm để lưu trạng thái của workflow theo thread_id
         memory = InMemorySaver()

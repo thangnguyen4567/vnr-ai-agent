@@ -25,9 +25,9 @@ class MultiAgent(StateGraph):
         # Switch agent: chuyển đổi agent và chạy agent được chọn chạy workflow fc_agent ( chạy song song nhiều agent)
         self.workflow.add_edge("router_agent", "switch_agent")
         # LLM aggregate result: tổng hợp kết quả từ các agent
-        self.workflow.add_edge("switch_agent", "llm_aggregate_result")
+        # self.workflow.add_edge("switch_agent", "llm_aggregate_result")
         # Kết thúc workflow
-        self.workflow.add_edge("llm_aggregate_result", END)
+        # self.workflow.add_edge("llm_aggregate_result", END)
 
         self.compiled_graph = self.workflow.compile(checkpointer=memory)
 
