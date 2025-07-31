@@ -27,3 +27,6 @@ pytest-cov==4.1.0
 black==24.2.0
 ruff==0.2.2
 langchain-qdrant==0.2.0
+gtts==2.5.4
+pydub==0.25.1
+audioop-lts==0.2.1

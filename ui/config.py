@@ -181,7 +181,7 @@ class AgentUI:
     
     def _render_agent(self, agent: Dict[str, Any], idx: int):
         """Hiển thị một agent cụ thể"""
-        with st.expander(f"🚀 {agent['name']} ({agent['agent_id']})", expanded=True):
+        with st.expander(f"🚀 {agent['name']} ({agent['agent_id']})", expanded=False):
             with st.container():
                 col1, col2 = st.columns([2, 10])
                 
@@ -346,7 +346,6 @@ class AgentUI:
             param["required"] = st.checkbox("Bắt buộc", value=param.get("required", False), key=f"param_required_{agent_idx}_{tool_idx}_{param_idx}")
             
             st.markdown("---")
-
 
 def config():
     """Hàm chính để khởi tạo ứng dụng config"""

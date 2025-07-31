@@ -35,3 +35,7 @@ class Config(BaseModel):
 class PayloadRequest(BaseModel):
     input: InputData = Field(..., description="Dữ liệu đầu vào")
     config: Config = Field(..., description="Cấu hình")
+
+class SpeechRequest(BaseModel):
+    text: str
+    lang: Literal["vi", "en"]
