@@ -23,7 +23,7 @@ WORKDIR /app
 # Copy requirements
 COPY requirements.txt /app
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 RUN pip install langfuse==3.0.8
 # Install ffmpeg để xử lý audio

@@ -22,7 +22,7 @@ def get_hdsd(search: str, config: RunnableConfig = None) -> str:
         result = ''
         for doc in documents:
             result += re.sub(r"[{}]", "", doc.page_content)
-            result += ' Link tài liệu hdsd: ['+doc.metadata['title']+']' + doc.metadata['source'] + '.\n'
+            result += ' Link tài liệu hdsd: ['+doc.metadata['title']+']' + (doc.metadata['source'] if doc.metadata['source'] != None else '') + '.\n'
         return result
 
     except Exception as e:

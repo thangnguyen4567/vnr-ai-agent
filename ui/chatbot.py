@@ -15,6 +15,15 @@ def chatbot():
     st.set_page_config(page_title="AI Chatbot", page_icon="🤖")
     st.title("🤖 Agent Chatbot")
 
+    # Thêm checkbox cho debug mode trong sidebar
+    with st.sidebar:
+        st.subheader("Cài đặt")
+        debug_mode = st.checkbox("Hiển thị thông tin tool call", value=False)
+        if "debug_mode" not in st.session_state:
+            st.session_state.debug_mode = debug_mode
+        else:
+            st.session_state.debug_mode = debug_mode
+
     # Thiết lập loại agent là multi_agent
     agent_config_loader.set_agent_type("multi")
 
@@ -59,13 +68,19 @@ def chatbot():
             elif kind == "on_chat_model_stream" and event["metadata"].get(
                 "langgraph_node"
             ) not in ["research", "reflection", "router_agent"]:
-                # Hiển thị tool call
-                for tool_call in event['data']['chunk'].additional_kwargs.get('tool_calls', []):
-                    if tool_call['function']['name'] != None:
-                        yield f"🛠️ **Sử dụng Tool:** `{tool_call['function']['name']}` \n\n"
-                # Hiển thị tool call chunks ( xử lý tool call )
-                # if event['data']['chunk'].tool_call_chunks:
-                #     yield json.dumps(event['data']['chunk'].tool_call_chunks)
+                # Chỉ hiển thị tool call nếu debug mode được bật
+                if st.session_state.debug_mode:
+                    for tool_call in event['data']['chunk'].additional_kwargs.get('tool_calls', []):
+                        if tool_call['function']['name'] != None:
+                            yield f"🛠️ **Sử dụng Tool:** `{tool_call['function']['name']}` - **Tham số:** "
+                    # Hiển thị tool call chunks (xử lý tool call)
+                    if event['data']['chunk'].tool_call_chunks:
+                        if event['data']['chunk'].tool_call_chunks[0]['args']:
+                            yield event['data']['chunk'].tool_call_chunks[0]['args']
+                
+                if event["data"]["chunk"].content and full_response == "":
+                    yield "\n\n"
+
                 answer_content = event["data"]["chunk"].content
 
                 if answer_content:

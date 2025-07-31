@@ -112,6 +112,7 @@ services:
     environment:
       <<: *langfuse-worker-env
       NEXTAUTH_URL: http://localhost:3000
+      # NEXT_PUBLIC_BASE_PATH: /langfuse
       NEXTAUTH_SECRET: mysecret # CHANGEME
       LANGFUSE_INIT_ORG_ID: ${LANGFUSE_INIT_ORG_ID:-vnr}
       LANGFUSE_INIT_ORG_NAME: ${LANGFUSE_INIT_ORG_NAME:-vnr}

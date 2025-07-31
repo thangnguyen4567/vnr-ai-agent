@@ -30,3 +30,5 @@ langchain-qdrant==0.2.0
 gtts==2.5.4
 pydub==0.25.1
 audioop-lts==0.2.1
+langchain_community==0.3.27
+redis==6.2.0
