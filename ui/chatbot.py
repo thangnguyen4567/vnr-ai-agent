@@ -8,6 +8,7 @@ from src.config import settings
 from langfuse import Langfuse
 import streamlit.components.v1 as components
 from datetime import datetime
+import json
 
 def chatbot():
     # Thiết lập tiêu đề ứng dụng
@@ -58,7 +59,15 @@ def chatbot():
             elif kind == "on_chat_model_stream" and event["metadata"].get(
                 "langgraph_node"
             ) not in ["research", "reflection", "router_agent"]:
+                # Hiển thị tool call
+                for tool_call in event['data']['chunk'].additional_kwargs.get('tool_calls', []):
+                    if tool_call['function']['name'] != None:
+                        yield f"🛠️ **Sử dụng Tool:** `{tool_call['function']['name']}` \n\n"
+                # Hiển thị tool call chunks ( xử lý tool call )
+                # if event['data']['chunk'].tool_call_chunks:
+                #     yield json.dumps(event['data']['chunk'].tool_call_chunks)
                 answer_content = event["data"]["chunk"].content
+
                 if answer_content:
                     full_response += answer_content
                     yield answer_content

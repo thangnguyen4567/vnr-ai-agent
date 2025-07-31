@@ -18,21 +18,14 @@ def yaml_to_mermaid_flowchart(yaml_content):
         
         # Start building the Mermaid flowchart
         mermaid = ["flowchart TD"]
-        mermaid.append("    User ---> Supervisor[\"" + config.get('name', 'Multi Agent') + " (Supervisor)\"]")
-        mermaid.append("")
-        
-        # Create nodes for each agent
-        for agent in config.get('agents', []):
-            agent_name = agent.get('name', '')
-            agent_var = agent_name.replace(' ', '')
-            mermaid.append(f"    Supervisor ---> {agent_var}[\"{agent_name}\"]")
-        
+        mermaid.append("    User ---> Supervisor[\"Supervisor\"]")
         mermaid.append("")
         
         # Process sub-agents and their tools
         for sub_agent in config.get('sub_agents', []):
             agent_name = sub_agent.get('name', '')
             agent_var = agent_name.replace(' ', '')
+            mermaid.append(f"    Supervisor ---> {agent_var}[\"{agent_name}\"]")
             
             # Process tools for this agent
             tools = sub_agent.get('nodes', {}).get('tools', [])
@@ -91,12 +84,12 @@ def flowchart():
     </div>
     <style>
         .mermaid {{
-            transform: scale(2);
+            transform: scale(1.5);
             transform-origin: top left;
         }}
         p {{
             margin-bottom: 0;
-            font-size: 36px !important;
+            font-size: 32px !important;
         }}
     </style>
     <script>

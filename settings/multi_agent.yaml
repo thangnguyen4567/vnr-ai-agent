@@ -52,8 +52,6 @@ sub_agents:
               input_method: query
               type: number
               default: 7
-        - type: built_in
-          name: empty_tool
 
   - agent_id: "f4e9a767bf49f68a77f7afd783665df2"
     name: "Human Resource Agent"
@@ -84,8 +82,6 @@ sub_agents:
               input_method: query
               type: string
               default: Nguyễn Văn A
-        - type: built_in
-          name: empty_tool
 
   - agent_id: "f73bdfc06c6f2e9741826c1ce81a985e"
     name: "Recruitment Agent"
@@ -115,8 +111,6 @@ sub_agents:
               input_method: query
               type: number
               default: 1
-        - type: built_in
-          name: empty_tool
 
   - agent_id: "f73bdfc06c6f2e9741826c1ce81a985a"
     name: "Salary Agent"
@@ -137,8 +131,6 @@ sub_agents:
               input_method: query
               type: number
               default: 6
-        - type: built_in
-          name: empty_tool
 
   - agent_id: "f73bdfc06c6f2e9741826c1ce81a982b"
     name: "Training Agent"
@@ -158,8 +150,6 @@ sub_agents:
         - type: built_in
           name: get_hdsd
           description: "Lấy tài liệu hướng dẫn sử dụng hệ thống" 
-        - type: built_in
-          name: empty_tool
 
   - agent_id: "f73bdfc06c6f2e9741826c1ce81a982c"
     name: "Goal Agent"
@@ -170,8 +160,6 @@ sub_agents:
         provider: "openai"
         agent_prompt: ""
       tools:
-        - type: built_in
-          name: empty_tool
         - type: http
           name: get_assigned_goals
           description: "Lấy thông tin mục tiêu KPI đã được giao cho nhân viên hoặc bộ phận"

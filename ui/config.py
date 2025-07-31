@@ -10,10 +10,7 @@ class ConfigManager:
     def __init__(self, config_path: str):
         """Khởi tạo ConfigManager với đường dẫn file cấu hình"""
         self.config_path = config_path
-        self._init_session_state()
-        
-    def _init_session_state(self):
-        """Khởi tạo session state nếu chưa có"""
+
         if "agent_config" not in st.session_state:
             st.session_state.agent_config = self.load_config()
             
@@ -140,7 +137,9 @@ class ConfigManager:
 
 class AgentUI:
     """Lớp xử lý giao diện người dùng cho agent"""
-    
+
+    url_endpoint = "http://localhost:8000/"
+
     def __init__(self, config_manager: ConfigManager):
         """Khởi tạo AgentUI với ConfigManager"""
         self.config_manager = config_manager
@@ -154,6 +153,9 @@ class AgentUI:
         if st.button("➕ Thêm Sub-agent"):
             self.config_manager.create_sub_agent()
             st.rerun()
+
+        # Nhập url endpoint
+        self.url_endpoint = st.text_input("URL Endpoint", value=self.url_endpoint)
         
         # Hiển thị danh sách agents
         self._render_agent_list()
@@ -177,41 +179,37 @@ class AgentUI:
     def _render_agent_list(self):
         """Hiển thị danh sách sub-agents"""
         for idx, agent in enumerate(self.config_manager.get_config().get("sub_agents", [])):
-            self._render_agent(agent, idx)
-    
-    def _render_agent(self, agent: Dict[str, Any], idx: int):
-        """Hiển thị một agent cụ thể"""
-        with st.expander(f"🚀 {agent['name']} ({agent['agent_id']})", expanded=False):
-            with st.container():
-                col1, col2 = st.columns([2, 10])
-                
-                # Cập nhật tên và mô tả
-                new_name = col1.text_input("Tên agent", value=agent.get("name", ""), key=f"name_{idx}")
-                agent["name"] = new_name
-                
-                agent["type"] = 'fc'
-                
-                # Đảm bảo cấu trúc nodes
-                self._ensure_agent_structure(agent)
-                
-                # Cập nhật mô tả
-                new_description = col2.text_input("Mô tả agent", value=agent.get("description", ""), key=f"desc_{idx}")
-                agent["description"] = new_description
-                
-                # Hiển thị tools
-                st.markdown("### Tools")
-                self._render_tools(agent, idx)
-                
-                # Nút thêm tool
-                if st.button("➕ Thêm Tool", key=f"add_tool_{idx}"):
-                    self.config_manager.create_tool(idx)
-                    st.rerun()
-                
-                # Nút xóa agent
-                if st.button("❌ Xóa Sub-agent", key=f"del_agent_{idx}"):
-                    self.config_manager.delete_sub_agent(idx)
-                    st.rerun()
-    
+            with st.expander(f"🚀 {agent['name']} ({agent['agent_id']})", expanded=False):
+                with st.container():
+                    col1, col2 = st.columns([2, 10])
+                    
+                    # Cập nhật tên và mô tả
+                    new_name = col1.text_input("Tên agent", value=agent.get("name", ""), key=f"name_{idx}")
+                    agent["name"] = new_name
+                    
+                    agent["type"] = 'fc'
+                    
+                    # Đảm bảo cấu trúc nodes
+                    self._ensure_agent_structure(agent)
+                    
+                    # Cập nhật mô tả
+                    new_description = col2.text_input("Mô tả agent", value=agent.get("description", ""), key=f"desc_{idx}")
+                    agent["description"] = new_description
+                    
+                    # Hiển thị tools
+                    st.markdown("### Tools")
+                    self._render_tools(agent, idx)
+                    
+                    # Nút thêm tool
+                    if st.button("➕ Thêm Tool", key=f"add_tool_{idx}"):
+                        self.config_manager.create_tool(idx)
+                        st.rerun()
+                    
+                    # Nút xóa agent
+                    if st.button("❌ Xóa Sub-agent", key=f"del_agent_{idx}"):
+                        self.config_manager.delete_sub_agent(idx)
+                        st.rerun()
+        
     def _ensure_agent_structure(self, agent: Dict[str, Any]):
         """Đảm bảo agent có cấu trúc dữ liệu đúng"""
         if "nodes" not in agent:
@@ -227,68 +225,65 @@ class AgentUI:
     def _render_tools(self, agent: Dict[str, Any], agent_idx: int):
         """Hiển thị danh sách tools của agent"""
         for tool_idx, tool in enumerate(agent["nodes"].get("tools", [])):
-            self._render_tool(tool, agent_idx, tool_idx)
-    
-    def _render_tool(self, tool: Dict[str, Any], agent_idx: int, tool_idx: int):
-        """Hiển thị một tool cụ thể"""
-        # Header cho tool
-        st.markdown(f"""
-        <div class="tool-container">
-            <h5>Tool #{tool_idx + 1}</h5>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        with st.container():
-            # Layout cho tool
-            cols = st.columns([2, 2, 4, 2, 1, 1])
+            # Header cho tool
+            st.markdown(f"""
+            <div class="tool-container">
+                <h5>Tool #{tool_idx + 1}</h5>
+            </div>
+            """, unsafe_allow_html=True)
             
-            # Loại tool
-            tool_types = ["http", "built_in"]
-            type_index = tool_types.index(tool.get("type", "http")) if tool.get("type") in tool_types else 0
-            new_type = cols[0].selectbox("Loại tool", options=tool_types, index=type_index, key=f"tool_type_{agent_idx}_{tool_idx}")
-            
-            # Nếu loại tool thay đổi, cập nhật cấu trúc
-            if tool.get("type") != new_type:
-                tool["type"] = new_type
-                if new_type == "built_in":
-                    if "tool_path" in tool:
-                        tool.pop("tool_path")
-                    if "method" in tool:
-                        tool.pop("method")
-                    if "input_params" in tool:
-                        tool.pop("input_params")
-                else:  # http
-                    if "input_params" not in tool:
-                        tool["input_params"] = []
-            else:
-                tool["type"] = new_type
-            
-            # Các thuộc tính khác của tool
-            tool["name"] = cols[1].text_input("Tên tool", value=tool.get("name", ""), key=f"tool_name_{agent_idx}_{tool_idx}")
-            tool["description"] = cols[2].text_input("Mô tả tool", value=tool.get("description", ""), key=f"tool_desc_{agent_idx}_{tool_idx}")
-            
-            # Các thuộc tính dựa vào loại tool
-            if tool["type"] == "http":
-                tool["tool_path"] = cols[3].text_input("URL API", value=tool.get("tool_path", ""), key=f"tool_url_{agent_idx}_{tool_idx}")
-                method_options = ["GET", "POST", "PUT", "DELETE"]
-                default_method = tool.get("method", "GET")
-                method_index = method_options.index(default_method) if default_method in method_options else 0
-                tool["method"] = cols[4].selectbox("Method", options=method_options, index=method_index, key=f"tool_method_{agent_idx}_{tool_idx}")
-            else:
-                # Nếu là built_in tool, không cần hiển thị tool_path và method
-                cols[3].text_input("URL API", value="", disabled=True, key=f"tool_url_disabled_{agent_idx}_{tool_idx}")
-                cols[4].selectbox("Method", options=[""], disabled=True, key=f"tool_method_disabled_{agent_idx}_{tool_idx}")
-            
-            # Nút xóa tool
-            with cols[5]:
-                st.markdown("<div style='margin-top: 25px'></div>", unsafe_allow_html=True)
-                if st.button("❌ Xóa", key=f"del_tool_{agent_idx}_{tool_idx}"):
-                    self.config_manager.delete_tool(agent_idx, tool_idx)
-                    st.rerun()
-            
-            # Hiển thị parameters nếu là http tool
-            if tool["type"] == "http":
-                self._render_tool_parameters(tool, agent_idx, tool_idx)
+            with st.container():
+                # Layout cho tool
+                cols = st.columns([2, 2, 4, 2, 1, 1])
+                
+                # Loại tool
+                tool_types = ["http", "built_in"]
+                type_index = tool_types.index(tool.get("type", "http")) if tool.get("type") in tool_types else 0
+                new_type = cols[0].selectbox("Loại tool", options=tool_types, index=type_index, key=f"tool_type_{agent_idx}_{tool_idx}")
+                
+                # Nếu loại tool thay đổi, cập nhật cấu trúc
+                if tool.get("type") != new_type:
+                    tool["type"] = new_type
+                    if new_type == "built_in":
+                        if "tool_path" in tool:
+                            tool.pop("tool_path")
+                        if "method" in tool:
+                            tool.pop("method")
+                        if "input_params" in tool:
+                            tool.pop("input_params")
+                    else:  # http
+                        if "input_params" not in tool:
+                            tool["input_params"] = []
+                else:
+                    tool["type"] = new_type
+                
+                # Các thuộc tính khác của tool
+                tool["name"] = cols[1].text_input("Tên tool", value=tool.get("name", ""), key=f"tool_name_{agent_idx}_{tool_idx}")
+                tool["description"] = cols[2].text_input("Mô tả tool", value=tool.get("description", ""), key=f"tool_desc_{agent_idx}_{tool_idx}")
+                
+                # Các thuộc tính dựa vào loại tool
+                if tool["type"] == "http":
+                    full_url = self.url_endpoint + tool.get("tool_path", "")
+                    tool["full_url"] = cols[3].text_input("URL API", value=full_url, key=f"tool_url_{agent_idx}_{tool_idx}")
+                    method_options = ["GET", "POST", "PUT", "DELETE"]
+                    default_method = tool.get("method", "GET")
+                    method_index = method_options.index(default_method) if default_method in method_options else 0
+                    tool["method"] = cols[4].selectbox("Method", options=method_options, index=method_index, key=f"tool_method_{agent_idx}_{tool_idx}")
+                else:
+                    # Nếu là built_in tool, không cần hiển thị tool_path và method
+                    cols[3].text_input("URL API", value="", disabled=True, key=f"tool_url_disabled_{agent_idx}_{tool_idx}")
+                    cols[4].selectbox("Method", options=[""], disabled=True, key=f"tool_method_disabled_{agent_idx}_{tool_idx}")
+                
+                # Nút xóa tool
+                with cols[5]:
+                    st.markdown("<div style='margin-top: 25px'></div>", unsafe_allow_html=True)
+                    if st.button("❌ Xóa", key=f"del_tool_{agent_idx}_{tool_idx}"):
+                        self.config_manager.delete_tool(agent_idx, tool_idx)
+                        st.rerun()
+                
+                # Hiển thị parameters nếu là http tool
+                if tool["type"] == "http":
+                    self._render_tool_parameters(tool, agent_idx, tool_idx)
     
     def _render_tool_parameters(self, tool: Dict[str, Any], agent_idx: int, tool_idx: int):
         """Hiển thị parameters của tool"""
