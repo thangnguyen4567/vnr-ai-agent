@@ -30,7 +30,12 @@ class ConfigManager:
             "agent_id": str(uuid.uuid4()),
             "name": "Multi Agent",
             "type": "multi",
-            "sub_agents": []
+            "sub_agents": [],
+            "auth": {
+                "method": "",
+                "token": "",
+                "url_endpoint": "http://localhost:8000/"
+            }
         }
     
     def save_config(self) -> bool:
@@ -138,8 +143,6 @@ class ConfigManager:
 class AgentUI:
     """Lớp xử lý giao diện người dùng cho agent"""
 
-    url_endpoint = "http://localhost:8000/"
-
     def __init__(self, config_manager: ConfigManager):
         """Khởi tạo AgentUI với ConfigManager"""
         self.config_manager = config_manager
@@ -155,7 +158,13 @@ class AgentUI:
             st.rerun()
 
         # Nhập url endpoint
-        self.url_endpoint = st.text_input("URL Endpoint", value=self.url_endpoint)
+        with st.expander(f"🚀 Xác thực", expanded=False):
+            self.url_endpoint = st.text_input("URL Endpoint", value=self.config_manager.get_config()["auth"]["url_endpoint"])
+            auth_method = self.config_manager.get_config()["auth"]["method"]
+            auth_method_options = ["bearer", "basic", "api_key", "oauth2"]
+            default_index = auth_method_options.index(auth_method) if auth_method in auth_method_options else 0
+            self.authentication_method = st.selectbox("Phương thức xác thực", options=auth_method_options, index=default_index)
+            self.token = st.text_input("Token", value=self.config_manager.get_config()["auth"]["token"])
         
         # Hiển thị danh sách agents
         self._render_agent_list()
@@ -165,6 +174,9 @@ class AgentUI:
         # Nút lưu cấu hình
         col1, col2 = st.columns(2)
         if col1.button("💾 Lưu vào YAML", help=f"Lưu cấu hình vào file {self.config_manager.config_path}"):
+            st.session_state.agent_config["auth"]["token"] = self.token
+            st.session_state.agent_config["auth"]["url_endpoint"] = self.url_endpoint
+            st.session_state.agent_config["auth"]["method"] = self.authentication_method
             save_success = self.config_manager.save_config()
             if save_success:
                 st.success(f"Đã lưu cấu hình vào file {self.config_manager.config_path}")
@@ -263,8 +275,7 @@ class AgentUI:
                 
                 # Các thuộc tính dựa vào loại tool
                 if tool["type"] == "http":
-                    full_url = self.url_endpoint + tool.get("tool_path", "")
-                    tool["full_url"] = cols[3].text_input("URL API", value=full_url, key=f"tool_url_{agent_idx}_{tool_idx}")
+                    tool["tool_path"] = cols[3].text_input("URL API", value=tool.get("tool_path", ""), key=f"tool_url_{agent_idx}_{tool_idx}")
                     method_options = ["GET", "POST", "PUT", "DELETE"]
                     default_method = tool.get("method", "GET")
                     method_index = method_options.index(default_method) if default_method in method_options else 0

@@ -1,5 +1,6 @@
 from langchain_core.tools import BaseTool
 from src.core.tools.builtin_tool import built_in_tools
+from src.config import settings
 
 PARAM_TYPE = {
     "string": "string",
@@ -183,11 +184,16 @@ class ToolInitializer:
                 tool_schema = self.convert_http_tool_to_schema(tool,llm_provider)
                 tools.append(tool_schema)
                 http_tool_registry[tool["name"]] = {
-                    "url": tool["tool_path"],
+                    "url": settings.MULTI_AGENT_CONFIG["auth"]["url_endpoint"] + tool["tool_path"],
                     "method": tool.get("method", "GET"),
                     "provider": tool.get("provider"),
                     "input_params": tool.get("input_params",[]),
-                    "output_params": tool.get("output_params",[])
+                    "output_params": tool.get("output_params",[]),
+                    "auth_method": settings.MULTI_AGENT_CONFIG["auth"]["method"],
+                    "auth_params": {
+                        "token": settings.MULTI_AGENT_CONFIG["auth"]["token"],
+                        "url_endpoint": settings.MULTI_AGENT_CONFIG["auth"]["url_endpoint"]
+                    }
                 }
             else:
                 raise ValueError(f"Tool type {tool['type']} is not supported")

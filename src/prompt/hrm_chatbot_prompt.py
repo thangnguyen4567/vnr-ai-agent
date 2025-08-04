@@ -37,6 +37,7 @@ Bạn là một hệ thống điều phối thông minh. Nhiệm vụ của bạ
 
 Hướng dẫn:
 - Trả về kết quả là list JSON hợp lệ, KHÔNG giải thích gì thêm.
+- Bắt buộc phải chọn 1 agent để xử lý tiếp theo. chỉ được chọn tối đa 1 agent.
 
 Lịch sử hội thoại:
 {chat_history}
