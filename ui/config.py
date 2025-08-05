@@ -3,6 +3,7 @@ import uuid
 import yaml
 import os
 from typing import Dict, Any
+from src.core.tools.builtin_tool import built_in_tools_name
 
 class ConfigManager:
     """Lớp quản lý cấu hình"""
@@ -158,7 +159,7 @@ class AgentUI:
             st.rerun()
 
         # Nhập url endpoint
-        with st.expander(f"🚀 Xác thực", expanded=False):
+        with st.expander(f"🔑 Xác thực", expanded=False):
             self.url_endpoint = st.text_input("URL Endpoint", value=self.config_manager.get_config()["auth"]["url_endpoint"])
             auth_method = self.config_manager.get_config()["auth"]["method"]
             auth_method_options = ["bearer", "basic", "api_key", "oauth2"]
@@ -270,7 +271,12 @@ class AgentUI:
                     tool["type"] = new_type
                 
                 # Các thuộc tính khác của tool
-                tool["name"] = cols[1].text_input("Tên tool", value=tool.get("name", ""), key=f"tool_name_{agent_idx}_{tool_idx}")
+                if tool["type"] == "built_in":
+                    tool["name"] = cols[1].selectbox("Method", options=list(built_in_tools_name.keys()), key=f"tool_method_{agent_idx}_{tool_idx}")
+
+                else:   
+                    tool["name"] = cols[1].text_input("Tên tool", value=tool.get("name", ""), key=f"tool_name_{agent_idx}_{tool_idx}")
+                
                 tool["description"] = cols[2].text_input("Mô tả tool", value=tool.get("description", ""), key=f"tool_desc_{agent_idx}_{tool_idx}")
                 
                 # Các thuộc tính dựa vào loại tool

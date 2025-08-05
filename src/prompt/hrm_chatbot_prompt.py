@@ -1,4 +1,4 @@
-HRM_TOOL_CALL_PROMPT = """Bắt buộc phải sử dụng tool nếu không có tool phù hợp với yêu cầu thì sử dụng empty_tool"""
+HRM_TOOL_CALL_PROMPT = """"""
 
 HRM_CHATBOT_PROMPT = """
     Bạn là một trợ lý ảo nội bộ thông minh, chuyên hỗ trợ người dùng trong hệ thống HRM (Quản trị nhân sự).

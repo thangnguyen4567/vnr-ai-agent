@@ -27,12 +27,12 @@ async def do_async_http_request(
         "params": query_params,
         "timeout": timeout,
     }
-    if body is not None:
-        content_type = headers.get("Content-Type", "").lower()
-        if 'application/x-www-form-urlencoded' in content_type:
-            request_kwargs["data"] = query_params
-        else:
-            request_kwargs["json"] = query_params
+    
+    content_type = headers.get("Content-Type", "").lower()
+    if 'application/x-www-form-urlencoded' in content_type:
+        request_kwargs["data"] = query_params
+    else:
+        request_kwargs["json"] = query_params
 
     try:
         async with httpx.AsyncClient() as client:
