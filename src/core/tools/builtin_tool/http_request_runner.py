@@ -35,7 +35,7 @@ async def do_async_http_request(
         request_kwargs["json"] = query_params
 
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(verify=False) as client:
             response = await client.request(**request_kwargs)
             try:
                 response_data = response.json() if response.content and response.headers.get("Content-Type", "").startswith("application/json") else None

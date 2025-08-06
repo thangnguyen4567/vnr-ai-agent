@@ -250,7 +250,7 @@ class AgentUI:
                 cols = st.columns([2, 2, 4, 2, 1, 1])
                 
                 # Loại tool
-                tool_types = ["http", "built_in"]
+                tool_types = ["http", "built_in", "store"]
                 type_index = tool_types.index(tool.get("type", "http")) if tool.get("type") in tool_types else 0
                 new_type = cols[0].selectbox("Loại tool", options=tool_types, index=type_index, key=f"tool_type_{agent_idx}_{tool_idx}")
                 
@@ -286,6 +286,9 @@ class AgentUI:
                     default_method = tool.get("method", "GET")
                     method_index = method_options.index(default_method) if default_method in method_options else 0
                     tool["method"] = cols[4].selectbox("Method", options=method_options, index=method_index, key=f"tool_method_{agent_idx}_{tool_idx}")
+                elif tool["type"] == "store":
+                    tool["store_name"] = cols[3].text_input("Tên store", value=tool.get("store_name", ""), key=f"tool_store_name_{agent_idx}_{tool_idx}")
+                    tool["rec_take"] = cols[4].text_input("Số lượng lấy", value=tool.get("rec_take", "5"), key=f"tool_rec_take_{agent_idx}_{tool_idx}")
                 else:
                     # Nếu là built_in tool, không cần hiển thị tool_path và method
                     cols[3].text_input("URL API", value="", disabled=True, key=f"tool_url_disabled_{agent_idx}_{tool_idx}")
@@ -299,7 +302,7 @@ class AgentUI:
                         st.rerun()
                 
                 # Hiển thị parameters nếu là http tool
-                if tool["type"] == "http":
+                if tool["type"] == "http" or tool["type"] == "store":
                     self._render_tool_parameters(tool, agent_idx, tool_idx)
     
     def _render_tool_parameters(self, tool: Dict[str, Any], agent_idx: int, tool_idx: int):

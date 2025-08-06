@@ -173,12 +173,15 @@ class ToolInitializer:
 
         llm_provider = agent_config["nodes"]["llm"]["provider"]
         http_tool_registry = {}
+        store_tool_registry = {}
 
         for tool in raw_tools:
+            # Chuyển đổi tool built_in thành schema
             if tool["type"] == "built_in" and tool["name"] in self.built_in_tools_name:
                 built_in_tool = next((t for t in built_in_tools if t.name == tool["name"]), None)
                 if built_in_tool:
                     tools.extend(self.convert_to_schema([built_in_tool],llm_provider))
+            # Chuyển đổi tool http thành schema
             elif tool["type"] == "http":
                 # Chuyển đổi tool http thành schema
                 tool_schema = self.convert_http_tool_to_schema(tool,llm_provider)
@@ -195,10 +198,28 @@ class ToolInitializer:
                         "url_endpoint": settings.MULTI_AGENT_CONFIG["auth"]["url_endpoint"]
                     }
                 }
+            # Chuyển đổi tool dynamic store thành schema
+            elif tool["type"] == "store":
+                tool_schema = self.convert_http_tool_to_schema(tool,llm_provider)
+                tools.append(tool_schema)
+                store_tool_registry[tool["name"]] = {
+                    "url": settings.MULTI_AGENT_CONFIG["auth"]["url_endpoint"] + 'proxy/shared/api/v1/Dynamic/GetDataSourceByDynamicStore',
+                    "method": "POST",
+                    "provider": tool.get("provider"),
+                    "auth_method": settings.MULTI_AGENT_CONFIG["auth"]["method"],
+                    "input_params": tool.get("input_params",[]),
+                    "output_params": tool.get("output_params",[]),
+                    "store_name": tool.get("store_name", ""),   
+                    "rec_take": tool.get("rec_take", "5"),
+                    "auth_params": {
+                        "token": settings.MULTI_AGENT_CONFIG["auth"]["token"],
+                        "url_endpoint": settings.MULTI_AGENT_CONFIG["auth"]["url_endpoint"]
+                    }
+                }
             else:
                 raise ValueError(f"Tool type {tool['type']} is not supported")
 
-        return tools,http_tool_registry
+        return tools,http_tool_registry,store_tool_registry
        
 
 

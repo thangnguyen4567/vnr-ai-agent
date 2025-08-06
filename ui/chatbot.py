@@ -9,6 +9,7 @@ from langfuse import Langfuse
 import streamlit.components.v1 as components
 from datetime import datetime
 import json
+import uuid
 
 def chatbot():
     # Thiết lập tiêu đề ứng dụng
@@ -44,7 +45,7 @@ def chatbot():
                 "current_date": datetime.now().strftime("%d/%m/%Y"),
                 "language": "vi-VN",
                 "agent_id": "",
-                "thread_id": "113",
+                "thread_id": str(uuid.uuid4()),
                 "user_info": {
                     "name": "Nguyễn Văn A",
                     "employee_id": "EMP001",
