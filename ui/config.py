@@ -267,12 +267,18 @@ class AgentUI:
                     else:  # http
                         if "input_params" not in tool:
                             tool["input_params"] = []
+                        if "store_name" in tool:
+                            tool.pop("store_name")
+                        if "rec_take" in tool:
+                            tool.pop("rec_take")
                 else:
                     tool["type"] = new_type
                 
                 # Các thuộc tính khác của tool
                 if tool["type"] == "built_in":
-                    tool["name"] = cols[1].selectbox("Method", options=list(built_in_tools_name.keys()), key=f"tool_method_{agent_idx}_{tool_idx}")
+                    default_name = tool.get("name", "")
+                    name_index = list(built_in_tools_name.keys()).index(default_name) if default_name in list(built_in_tools_name.keys()) else 0
+                    tool["name"] = cols[1].selectbox("Tên tool", options=list(built_in_tools_name.keys()), index=name_index, key=f"tool_name_{agent_idx}_{tool_idx}")
 
                 else:   
                     tool["name"] = cols[1].text_input("Tên tool", value=tool.get("name", ""), key=f"tool_name_{agent_idx}_{tool_idx}")

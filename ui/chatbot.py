@@ -47,8 +47,8 @@ def chatbot():
                 "agent_id": "",
                 "thread_id": str(uuid.uuid4()),
                 "user_info": {
-                    "name": "Nguyễn Văn A",
-                    "employee_id": "EMP001",
+                    "name": "Huynh Tan Hoang",
+                    "ProfileID": "54c12a16-a53e-4246-8c7b-7b409c8b2c35",
                     "role": "HR Manager",
                 }
             },

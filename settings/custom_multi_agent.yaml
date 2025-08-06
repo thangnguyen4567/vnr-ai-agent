@@ -2,7 +2,7 @@ agent_id: 5e02b315-c808-450c-8205-de88e30edae1
 name: Multi Agent
 type: multi
 sub_agents:
-- agent_id: c9e381c7-4115-4f8a-a733-43be10a72768
+- agent_id: c9e381c7-4115-4f8a-a733-43be10a72768m
   name: Attendance Agent
   description: Agent tìm kiếm thông tin về lịch làm việc, tăng ca, đăng ký nghỉ ,
     ds ngày nghỉ của nhân viên hoặc các dữ liệu liên quan đến công của nhân viên
@@ -12,16 +12,16 @@ sub_agents:
       provider: openai
       agent_prompt: ''
     tools:
-    - type: http
+    - type: store
       name: get_leaveday
-      description: Xem số ngày nghỉ phép năm còn lại của một nhân viên
-      tool_path: /api/Att_LeaveDay/GetRemainAnlDays
+      description: Xem số ngày nghỉ còn lại của một nhân viên
+      tool_path: api/Att_LeaveDay/GetRemainAnlDays
       input_params:
       - name: ProfileID
         description: ID nhân viên
         input_method: query
         type: string
-        default: 2cee3a43-38ff-4847-bc7a-983e12e41cf8
+        default: ''
         required: true
       - name: DateStart
         description: Ngày bắt đầu xin nghỉ (yyyy/MM/dd)
@@ -33,11 +33,180 @@ sub_agents:
         description: ID loại ngày nghỉ
         input_method: query
         type: string
-        default: 40e0b514-3558-45a2-b579-8f0821621909
+        default: 1b360462-ede9-45b4-a940-ab916efc83b3
         required: true
       method: POST
-      full_url: http://localhost:8000/https://ba.vnresource.net:1013/api/Att_LeaveDay/GetRemainAnlDays
+      store_name: ''
+      rec_take: '5'
+    - type: built_in
+      name: register_leaveday
+      description: Thực hiện đăng ký nghỉ phép
+    - type: http
+      name: list_leaveday
+      description: Danh sách ngày nghỉ đã được đăng ký
+      tool_path: api/Att_LeaveDay/New_GetPersonalLeaveDayHandle
+      input_params:
+      - name: DateStart
+        description: 'Được đăng ký từ ngày '
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      - name: DateEnd
+        description: Được đăng ký đến ngày
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      - name: ProfileID
+        description: ID nhân viên cần tìm
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      - name: ValueFields
+        description: Các field dữ liệu cần lấy
+        input_method: query
+        type: string
+        default: ID,ProfileName,DateStart,LeaveDays,StatusView
+        required: false
+      - name: dataSourceRequestString
+        description: Số record cần lấy
+        input_method: query
+        type: string
+        default: page=1&pageSize=5
+        required: false
+      method: POST
+    - type: http
+      name: approve_leaveday
+      description: Duyệt ngày nghỉ
+      tool_path: api/Att_LeaveDay/SetApproveLeaveDayInPortal
+      input_params:
+      - name: ListRecordID
+        description: Danh sách ID yêu cầu nghỉ phép
+        input_method: query
+        type: array
+        default: ''
+        required: false
+      - name: UserProcessID
+        description: ID người thực hiện phê duyệt
+        input_method: query
+        type: string
+        default: a20128a7-cd70-4fc3-9050-56d4befff410
+        required: false
+      - name: Comment
+        description: Lý do duyệt hoặc ý kiến bổ sung thêm
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      method: POST
+    - type: http
+      name: reject_leaveday
+      description: Từ chối duyệt ngày nghỉ
+      tool_path: api/Att_LeaveDay/SetRejectLeaveDayInPortal
+      input_params:
+      - name: ListRecordID
+        description: Danh sách ID yêu cầu nghỉ phép
+        input_method: query
+        type: array
+        default: ''
+        required: false
+      - name: UserProcessID
+        description: ID người thực hiện phê duyệt
+        input_method: query
+        type: string
+        default: a20128a7-cd70-4fc3-9050-56d4befff410
+        required: false
+      - name: Comment
+        description: Lý do từ chối
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      method: POST
+    - type: http
+      name: approve_overtime
+      description: Phê duyệt tăng ca
+      tool_path: api/Att_OvertimePlan/SetApproveOvertimePlanInPortal
+      input_params:
+      - name: ListRecordID
+        description: Danh sách ID yêu cầu tăng ca
+        input_method: query
+        type: array
+        default: ''
+        required: false
+      - name: UserProcessID
+        description: ID người phê duyệt tăng ca
+        input_method: query
+        type: string
+        default: a20128a7-cd70-4fc3-9050-56d4befff410
+        required: false
+      - name: Comment
+        description: Lý do duyệt hoặc yêu cầu bổ sung
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      method: POST
+    - type: http
+      name: reject_overtime
+      description: Từ chối tăng cả
+      tool_path: api/Att_OvertimePlan/SetRejectOvertimePlanInPortal
+      input_params:
+      - name: ListRecordID
+        description: Danh sách ID yêu cầu tăng ca
+        input_method: query
+        type: array
+        default: ''
+        required: false
+      - name: UserProcessID
+        description: ID người từ chối yêu cầu
+        input_method: query
+        type: string
+        default: a20128a7-cd70-4fc3-9050-56d4befff410
+        required: false
+      - name: Comment
+        description: Lý do từ chối yêu cầu
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      method: POST
+    - type: built_in
+      name: register_overtime
+      description: Thực hiện đăng ký tăng ca
+    - type: http
+      name: list_overtime
+      description: Danh sách yêu cầu đăng ký tăng ca
+      tool_path: api/Att_OvertimePlan/New_PlanOvertimeByFilterHandle
+      input_params:
+      - name: DateStart
+        description: Ngày bắt đầu đăng ký
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      - name: DateEnd
+        description: Ngày kết thúc đăng ký
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      - name: ValueFields
+        description: Các field dữ liệu cần lấy
+        input_method: query
+        type: string
+        default: ID,ProfileName,WorkDate,RegisterHours,UdHourByDate,StatusView
+        required: false
+      - name: dataSourceRequestString
+        description: số record cần lấy
+        input_method: query
+        type: string
+        default: page=1&pageSize=5
+        required: false
+      method: POST
 auth:
   method: bearer
-  token: eyJhbGciOiJSUzI1NiIsImtpZCI6IjY4MEEzMzZCNjdEQ0Q4OUNDMTAyMkFCRDYxMzE5NUFDIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3NTQxMTE0NjgsImV4cCI6MTc1NDI4Mzk2OCwiaXNzIjoiaHR0cHM6Ly9iYS52bnJlc291cmNlLm5ldDoxNTE2IiwiYXVkIjpbInByb2ZpbGUiLCJodHRwczovL2JhLnZucmVzb3VyY2UubmV0OjE1MTYvcmVzb3VyY2VzIl0sImNsaWVudF9pZCI6IkJBUF9tYWluIiwic3ViIjoiMmUyOWNlMzctN2U3OS00YjA1LWE2OGItZDJiNTkwNmExYTJiIiwiYXV0aF90aW1lIjoxNzU0MTExNDY0LCJpZHAiOiJsb2NhbCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJhZG1pbiIsImhybV91c2VyX2lkIjoiMmUyOWNlMzctN2U3OS00YjA1LWE2OGItZDJiNTkwNmExYTJiIiwiaHJtX3Byb2ZpbGVfaWQiOiI1MmNjNzUxNy0wODRlLTQ5YzktYTNmYy0zY2M2NDFjNTg4Y2EiLCJocm1fdXNlcm5hbWUiOiJhZG1pbiIsImhybV9pc19hY3RpdmF0ZSI6InRydWUiLCJocm1fdHlwZV91c2VyIjoiRV9NYWluLEVfUG9ydGFsIiwiaHJtX2Z1bGxuYW1lIjoiTMOqIE1pbmggUXXhu5FjIiwiaHJtX3VzZXJfaW5mb19uYW1lIjoiTMOqIE1pbmggUXXhu5FjIiwiaHJtX2NvZGVfZW1wIjoiVk5SMDAwNDcyIiwiaHJtX2ltYWdlX3BhdGgiOiJub19hdmF0YXIuanBnIiwiaHJtX2VtYWlsIjoiMTIzIiwiaHJtX2lzX3N1cGVyX2FkbWluIjoidHJ1ZSIsImhybV9sYW5nX2NvZGUiOiJWTiIsImp0aSI6IkY4RkFFRDczQkZDNzdFNjEzRTcyRjQxMDI0NjQ2OTVFIiwic2lkIjoiRURDRjY0NTE5OUM0MjYwQkQ2NTkwNjhBODBDMzY5NzUiLCJpYXQiOjE3NTQxMTE0NjgsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiLCJhcGkiLCJvZmZsaW5lX2FjY2VzcyJdLCJhbXIiOlsicHdkIl19.j8HRn947EV35gFGRWmwdmApbILyZQmaHgX4B0-kFuQm43AHlnUkvudHdHK3I1POA7nsXoab6vdJNYo_9GqvhqEgEfkoHOx35GOlJ9DZ3Y2qd6XK77Vk4oDN08Gxt29hIOGk0gz-PPCUD9qYrpNUrMssSb7T9nPLzLm-VtK71uIIGkQm09Bhx7MGyPmjm9hEgz0L7swist-Dcg1pxvNnAXjBGnvzWaDqGq2Rjzavvr2PzmsHdV-AOMUtuewNsoC97QEG5CkbxgLxI2NO4_EKFVGe02sMoBaD0tGm2MZ9X7Om_W0xrBb60ojN8eNrYvZ1dNQLYMezvLWrAPN0H7b7sQA
-  url_endpoint: https://ba.vnresource.net:1013/
+  token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg0NTYzRDQwOEYyNTM4RTY2NzMwQkNGNjBEQzUxQjA3IiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3NTQzNzA5NTcsImV4cCI6MTc1Njk2Mjk1NywiaXNzIjoiaHR0cHM6Ly9kZW1vMzMudm5yZXNvdXJjZS5uZXQ6MzMzMiIsImF1ZCI6WyJwcm9maWxlIiwiaHR0cHM6Ly9kZW1vMzMudm5yZXNvdXJjZS5uZXQ6MzMzMi9yZXNvdXJjZXMiXSwiY2xpZW50X2lkIjoiaHJtMTBfcG9ydGFsIiwic3ViIjoiYWM2ZDY4MzEtNmRiMy00MjQ5LWI3MTYtODU5NDk4ZGQ2YmYwIiwiYXV0aF90aW1lIjoxNzU0MzYyNTY4LCJpZHAiOiJsb2NhbCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJhZG1pbiIsImhybV91c2VyX2lkIjoiYWM2ZDY4MzEtNmRiMy00MjQ5LWI3MTYtODU5NDk4ZGQ2YmYwIiwiaHJtX3Byb2ZpbGVfaWQiOiIxYmQwMjg3OS1mNWQ3LTQ4NjAtODAyMS00MWU1ZjUwODExMTQiLCJocm1fdXNlcm5hbWUiOiJhZG1pbiIsImhybV9pc19hY3RpdmF0ZSI6InRydWUiLCJocm1fdHlwZV91c2VyIjoiRV9NYWluLEVfUG9ydGFsIiwiaHJtX2Z1bGxuYW1lIjoiTkdVWeG7hE4gTUlOSCBUUsONIiwiaHJtX3VzZXJfaW5mb19uYW1lIjoiTkdVWeG7hE4gTUlOSCBUUsONIiwiaHJtX2NvZGVfZW1wIjoiMTAwNiIsImhybV9pbWFnZV9wYXRoIjoiUHJvZmlsZV85YzYwMzU0OS0wYjU5LTQ3ODctOTc1OS1hNTVmYjNjODZlNzEucG5nIiwiaHJtX2VtYWlsIjoidHJpbmd1eWVuLnZuckBnbWFpbC5jb20iLCJocm1faXNfc3VwZXJfYWRtaW4iOiJ0cnVlIiwiaHJtX2xhbmdfY29kZSI6IlZOIiwianRpIjoiNkU0QzA4NkM1M0RCNTVERDAwMjNEMTIzRTVDREQ1QzAiLCJzaWQiOiJFRkU4QzVBNEExRkFCQkQ3OTQxQUJDMjcwODRFMDRDNiIsImlhdCI6MTc1NDM2MjU3Niwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImFwaSIsIm9mZmxpbmVfYWNjZXNzIl0sImFtciI6WyJwd2QiXX0.DIn59Np4t9QdQBx5oEaxTqCXoF1igMSgo27_SD7shQvbEYW3ygKGIiItHRz9hkDQbn_mv2JdwdUIshIcWr1ltW9gGS1w4n0ZXlFCIDFOwfBHzemRvZk7rkQZeFAT98TceSmwBgDSP29MiNGUSZd2n1gttEeUMjfS5IPbFhumQM0I8bfzLVCaGvbp-M113CXda7XnGqb6YfMKYhl7Fkxlsk82MMaPc3TeyldDem4TOl2YjhbnmShIg0pCqyJjDI81Ou3g4hY7fJYiXRxK9o9SR7szUOTF79GRAxW5LDbjsAXu9_YLMVyD_UcyBMDQycc-JddU3PXokc0nzd3ZjGmqRQ
+  url_endpoint: https://demo33.vnresource.net:3333/
