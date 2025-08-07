@@ -32,3 +32,4 @@ pydub==0.25.1
 audioop-lts==0.2.1
 langchain_community==0.3.27
 redis==6.2.0
+PyJWT==2.10.1

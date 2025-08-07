@@ -1,0 +1,37 @@
+agent_id: 5e02b315-c808-450c-8205-de88e30edae1
+name: Multi Agent
+type: multi
+sub_agents:
+- agent_id: c9e381c7-4115-4f8a-a733-43be10a72768m
+  name: Goal Agent
+  description: Agent tìm kiếm thông tin về mục tiêu KPI của công ty, nhân viên, bộ
+    phận
+  type: fc
+  nodes:
+    llm:
+      provider: openai
+      agent_prompt: ''
+    tools:
+    - type: store
+      name: get_goal
+      description: Lấy ds mục tiêu của bộ phận
+      tool_path: ''
+      input_params:
+      - name: Representative
+        description: Tên người đại diện của bộ phận
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      - name: GoalName
+        description: Tên mục tiêu KPI
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      method: GET
+      store_name: sp_eva_get_goal_department
+auth:
+  method: oauth2
+  url_endpoint: https://qc-core.vnrlocal.com:3019/
+  token: eyJhbGciOiJSUzI1NiIsImtpZCI6IjZBNEIxNERDQzEzMjFGQzMzMDM3QUU5QUYyNDQzRjkyIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3NTQ0NzU2NzksImV4cCI6MTc1NDQ3OTI3OSwiaXNzIjoiaHR0cHM6Ly9xYy1jb3JlLnZucmxvY2FsLmNvbTozMDA1IiwiYXVkIjpbInByb2ZpbGUiLCJodHRwczovL3FjLWNvcmUudm5ybG9jYWwuY29tOjMwMDUvcmVzb3VyY2VzIl0sImNsaWVudF9pZCI6IjgwZGRlM2NiYWVkMzRlMDliNDdmMTIxNzI2Y2Y3ZTI1Iiwic3ViIjoiMGJkNTM1M2UtOTMyNS00OGZlLTgwOTEtMDMzYzgxYjQ2ZDNjIiwiYXV0aF90aW1lIjoxNzU0NDc1Njc5LCJpZHAiOiJsb2NhbCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJ2bnIiLCJocm1fdXNlcl9pZCI6IjBiZDUzNTNlLTkzMjUtNDhmZS04MDkxLTAzM2M4MWI0NmQzYyIsImhybV9wcm9maWxlX2lkIjoiNDgwMTBjZTUtODhlZS00ZjZlLWFiNjQtNzhiYzJlYmRlMjcxIiwiaHJtX3VzZXJuYW1lIjoidm5yIiwiaHJtX2lzX2FjdGl2YXRlIjoidHJ1ZSIsImhybV90eXBlX3VzZXIiOiJFX01haW4sRV9Qb3J0YWwiLCJocm1fZnVsbG5hbWUiOiJMw6ogxJDDoG8iLCJocm1fdXNlcl9pbmZvX25hbWUiOiJMw6ogxJDDoG8iLCJocm1fY29kZV9lbXAiOiJWUDAyOTc1IiwiaHJtX2ltYWdlX3BhdGgiOiJQcm9maWxlX2FmMTUxZGU1LTkyMDctNDUyNC1iY2E5LTdkOTBkNGE1MzBjNS5wbmciLCJocm1fZW1haWwiOiJ0ZXN0ZGFuZ2t5dm5yZXNvdXJjZUBnbWFpbC5jb20iLCJocm1faXNfc3VwZXJfYWRtaW4iOiJ0cnVlIiwiaHJtX2xhbmdfY29kZSI6IlZOIiwianRpIjoiNEFGOTNDQTY1NkFCNEUwOTZERkUxQ0JCMjUxMDVDMEYiLCJpYXQiOjE3NTQ0NzU2NzksInNjb3BlIjpbImFwaSIsIm9mZmxpbmVfYWNjZXNzIl0sImFtciI6WyJwYXNzd29yZCJdfQ.gH7LSDpgsULsWz9BN_yHSyoG5oeTHT5RQJYcRPQW9JJg31DmGJ_p1cEAeFy8tvAmZUmplEO6AvAbkoKrM7lBKdlmW9jaXqLfFXI69yUpG0mGd8bboIXrrhm4Eo0tAz6eW-5M3iJ7Nvv8Gvf3-9FYl4cMrLyOcvMnSmbRVd1Qsaj_znkp9lPqqoip2dvtg7XZ4ClrVDKl-XiiK4ow-lwuyl4BhPVxFXzlKQDp8MAeGyAR0oOGJlKfkA1mJHSVJTElmoEkHDGCQ6jNVrg3B5J2RQ5RrUXpChxWQyty3gohLxBShZsLgJ3lbulWDLPHFT9WV0VA1-lXnHtumv7WdZDORw

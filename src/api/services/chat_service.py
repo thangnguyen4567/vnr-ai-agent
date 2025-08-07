@@ -1,5 +1,3 @@
-import logging
-from sys import version
 from typing import Dict, Any
 from src.core.multi_agent import multi_agent_graph
 from src.core.fc_agent import fc_agent_graph
@@ -9,16 +7,12 @@ from src.utils.common import AgentType
 
 load_dotenv()
 
-# Logger
-logger = logging.getLogger(__name__)
-
 
 class ChatService:
     """Service xử lý các yêu cầu AI"""
 
     def __init__(self):
         """Khởi tạo service"""
-        logger.info("Khởi tạo AI Service")
 
     @staticmethod
     def parse_start_event(event):

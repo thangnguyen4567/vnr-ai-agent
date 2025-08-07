@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Literal, Union, Dict, Any
 from datetime import datetime
+import uuid
 
 class TextContent(BaseModel):
     type: Literal["text"] = Field(..., description="Loại nội dung")
@@ -20,7 +21,7 @@ class InputData(BaseModel):
     messages: List[Message] = Field(default_factory=list)
 
 class Configurable(BaseModel):
-    thread_id: str = Field(..., description="ID thread")
+    thread_id: str = Field(str(uuid.uuid4()), description="ID thread")
     agent_id: str = Field("d4e12d5bb4014794fa3f956e2b0e01cf", description="ID agent")
     language: str = Field("vi-VN", description="Ngôn ngữ")
     current_date: str = Field(datetime.now().strftime("%d/%m/%Y"), description="Ngày hiện tại")

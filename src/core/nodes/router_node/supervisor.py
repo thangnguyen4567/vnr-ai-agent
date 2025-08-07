@@ -7,7 +7,6 @@ import copy
 from langchain_core.messages import AIMessage, ToolMessage, HumanMessage
 from dotenv import load_dotenv
 from src.config import settings
-import logging
 from pydantic import BaseModel
 from typing import List
 from langchain_core.output_parsers import JsonOutputParser

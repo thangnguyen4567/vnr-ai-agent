@@ -15,8 +15,11 @@ from .routers.test_api.training import router as training_router
 from .routers.test_api.goal import router as goal_router
 # Cấu hình logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    filename="logs/prod.log",        # 👈 Ghi log vào file app.log
+    filemode="a"               # "a" để ghi tiếp, "w" để ghi đè
 )
 # Khởi tạo Langfuse để tracking các request
 Langfuse(

@@ -10,7 +10,15 @@ import streamlit.components.v1 as components
 from datetime import datetime
 import json
 import uuid
-
+import logging
+# Cấu hình logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    filename="logs/dev.log",        # 👈 Ghi log vào file app.log
+    filemode="a"               # "a" để ghi tiếp, "w" để ghi đè
+)
 def chatbot():
     # Thiết lập tiêu đề ứng dụng
     st.set_page_config(page_title="AI Chatbot", page_icon="🤖")

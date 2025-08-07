@@ -1,12 +1,9 @@
-import logging
 from src.core import AgentState
 from langchain_core.runnables import RunnableConfig
 from src.core.nodes.tool_node.utils import extract_tool_call_info, get_agent_config
 from src.core.nodes.tool_node.http_tool_handler import HttpToolHandler 
 from src.core.nodes.tool_node.builtin_tool_handler import BuiltinToolHandler
 from src.core.nodes.tool_node.store_tool_handler import StoreToolHandler
-
-logger = logging.getLogger(__name__)
 
 builtin_tool_handler = BuiltinToolHandler()
 http_tool_handler = HttpToolHandler()
@@ -29,7 +26,6 @@ async def tool_call(state: AgentState, config: RunnableConfig):
         # Lấy thông tin tool call từ state ( được AI tạo ra )
         tool_calls_info = extract_tool_call_info(state)
         if not tool_calls_info:
-            logger.info("No tool call info found, using default toolNode")
             return await builtin_tool_handler.process(state, None)
         
         # Lấy cấu hình tool từ state
@@ -47,7 +43,6 @@ async def tool_call(state: AgentState, config: RunnableConfig):
                 return await builtin_tool_handler.process(state, tool_call_info)
             
     except Exception as e:
-        logger.error(f"Error processing tool call: {e}")
         return {
             "messages": [
                 {

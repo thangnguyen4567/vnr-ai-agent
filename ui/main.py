@@ -2,6 +2,7 @@ import streamlit as st
 from chatbot import chatbot
 from config import config
 from flowchart import flowchart
+from logs import show_logs
 # --- Khởi tạo giá trị page mặc định ---
 if "page" not in st.session_state:
     st.session_state.page = "agent"
@@ -15,6 +16,8 @@ with st.sidebar:
         st.session_state.page = "agent_config"
     if st.button("Agent Flow"):
         st.session_state.page = "agent_flow"
+    if st.button("Agent Logs"):
+        st.session_state.page = "logs"
 
 
 if st.session_state.page == "agent":
@@ -25,3 +28,6 @@ elif st.session_state.page == "agent_config":
 
 elif st.session_state.page == "agent_flow":
     flowchart()
+
+elif st.session_state.page == "logs":
+    show_logs()

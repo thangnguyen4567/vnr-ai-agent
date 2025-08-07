@@ -1,8 +1,6 @@
 from typing import Any, Dict, Optional
-import logging
 from src.core import AgentState
 
-logger = logging.getLogger(__name__)
 
 def extract_tool_call_info(state: AgentState) -> Optional[Dict[str, Any]]:
     """
@@ -19,13 +17,11 @@ def extract_tool_call_info(state: AgentState) -> Optional[Dict[str, Any]]:
         tool_calls = last_message.tool_calls if hasattr(last_message, "tool_calls") else []
 
         if not tool_calls:
-            logger.info("No tool call info found")
             return None
         
         return tool_calls
     
     except Exception as e:
-        logger.error(f"Error extracting tool call info: {e}")
         return None
     
 def get_agent_config(state: AgentState) -> Dict[str, Any]:

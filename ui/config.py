@@ -4,6 +4,8 @@ import yaml
 import os
 from typing import Dict, Any
 from src.core.tools.builtin_tool import built_in_tools_name
+from src.config import settings
+from src.core.config_loader import agent_config_loader
 
 class ConfigManager:
     """Lớp quản lý cấu hình"""
@@ -45,6 +47,9 @@ class ConfigManager:
             with open(self.config_path, 'w', encoding='utf-8') as file:
                 yaml.dump(st.session_state.agent_config, file, default_flow_style=False, 
                          allow_unicode=True, sort_keys=False)
+
+            settings.reload_multi_agent_config()
+            agent_config_loader._load_config()
             return True
         except Exception as e:
             st.error(f"Lỗi khi lưu cấu hình: {str(e)}")
@@ -371,7 +376,8 @@ class AgentUI:
 def config():
     """Hàm chính để khởi tạo ứng dụng config"""
     # Đường dẫn đến file cấu hình
-    yaml_config_path = "settings/custom_multi_agent.yaml"
+    # yaml_config_path = "settings/prod_multi_agent.yaml"
+    yaml_config_path = "settings/dev_multi_agent.yaml"
     
     # Khởi tạo ConfigManager
     config_manager = ConfigManager(yaml_config_path)
