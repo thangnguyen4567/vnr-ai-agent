@@ -4,17 +4,17 @@ type: multi
 sub_agents:
 - agent_id: c9e381c7-4115-4f8a-a733-43be10a72768m
   name: Goal Agent
-  description: Agent tìm kiếm thông tin về mục tiêu KPI của công ty, nhân viên, bộ
-    phận
+  description: Agent tìm kiếm thông tin về mục tiêu và các đợt đánh gia KPI của công
+    ty, nhân viên, bộ phận
   type: fc
   nodes:
     llm:
-      provider: openai
+      provider: google
       agent_prompt: ''
     tools:
     - type: store
       name: get_goal
-      description: Lấy ds mục tiêu của bộ phận
+      description: Lấy danh sách mục tiêu hoặc KPI của bộ phận
       tool_path: ''
       input_params:
       - name: Representative
@@ -31,6 +31,73 @@ sub_agents:
         required: false
       method: GET
       store_name: sp_eva_get_goal_department
+      tool_type: dynamic
+    - type: store
+      name: get_evaluation_period
+      description: Lấy danh sách các đợt đánh giá
+      tool_path: ''
+      input_params:
+      - name: Name
+        description: Tên đợt đánh giá
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      method: GET
+      store_name: sp_get_cat_evaluation_period
+      tool_type: dynamic
+    - type: store
+      name: get_goal_personal
+      description: Lấy mục tiêu hoặc KPI của cá nhân
+      tool_path: ''
+      input_params:
+      - name: ProfileName
+        description: Tên nhân viên
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      method: GET
+      store_name: sp_eva_get_goal_personal
+      tool_type: dynamic
+    - type: store
+      name: get_eva_evaluation_person
+      description: Lấy phiếu đánh giá của nhân viên
+      tool_path: ''
+      input_params: []
+      method: GET
+      store_name: sp_get_eva_evaluation_person
+      tool_type: dynamic
+    - type: store
+      name: get_progress_overview
+      description: Lấy danh sách tiến độ mục tiêu
+      tool_path: sp_eva_get_progress_overview
+      input_params: []
+      method: GET
+      store_name: sp_eva_get_progress_overview
+      tool_type: dynamic
+    - type: built_in
+      name: register_goal
+      description: Thực hiện giao mục tiêu cho phòng ban bộ phận
+- agent_id: f73bdfc06c6f2e9741826c1ce81a982b
+  name: Training Agent
+  description: Agent tìm kiếm thông tin về việc đào tạo, khóa học, tài liệu, bài giảng
+    và tài liệu hướng dẫn sử dụng hệ thống elearning
+  type: fc
+  nodes:
+    llm:
+      provider: google
+      agent_prompt: ''
+    tools:
+    - type: built_in
+      name: get_courses
+      description: Lấy danh sách khóa học
+    - type: built_in
+      name: get_documents
+      description: Lấy tài liệu trong khóa học, bài giảng ..
+    - type: built_in
+      name: get_hdsd
+      description: Lấy tài liệu hướng dẫn sử dụng hệ thống
 auth:
   method: oauth2
   url_endpoint: https://qc-core.vnrlocal.com:3019/

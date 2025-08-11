@@ -29,7 +29,7 @@ class GlobalConfig(BaseSettings):
     )
     
     MULTI_AGENT_CONFIG: Dict[str, Any] = Field(
-        default_factory=lambda: load_config_from_file("settings/dev_multi_agent.yaml")
+        default_factory=lambda: load_config_from_file("settings/prod_multi_agent.yaml")
     )
 
     FC_AGENT_CONFIG: Dict[str, Any] = Field(
@@ -49,7 +49,7 @@ class GlobalConfig(BaseSettings):
     )
 
     def reload_multi_agent_config(self):
-        self.MULTI_AGENT_CONFIG = load_config_from_file("settings/dev_multi_agent.yaml")
+        self.MULTI_AGENT_CONFIG = load_config_from_file("settings/prod_multi_agent.yaml")
     
 # Khởi tạo cấu hình toàn cục
 settings = GlobalConfig()

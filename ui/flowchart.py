@@ -57,7 +57,7 @@ def yaml_to_mermaid_flowchart(yaml_content):
         return f"Error generating Mermaid diagram: {str(e)}"
 
 def flowchart():
-    with open('settings/multi_agent.yaml', 'r') as file:
+    with open('settings/prod_multi_agent.yaml', 'r') as file:
         yaml_content = file.read()
     
     mermaid_diagram = yaml_to_mermaid_flowchart(yaml_content)
@@ -84,7 +84,6 @@ def flowchart():
     </div>
     <style>
         .mermaid {{
-            transform: scale(1.5);
             transform-origin: top left;
         }}
         p {{

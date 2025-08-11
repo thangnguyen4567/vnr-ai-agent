@@ -252,7 +252,7 @@ class AgentUI:
             
             with st.container():
                 # Layout cho tool
-                cols = st.columns([2, 2, 4, 2, 1, 1])
+                cols = st.columns([2, 2, 4, 2, 1.5, 0.5])
                 
                 # Loại tool
                 tool_types = ["http", "built_in", "store"]
@@ -274,8 +274,8 @@ class AgentUI:
                             tool["input_params"] = []
                         if "store_name" in tool:
                             tool.pop("store_name")
-                        if "rec_take" in tool:
-                            tool.pop("rec_take")
+                        if "tool_type" in tool:
+                            tool.pop("tool_type")
                 else:
                     tool["type"] = new_type
                 
@@ -299,7 +299,7 @@ class AgentUI:
                     tool["method"] = cols[4].selectbox("Method", options=method_options, index=method_index, key=f"tool_method_{agent_idx}_{tool_idx}")
                 elif tool["type"] == "store":
                     tool["store_name"] = cols[3].text_input("Tên store", value=tool.get("store_name", ""), key=f"tool_store_name_{agent_idx}_{tool_idx}")
-                    tool["rec_take"] = cols[4].text_input("Số lượng lấy", value=tool.get("rec_take", "5"), key=f"tool_rec_take_{agent_idx}_{tool_idx}")
+                    tool["tool_type"] = cols[4].selectbox("Loại store", options=["dynamic", "standard"], index=0, key=f"tool_store_type_{agent_idx}_{tool_idx}")
                 else:
                     # Nếu là built_in tool, không cần hiển thị tool_path và method
                     cols[3].text_input("URL API", value="", disabled=True, key=f"tool_url_disabled_{agent_idx}_{tool_idx}")
@@ -308,7 +308,7 @@ class AgentUI:
                 # Nút xóa tool
                 with cols[5]:
                     st.markdown("<div style='margin-top: 25px'></div>", unsafe_allow_html=True)
-                    if st.button("❌ Xóa", key=f"del_tool_{agent_idx}_{tool_idx}"):
+                    if st.button("❌", key=f"del_tool_{agent_idx}_{tool_idx}"):
                         self.config_manager.delete_tool(agent_idx, tool_idx)
                         st.rerun()
                 
@@ -377,7 +377,7 @@ def config():
     """Hàm chính để khởi tạo ứng dụng config"""
     # Đường dẫn đến file cấu hình
     # yaml_config_path = "settings/prod_multi_agent.yaml"
-    yaml_config_path = "settings/dev_multi_agent.yaml"
+    yaml_config_path = "settings/prod_multi_agent.yaml"
     
     # Khởi tạo ConfigManager
     config_manager = ConfigManager(yaml_config_path)

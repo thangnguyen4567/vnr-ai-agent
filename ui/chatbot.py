@@ -11,7 +11,14 @@ from datetime import datetime
 import json
 import uuid
 import logging
+import os
+
 # Cấu hình logging
+
+# Tạo thư mục logs nếu chưa tồn tại
+if not os.path.exists("logs"):
+    os.makedirs("logs")
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",

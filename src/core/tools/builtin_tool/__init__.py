@@ -7,5 +7,5 @@ built_in_tools = [empty_tool] + lms_tools + hrm_tools
 
 built_in_tools_name = {
     tool.name: tool
-    for tool in [empty_tool] + hrm_tools
+    for tool in [empty_tool] + hrm_tools + lms_tools
 }

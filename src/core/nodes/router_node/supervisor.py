@@ -5,14 +5,13 @@ from typing import Dict, Any
 from langchain_openai import ChatOpenAI
 import copy
 from langchain_core.messages import AIMessage, ToolMessage, HumanMessage
-from dotenv import load_dotenv
 from src.config import settings
 from pydantic import BaseModel
 from typing import List
 from langchain_core.output_parsers import JsonOutputParser
 import asyncio
 from src.prompt import ROUTER_AGENT_PROMPT, PREFIX_AGENT_KEY, AGENT_DESC_TEMPLATE
-load_dotenv()
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 class AgentList(BaseModel):
     agents: List[str]
@@ -20,14 +19,21 @@ class AgentList(BaseModel):
 class RouterNode(BaseNode):
     def __init__(self):
         super().__init__()
+        
+        # self.llm_router_agent = ChatOpenAI(
+        #     model=settings.LLM_CONFIG["router"]["model"],
+        #     temperature=settings.LLM_CONFIG["router"]["temperature"],
+        #     stream_usage=True,
+        #     api_key=settings.LLM_CONFIG["router"]["api_key"],
+        #     max_tokens=20,
+        # )
 
-        self.llm_router_agent = ChatOpenAI(
-            base_url=settings.LLM_CONFIG["router"]["base_url"],
-            model=settings.LLM_CONFIG["router"]["model"],
-            temperature=settings.LLM_CONFIG["router"]["temperature"],
+        self.llm_router_agent = ChatGoogleGenerativeAI(
+            model=settings.LLM_CONFIG["google"]["model"],
+            api_key=settings.LLM_CONFIG["google"]["api_key"],
+            temperature=settings.LLM_CONFIG["google"]["temperature"],
+            max_tokens=settings.LLM_CONFIG["google"]["max_tokens"],
             stream_usage=True,
-            api_key=settings.LLM_CONFIG["router"]["api_key"],
-            max_tokens=20,
         )
 
     async def process(

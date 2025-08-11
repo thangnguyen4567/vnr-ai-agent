@@ -1,6 +1,6 @@
 from langchain_core.tools import tool
 import json
-from src.core.tools.builtin_tool.http_request_runner import do_authenticated_http_request
+from src.core.tools.builtin_tool.http_request_runner import do_async_http_request
 from src.config import settings
 from datetime import datetime
 
@@ -50,10 +50,8 @@ async def register_overtime(
             }
         ],
     }
-    json_data = json.dumps(data)
-    print(json_data)
     try:
-        result = await do_authenticated_http_request(
+        result = await do_async_http_request(
             url=settings.MULTI_AGENT_CONFIG['auth']['url_endpoint'] + "api/Att_OvertimePlan/CreateOrUpdateOvertimePlanNew",
             method="POST",
             query_params=data,

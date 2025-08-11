@@ -176,6 +176,7 @@ tools:
         type: string                          # Kiểu dữ liệu
         description: "Thời tiết hiện tại"     # Mô tả
 ```
+##### 3. Dynamic Store Tools
 
 #### Phương thức truyền Input Params
 - **query**: Tham số được gửi qua query string trong URL (`?param=value`)

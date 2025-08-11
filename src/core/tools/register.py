@@ -202,15 +202,20 @@ class ToolInitializer:
             elif tool["type"] == "store":
                 tool_schema = self.convert_http_tool_to_schema(tool,llm_provider)
                 tools.append(tool_schema)
+                # Kiểm tra loại store là dynamic hay standard thì sẽ có url khác nhau
+                if tool.get("tool_type") == "dynamic":
+                    store_url = settings.MULTI_AGENT_CONFIG["auth"]["url_endpoint"] + 'proxy/shared/api/v1/Dynamic/GetDataSourceByDynamicStore'
+                elif tool.get("tool_type") == "standard":
+                    store_url = settings.MULTI_AGENT_CONFIG["auth"]["url_endpoint"] + 'proxy/shared/api/v1/Dynamic/GetDataSourceByStandardStore'
+
                 store_tool_registry[tool["name"]] = {
-                    "url": settings.MULTI_AGENT_CONFIG["auth"]["url_endpoint"] + 'proxy/shared/api/v1/Dynamic/GetDataSourceByDynamicStore',
+                    "url": store_url,
                     "method": "POST",
                     "provider": tool.get("provider"),
                     "auth_method": settings.MULTI_AGENT_CONFIG["auth"]["method"],
                     "input_params": tool.get("input_params",[]),
                     "output_params": tool.get("output_params",[]),
                     "store_name": tool.get("store_name", ""),   
-                    "rec_take": tool.get("rec_take", "5"),
                     "auth_params": {
                         "token": settings.MULTI_AGENT_CONFIG["auth"]["token"],
                         "url_endpoint": settings.MULTI_AGENT_CONFIG["auth"]["url_endpoint"]

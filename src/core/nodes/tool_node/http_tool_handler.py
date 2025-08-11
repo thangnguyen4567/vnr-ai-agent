@@ -1,7 +1,7 @@
 from src.core.nodes.tool_node.base_tool_handler import BaseToolHandler
 from typing import Any, Dict, List, Tuple
 from src.core.nodes.tool_node.formatter import get_formatter
-from src.core.tools.builtin_tool.http_request_runner import do_async_http_request, do_authenticated_http_request
+from src.core.tools.builtin_tool.http_request_runner import do_async_http_request
 from langchain_core.messages import ToolMessage
 
 class HttpToolHandler(BaseToolHandler):
@@ -34,7 +34,7 @@ class HttpToolHandler(BaseToolHandler):
                 auth_method = http_tool_registry[tool_call_info.get("name")].get("auth_method", "bearer")
                 auth_params = http_tool_registry[tool_call_info.get("name")].get("auth_params", {})
                 #gửi request và lấy kết quả
-                result = await do_authenticated_http_request(
+                result = await do_async_http_request(
                     url,
                     method,
                     **params,

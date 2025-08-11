@@ -15,6 +15,7 @@ HRM_CHATBOT_PROMPT = """
     Nguyên tắc:
     - Nếu không chắc chắn hoặc không có dữ liệu, hãy trả lời: “Tôi không tìm thấy thông tin trong hệ thống.”
     - Luôn trả lời ngắn gọn, rõ ràng, không văn vẻ.
+    - Thời gian truyền vào các tool phải đúng định dạng dd/mm/yyyy
 
     Bạn chỉ nên trả lời dựa trên dữ liệu có trong hệ thống HRM.
     Không đưa ra suy đoán, dự đoán hoặc lời khuyên không có cơ sở dữ liệu.

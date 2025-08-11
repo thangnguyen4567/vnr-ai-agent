@@ -13,12 +13,17 @@ from .routers.test_api.recruit import router as recruit_router
 from .routers.test_api.salary import router as salary_router
 from .routers.test_api.training import router as training_router
 from .routers.test_api.goal import router as goal_router
+import os
 # Cấu hình logging
+
+if not os.path.exists("logs"):
+    os.makedirs("logs")
+
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
-    filename="logs/prod.log",        # 👈 Ghi log vào file app.log
+    filename="logs/dev.log",        # 👈 Ghi log vào file app.log
     filemode="a"               # "a" để ghi tiếp, "w" để ghi đè
 )
 # Khởi tạo Langfuse để tracking các request
