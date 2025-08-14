@@ -106,7 +106,7 @@ async def do_async_http_request_basic(
     headers: Optional[Dict[str, Any]] = None,
     query_params: Optional[Dict[str, Any]] = None,
     timeout: Optional[int] = None,
-) -> APIResponse:
+) -> Any:
     """
     Thực hiện HTTP request
     """

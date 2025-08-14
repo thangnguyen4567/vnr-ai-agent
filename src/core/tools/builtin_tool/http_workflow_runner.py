@@ -24,7 +24,7 @@ async def do_async_http_workflow_request(
         settings.API_TOKEN = await get_new_token()
         settings.update_api_token(settings.API_TOKEN)
 
-    query_params["token"] = settings.API_TOKEN
+    query_params["inputs"]["token"] = settings.API_TOKEN
 
     request_kwargs = {
         "url": url,
@@ -51,10 +51,21 @@ async def do_async_http_workflow_request(
             try:
                 response_data = response.json() if response.content and response.headers.get("Content-Type", "").startswith("application/json") else None
                 logger.info(f"Response data: {json.dumps(response_data)}")
+                # Kiểm tra response status
+                if response.status_code != 200:
+                    return APIResponse(
+                        success=False,
+                        message="Failed",
+                        data=response_data['message']
+                    )
             except ValueError:
                 response_data = None
 
-            return response_data
+            return APIResponse(
+                success=True,
+                message="Success",
+                data=response_data['answer']
+            )
 
     except httpx.TimeoutException as e:
         error_msg = f"Request timed out after {timeout} seconds"

@@ -178,6 +178,36 @@ tools:
 ```
 ##### 3. Dynamic Store Tools
 
+Tools lấy dữ liệu từ hệ thống lưu trữ (dynamic store):
+```yaml
+- type: store                      # Xác định loại tool là store
+  name: get_progress_overview      # Tên của công cụ
+  description: "Lấy danh sách tiến độ mục tiêu"  # Mô tả chức năng
+  tool_path: sp_eva_get_progress_overview  # Đường dẫn API
+  input_params: []                 # Các tham số đầu vào (nếu có)
+  method: GET                      # Phương thức HTTP
+  store_name: sp_eva_get_progress_overview  # Tên của store
+  tool_type: dynamic               # Loại tool là dynamic hoặc standard
+```
+
+##### 4. Workflow Tools
+
+Tools thực hiện các quy trình nghiệp vụ phức tạp:
+```yaml
+- type: workflow                   # Xác định loại tool là workflow
+  name: register_goal              # Tên của workflow
+  description: "Thực hiện giao mục tiêu cho phòng ban bộ phận hoặc cá nhân"
+  input_params:                    # Danh sách các tham số đầu vào
+    - name: type                   # Tên của tham số
+      description: "loại mục tiêu có thể là 1 trong KPI, OKR, SMART"
+      input_method: query          # Phương thức truyền tham số
+      type: string                 # Kiểu dữ liệu
+      default: KPI                 # Giá trị mặc định
+      required: true               # Tham số bắt buộc hay không
+    # Các tham số khác...
+  token_workflow: app-6c94IEkTQ0sO4WxkTTiCkOFp  # Mã token xác thực workflow
+```
+
 #### Phương thức truyền Input Params
 - **query**: Tham số được gửi qua query string trong URL (`?param=value`)
 - **header**: Tham số được gửi trong header của request

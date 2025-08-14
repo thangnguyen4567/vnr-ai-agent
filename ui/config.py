@@ -255,7 +255,7 @@ class AgentUI:
                 cols = st.columns([2, 2, 4, 2, 1.5, 0.5])
                 
                 # Loại tool
-                tool_types = ["http", "built_in", "store"]
+                tool_types = ["http", "built_in", "store", "workflow"]
                 type_index = tool_types.index(tool.get("type", "http")) if tool.get("type") in tool_types else 0
                 new_type = cols[0].selectbox("Loại tool", options=tool_types, index=type_index, key=f"tool_type_{agent_idx}_{tool_idx}")
                 
@@ -269,7 +269,16 @@ class AgentUI:
                             tool.pop("method")
                         if "input_params" in tool:
                             tool.pop("input_params")
-                    else:  # http
+                    elif new_type == "http":
+                        if "input_params" not in tool:
+                            tool["input_params"] = []
+                        if "store_name" in tool:
+                            tool.pop("store_name")
+                        if "tool_type" in tool:
+                            tool.pop("tool_type")
+                        if "token_workflow" in tool:
+                            tool.pop("token_workflow")
+                    elif new_type == "workflow":
                         if "input_params" not in tool:
                             tool["input_params"] = []
                         if "store_name" in tool:
@@ -300,6 +309,8 @@ class AgentUI:
                 elif tool["type"] == "store":
                     tool["store_name"] = cols[3].text_input("Tên store", value=tool.get("store_name", ""), key=f"tool_store_name_{agent_idx}_{tool_idx}")
                     tool["tool_type"] = cols[4].selectbox("Loại store", options=["dynamic", "standard"], index=0, key=f"tool_store_type_{agent_idx}_{tool_idx}")
+                elif tool["type"] == "workflow":
+                    tool["token_workflow"] = cols[3].text_input("Token Workflow", value=tool.get("token_workflow", ""), key=f"tool_token_workflow_{agent_idx}_{tool_idx}")
                 else:
                     # Nếu là built_in tool, không cần hiển thị tool_path và method
                     cols[3].text_input("URL API", value="", disabled=True, key=f"tool_url_disabled_{agent_idx}_{tool_idx}")
@@ -313,7 +324,7 @@ class AgentUI:
                         st.rerun()
                 
                 # Hiển thị parameters nếu là http tool
-                if tool["type"] == "http" or tool["type"] == "store":
+                if tool["type"] == "http" or tool["type"] == "store" or tool["type"] == "workflow":
                     self._render_tool_parameters(tool, agent_idx, tool_idx)
     
     def _render_tool_parameters(self, tool: Dict[str, Any], agent_idx: int, tool_idx: int):
