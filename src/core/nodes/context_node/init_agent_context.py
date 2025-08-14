@@ -49,13 +49,17 @@ class ContextInitializer(BaseNode):
 
             # Nếu agent là agent FC thì khởi tạo các tool
             if agent_type == "fc":
-                tools, http_tool_registry, store_tool_registry = tool_initializer.initialize_tools(agent_config)
+                tools, http_tool_registry, store_tool_registry, workflow_tool_registry = tool_initializer.initialize_tools(agent_config)
 
                 state["configs"][agent_id]["tools"] = tools
+                # Lưu các tool vào state của agent
                 if http_tool_registry:
                     state["configs"][agent_id]["http_tool_registry"] = http_tool_registry
                 if store_tool_registry:
                     state["configs"][agent_id]["store_tool_registry"] = store_tool_registry
+                if workflow_tool_registry:
+                    state["configs"][agent_id]["workflow_tool_registry"] = workflow_tool_registry
+                    
             # Nếu agent là agent Multi thì khởi tạo các agent con
             elif agent_type == "multi":
                 agents = agent_config.get("sub_agents", [])

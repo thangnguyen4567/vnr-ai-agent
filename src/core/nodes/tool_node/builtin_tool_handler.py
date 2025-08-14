@@ -1,7 +1,7 @@
 from src.core.nodes.tool_node.base_tool_handler import BaseToolHandler
 from src.core.tools.builtin_tool import built_in_tools
 from langgraph.prebuilt import ToolNode
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Tuple
 from src.core import AgentState
 from langchain_core.messages import ToolMessage
 
@@ -38,3 +38,12 @@ class BuiltinToolHandler(BaseToolHandler):
                 name="unknown_tool",
                 content=str(e)
             )
+
+    def _preprare_request_params(self, *args, **kwargs) -> Tuple[str, str, Dict[str, Any]]:
+        pass
+
+    def _process_default_params(self, *args, **kwargs) -> Tuple[str, str, Dict[str, Any]]:
+        pass
+
+    def _process_tool_args(self, *args, **kwargs) -> Tuple[str, str, Dict[str, Any]]:
+        pass

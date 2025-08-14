@@ -16,7 +16,9 @@ down:
 
 up:
 	docker-compose up -d
-
+	
+up-build:
+	docker-compose up -d --build
 # Chạy test api 
 test:
 	docker exec -it agent-api pytest -v
@@ -30,3 +32,6 @@ st:
 
 graph:
 	docker exec -it agent-api python graph.py
+
+rm-vol:
+	docker volume prune

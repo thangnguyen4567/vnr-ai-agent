@@ -180,9 +180,9 @@ async def apply_authentication(
     Returns:
         Dict[str, Any]: Headers đã được cập nhật với thông tin xác thực
     """
-    auth_method=settings.MULTI_AGENT_CONFIG['auth']['method']
-    auth_params={
-        "token": settings.MULTI_AGENT_CONFIG['auth']['token']
+    auth_method = settings.MULTI_AGENT_CONFIG['auth']['method']
+    auth_params = {
+        "token": settings.MULTI_AGENT_CONFIG['auth']['token'] if auth_method == "bearer" else settings.API_TOKEN
     }   
 
     headers = headers or {}
@@ -209,6 +209,7 @@ async def apply_authentication(
             headers["Authorization"] = f"Bearer {auth_params['token']}"
         else:
             auth_params['token'] = await get_new_token()
+            settings.update_api_token(auth_params['token'])
             headers["Authorization"] = f"Bearer {auth_params['token']}"
    
             
@@ -242,7 +243,11 @@ async def get_new_token() -> str:
         "username": settings.AUTH_CONFIG['username'],
         "password": settings.AUTH_CONFIG['password']
     }
-
-    response = requests.post(settings.AUTH_CONFIG['token_url'], headers=headers, data=data, verify=False)
-    response.raise_for_status()
-    return response.json()['access_token']
+    try:
+        response = requests.post(settings.AUTH_CONFIG['token_url'], headers=headers, data=data, verify=False)
+        response.raise_for_status()
+        logger.info(f"Lấy token mới thành công")
+        return response.json()['access_token']
+    except Exception as e: 
+        logger.error(f"Lỗi khi lấy token mới: {e}")
+        return None

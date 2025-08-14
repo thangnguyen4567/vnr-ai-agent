@@ -1,10 +1,10 @@
 from src.core.nodes.tool_node.base_tool_handler import BaseToolHandler
 from typing import Any, Dict, List, Tuple
 from src.core.nodes.tool_node.formatter import get_formatter
-from src.core.tools.builtin_tool.http_request_runner import do_async_http_request
+from src.core.tools.builtin_tool.http_workflow_runner import do_async_http_workflow_request
 from langchain_core.messages import ToolMessage
 
-class StoreToolHandler(BaseToolHandler):
+class WorkflowToolHandler(BaseToolHandler):
 
     async def process(
             self, 
@@ -12,11 +12,11 @@ class StoreToolHandler(BaseToolHandler):
             tool_registry: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
-        Process Dynamically store tool call
+        Process Workflow tool call
 
         Args:
             tool_call_info: Tool call info
-            http_tool: HTTP tool config
+            tool_registry: Workflow tool config
 
         Returns:
             Trạng thái đã cập nhật với kết quả tool call
@@ -26,31 +26,31 @@ class StoreToolHandler(BaseToolHandler):
             tool_messages = []
             for tool_call_info in tool_calls_info:
                 # Lấy cấu hình tool theo tool name 
-                store_tool = tool_registry[tool_call_info.get("name")]
+                workflow_tool = tool_registry[tool_call_info.get("name")]
                 #chuẩn bị tham số cho request
                 params = self._preprare_request_params(
                     tool_call_info,
-                    store_tool
+                    workflow_tool
                 )
-                #parse auth_method và auth_params
-                auth_method = store_tool.get("auth_method", "bearer")
-                auth_params = store_tool.get("auth_params", {})
+                headers = {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + workflow_tool.get("token_workflow", "")
+                }
                 #gửi request và lấy kết quả
-                result = await do_async_http_request(
-                    store_tool.get("url", ""),
-                    store_tool.get("method", "POST"),
+                result = await do_async_http_workflow_request(
+                    url=workflow_tool.get("url", ""),
                     query_params=params,
-                    auth_method=auth_method,
-                    auth_params=auth_params
+                    headers=headers,
                 )
 
-                output_params = store_tool.get("output_params", [])
+                output_params = workflow_tool.get("output_params", [])
                 formatter = get_formatter(result.data)
                 #format kết quả theo output_params và đưa về dạng string
                 result_str = formatter.format(
                     result.data,
                     output_params
                 )
+                
                 tool_message = ToolMessage(
                     tool_call_id=tool_call_info.get("id"),
                     name=tool_call_info.get("name"),
@@ -75,7 +75,7 @@ class StoreToolHandler(BaseToolHandler):
     def _preprare_request_params(
         self, 
         tool_call_info: Dict[str, Any],
-        store_tool: Dict[str, Any]
+        tool_registry: Dict[str, Any]
     ) -> Tuple[str, str, Dict[str, Any]]:
         """
         Prepare HTTP request parameters
@@ -91,7 +91,7 @@ class StoreToolHandler(BaseToolHandler):
         # Khởi tạo các tham số
         query_params = {}
 
-        input_params = store_tool.get("input_params", {})
+        input_params = tool_registry.get("input_params", {})
         args = tool_call_info.get("args", {})
 
         # Process default parameters
@@ -108,9 +108,12 @@ class StoreToolHandler(BaseToolHandler):
         )
 
         params = {
-            "DataFormSearch": query_params,
-            "StoreName": store_tool.get("store_name", ""),
-            "dataSourceRequestString": "page=1&pageSize=5"
+            "inputs": query_params,
+            "query": "no query",
+            "response_mode": "blocking",
+            "conversation_id": "",
+            "user": "nouser",
+            "files": []
         }
 
         return params
@@ -121,7 +124,7 @@ class StoreToolHandler(BaseToolHandler):
         query_params: Dict[str, Any],
      ) -> Dict[str, Any]:
         """
-        Xử lý tham số từ arguments mà AI truyền vào tool call 
+        Xử lý tham số mặc định từ input_params
 
         Args:
             input_params: Danh sách tham số của tool
@@ -145,7 +148,7 @@ class StoreToolHandler(BaseToolHandler):
         query_params: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
-        Xử lý tham số từ arguments của tool call 
+        Xử lý tham số từ arguments mà AI truyền vào tool call 
 
         Args:
             input_params: Danh sách tham số của tool

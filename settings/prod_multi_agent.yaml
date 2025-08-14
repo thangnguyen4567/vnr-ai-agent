@@ -9,7 +9,7 @@ sub_agents:
   type: fc
   nodes:
     llm:
-      provider: google
+      provider: openai
       agent_prompt: ''
     tools:
     - type: store
@@ -48,17 +48,23 @@ sub_agents:
       tool_type: dynamic
     - type: store
       name: get_goal_personal
-      description: Lấy mục tiêu hoặc KPI của cá nhân
+      description: Lấy danh sách mục tiêu hoặc KPI chi tiết của cá nhân
       tool_path: ''
       input_params:
-      - name: ProfileName
-        description: Tên nhân viên
+      - name: AssignedToProfileId
+        description: ID nhân viên
         input_method: query
         type: string
-        default: ''
-        required: false
+        default: c895f92b-4745-49f8-99a8-8b261294e659
+        required: true
+      - name: PeriodId
+        description: Kỳ mục tiêu
+        input_method: query
+        type: string
+        default: adcb9920-0078-43fe-a02a-e78cc488b87d
+        required: true
       method: GET
-      store_name: sp_eva_get_goal_personal
+      store_name: sp_eva_get_goal_personal_detail
       tool_type: dynamic
     - type: store
       name: get_eva_evaluation_person
@@ -86,7 +92,7 @@ sub_agents:
   type: fc
   nodes:
     llm:
-      provider: google
+      provider: openai
       agent_prompt: ''
     tools:
     - type: built_in

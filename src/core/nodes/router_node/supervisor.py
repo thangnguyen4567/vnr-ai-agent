@@ -20,21 +20,21 @@ class RouterNode(BaseNode):
     def __init__(self):
         super().__init__()
         
-        # self.llm_router_agent = ChatOpenAI(
-        #     model=settings.LLM_CONFIG["router"]["model"],
-        #     temperature=settings.LLM_CONFIG["router"]["temperature"],
-        #     stream_usage=True,
-        #     api_key=settings.LLM_CONFIG["router"]["api_key"],
-        #     max_tokens=20,
-        # )
-
-        self.llm_router_agent = ChatGoogleGenerativeAI(
-            model=settings.LLM_CONFIG["google"]["model"],
-            api_key=settings.LLM_CONFIG["google"]["api_key"],
-            temperature=settings.LLM_CONFIG["google"]["temperature"],
-            max_tokens=settings.LLM_CONFIG["google"]["max_tokens"],
+        self.llm_router_agent = ChatOpenAI(
+            model=settings.LLM_CONFIG["router"]["model"],
+            temperature=settings.LLM_CONFIG["router"]["temperature"],
             stream_usage=True,
+            api_key=settings.LLM_CONFIG["router"]["api_key"],
+            max_tokens=20,
         )
+
+        # self.llm_router_agent = ChatGoogleGenerativeAI(
+        #     model=settings.LLM_CONFIG["google"]["model"],
+        #     api_key=settings.LLM_CONFIG["google"]["api_key"],
+        #     temperature=settings.LLM_CONFIG["google"]["temperature"],
+        #     max_tokens=settings.LLM_CONFIG["google"]["max_tokens"],
+        #     stream_usage=True,
+        # )
 
     async def process(
         self, state: AgentState, config: RunnableConfig

@@ -48,8 +48,19 @@ class GlobalConfig(BaseSettings):
         default_factory=lambda: load_config_from_file("settings/auth.yaml")
     )
 
+    API_TOKEN: str = Field(
+        default=""
+    )
+
+    DIFY_WORKFLOW_CONFIG: Dict[str, Any] = Field(
+        default_factory=lambda: load_config_from_file("settings/dify_workflow.yaml")
+    )
+
     def reload_multi_agent_config(self):
         self.MULTI_AGENT_CONFIG = load_config_from_file("settings/prod_multi_agent.yaml")
+    
+    def update_api_token(self, token: str):
+        self.API_TOKEN = token
     
 # Khởi tạo cấu hình toàn cục
 settings = GlobalConfig()

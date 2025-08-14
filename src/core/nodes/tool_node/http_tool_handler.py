@@ -9,7 +9,7 @@ class HttpToolHandler(BaseToolHandler):
     async def process(
             self, 
             tool_calls_info: List[Dict[str, Any]], 
-            http_tool_registry: Dict[str, Any]
+            tool_registry: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
         Process HTTP tool call
@@ -25,14 +25,16 @@ class HttpToolHandler(BaseToolHandler):
         try:
             tool_messages = []
             for tool_call_info in tool_calls_info:
+                # Lấy cấu hình tool theo tool name 
+                http_tool = tool_registry[tool_call_info.get("name")]
                 #chuẩn bị tham số cho request
-                url, method, params = self._preprare_http_request_params(
+                url, method, params = self._preprare_request_params(
                     tool_call_info,
-                    http_tool_registry[tool_call_info.get("name")]
+                    http_tool
                 )
                 #parse auth_method và auth_params
-                auth_method = http_tool_registry[tool_call_info.get("name")].get("auth_method", "bearer")
-                auth_params = http_tool_registry[tool_call_info.get("name")].get("auth_params", {})
+                auth_method = http_tool.get("auth_method", "bearer")
+                auth_params = http_tool.get("auth_params", {})
                 #gửi request và lấy kết quả
                 result = await do_async_http_request(
                     url,
@@ -42,7 +44,7 @@ class HttpToolHandler(BaseToolHandler):
                     auth_params=auth_params
                 )
 
-                output_params = http_tool_registry[tool_call_info.get("name")].get("output_params", [])
+                output_params = http_tool.get("output_params", [])
                 formatter = get_formatter(result.data)
                 #format kết quả theo output_params và đưa về dạng string
                 result_str = formatter.format(
@@ -70,7 +72,7 @@ class HttpToolHandler(BaseToolHandler):
             "messages": tool_messages if len(tool_messages) > 1 else tool_message
         }
             
-    def _preprare_http_request_params(
+    def _preprare_request_params(
         self, 
         tool_call_info: Dict[str, Any],
         http_tool: Dict[str, Any]
@@ -173,7 +175,7 @@ class HttpToolHandler(BaseToolHandler):
         body: Dict[str, Any],
     ) -> Tuple[Dict[str, Any], Dict[str, str], Dict[str, Any], Dict[str, Any]]:
         """
-        Xử lý tham số từ arguments của tool call 
+        Xử lý tham số từ arguments mà AI truyền vào tool call 
 
         Args:
             input_params: Danh sách tham số của tool
