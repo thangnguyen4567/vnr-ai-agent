@@ -92,7 +92,6 @@ class HttpToolHandler(BaseToolHandler):
         method = http_tool.get("method", "GET").upper()
 
         # Khởi tạo các tham số
-        path_params = {}
         headers = {}
         body = {}
         query_params = {}
@@ -120,9 +119,7 @@ class HttpToolHandler(BaseToolHandler):
         )
 
         params = {
-            "path_params": path_params,
             "headers": headers,
-            "body": body,
             "query_params": query_params
         }
 

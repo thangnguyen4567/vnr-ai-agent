@@ -10,13 +10,20 @@ clearlog:
 #exec container agent-api
 e:
 	docker exec -it agent-api bash
+#ignore file settings/llm.yaml
+ignore:
+	git update-index --skip-worktree settings/llm.yaml
+#unignore file settings/llm.yaml
+unignore:
+	git update-index --no-skip-worktree settings/llm.yaml
 #docker compose
 down:
 	docker-compose down
-
+#docker compose up
 up:
 	docker-compose up -d
 	
+#docker compose up --build
 up-build:
 	docker-compose up -d --build
 # Chạy test api 
