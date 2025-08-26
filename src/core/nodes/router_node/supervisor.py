@@ -135,6 +135,7 @@ class RouterNode(BaseNode):
         """
 
         from src.core.fc_agent import fc_agent_graph
+        from src.core.ui_agent import ui_agent_graph
 
         tasks = []
         next_agent = state["next"]
@@ -157,7 +158,11 @@ class RouterNode(BaseNode):
             # clone node_state cho từng agent để tránh ghi đè
             node_state = dict(state)
             node_state["agent_id"] = agent_id
-            task = fc_agent_graph.ainvoke(node_state)
+            # Check type của agent để chọn graph phù hợp
+            if state["configs"][agent_id]['type'] == 'ui':
+                task = ui_agent_graph.ainvoke(node_state)
+            else:
+                task = fc_agent_graph.ainvoke(node_state)
             tasks.append(task)
         # chờ tất cả các task hoàn thành ( các task có thể chạy song song)
         results = await asyncio.gather(*tasks)
