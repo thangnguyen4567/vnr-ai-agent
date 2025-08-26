@@ -28,15 +28,15 @@ class VectorDBManager:
         else:
             raise ValueError(f"Không hỗ trợ provider: {self.provider_type}")
     
-    def add_documents(self, documents: list[Document], collection_name):
+    def add_documents(self, documents: list[Document], index_name, index_schema=None):
         """Thêm documents vào vector database"""
-        self.provider.add_vectordb(documents, collection_name)
+        self.provider.add_vectordb(documents, index_name, index_schema)
     
-    def connect_vectordb(self, collection_name, index_schema=None):
+    def connect_vectordb(self, index_name, index_schema=None):
         """Kết nối đến vector database"""
-        return self.provider.connect_vectordb(collection_name, index_schema)
+        return self.provider.connect_vectordb(index_name, index_schema)
     
-    def get_documents(self, query: str, k: int = 2, collection_name: str = None, filter=None):
+    def get_documents(self, query: str, k: int = 2, index_name: str = None, filter=None):
         """Tìm kiếm documents tương tự với query"""
         import time
         
@@ -44,7 +44,7 @@ class VectorDBManager:
         start_time = time.time()
         
         # Thực hiện tìm kiếm
-        results = self.provider.similarity_search(query, k=k, collection_name=collection_name, filter=filter)
+        results = self.provider.similarity_search(query, k=k, index_name=index_name, filter=filter)
         
         # Kết thúc đo thời gian và tính toán
         end_time = time.time()

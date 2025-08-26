@@ -21,7 +21,7 @@ class QdrantVectorDB(VectorDB):
         )
         return vector_db
 
-    def add_vectordb(self, documents, index_name):
+    def add_vectordb(self, documents, index_name, index_schema=None):
         qdrant = QdrantVectorStore(
             client=self.client,
             collection_name=index_name,
@@ -30,11 +30,11 @@ class QdrantVectorDB(VectorDB):
         )
         qdrant.add_documents(documents)
     
-    def similarity_search(self, query, k=2, filter=None):
+    def similarity_search(self, query, k=2, filter=None, collection_name=None):
         # Tạo vector store để tìm kiếm
         vector_store = QdrantVectorStore(
             client=self.client,
-            collection_name="my_documents",  # Mặc định collection name
+            collection_name=collection_name,  # Mặc định collection name
             embedding=self.embeddings,
             retrieval_mode=RetrievalMode.DENSE,
         )

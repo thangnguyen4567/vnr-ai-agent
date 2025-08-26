@@ -1,5 +1,5 @@
-from langchain_community.vectorstores import Redis
 from src.vectordb.provider.base import VectorDB
+from langchain_redis import RedisConfig, RedisVectorStore
 
 class RedisVectorDB(VectorDB):
     def __init__(self):
@@ -8,28 +8,21 @@ class RedisVectorDB(VectorDB):
 
     def connect_vectordb(self, index_name, index_schema=None):
         """Kết nối đến Redis vector database"""
-        vector_db = Redis.from_existing_index(
-            self.embeddings,
+        config = RedisConfig(
             index_name=index_name,
             redis_url=self.redis_url,
-            schema=index_schema
+            metadata_schema=index_schema
         )
-        return vector_db
+        vector_store = RedisVectorStore(self.embeddings, config=config)
+        return vector_store
 
-    def add_vectordb(self, documents, index_name):
+    def add_vectordb(self, documents, index_name, index_schema=None):
         """Thêm documents vào Redis vector database"""
-        Redis.from_documents(
-            documents=documents,
-            embedding=self.embeddings,
-            index_name=index_name,
-            redis_url=self.redis_url
-        )
+        vector_store = self.connect_vectordb(index_name, index_schema)
+        vector_store.add_documents(documents)
     
-    def similarity_search(self, query, k=2, filter=None):
+    def similarity_search(self, query, k=2, filter=None, index_name=None):
         """Tìm kiếm các documents tương tự từ Redis vector database"""
-        # Sử dụng index mặc định nếu không được chỉ định
-        index_name = "my_documents"
-        
         # Kết nối đến database
         vector_db = self.connect_vectordb(index_name)
         
