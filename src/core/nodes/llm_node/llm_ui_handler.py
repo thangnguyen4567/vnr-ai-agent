@@ -5,7 +5,7 @@ from typing import Dict, Any
 from src.core.nodes.utils.model_utils import get_model
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from src.core.nodes.utils.message_utils import organize_messages, extract_text_content
-from src.prompt import SYSTEM_INFO_PROMPT, USER_INFO_PROMPT, HRM_UI_PROMPT, SCREEN_DESC_TEMPLATE , HRM_UI_SELECT_SCREEN_PROMPT
+from src.prompt import SYSTEM_INFO_PROMPT, HRM_UI_PROMPT, SCREEN_DESC_TEMPLATE
 from src.vectordb.vectordb import VectorDBManager
 
 class LLMUIHandler(BaseNode):
@@ -38,10 +38,11 @@ class LLMUIHandler(BaseNode):
         # Chọn màn hình phù hợp nhất để xử lý yêu cầu người dùng
         # screen_name = self.__screen_selector(state, llm_config)
 
+        context = self.aggregation_question_context(state["messages"])
         screen_desc = []
-        self.screen_schema = self.vector_db.get_documents(state["messages"][-1].content, k=10, index_name="ui_schema")
+        self.screen_schema = self.vector_db.get_documents(context, k=10, index_name="ui_schema")
         for a in self.screen_schema:
-            screen_desc.append(SCREEN_DESC_TEMPLATE.format(name=a.metadata["pageId"], description=a.page_content, schema=a))
+            screen_desc.append(SCREEN_DESC_TEMPLATE.format(pageId=a.metadata["pageId"], schema=a))
 
         sys_config["screen_schema"] = "\n".join(screen_desc)
         sys_config["current_screen"] = user_info.get("current_screen","")
@@ -71,64 +72,18 @@ class LLMUIHandler(BaseNode):
         response = llm_model.invoke(messages)
 
         return {"messages": [response]}
-    
 
-    def __screen_selector(
-        self,
-        state: AgentState,
-        config: RunnableConfig
-    ) -> Dict[str, Any]:
+
+    def aggregation_question_context(self,chat_history: list) -> str:
         """
-        Chọn màn hình phù hợp nhất để xử lý yêu cầu người dùng
-
-        Args:
-            state: Trạng thái hiện tại của agent
-            config: Cấu hình của agent
-
-        Returns:
-            Màn hình phù hợp nhất để xử lý yêu cầu người dùng
+        Hợp nhất lịch sử chat và câu hỏi thành chuỗi để tìm kiếm schema
         """
-        self.screen_schema = self.vector_db.get_documents(state["messages"][-1].content, k=10, index_name="ui_schema")
-
-        screen_desc = []
-        for a in self.screen_schema:
-            screen_desc.append(SCREEN_DESC_TEMPLATE.format(name=a.metadata["pageId"], description=a.page_content))
-
-        messages = []
-        for msg in state["messages"]:
-            if isinstance(msg, AIMessage) and msg.content:
-                messages.append(f"assistant: {msg.content}")
-            elif isinstance(msg, HumanMessage) and msg.content:
-                messages.append(f"user: {msg.content}")
-
-        screen_desc = "\n".join(screen_desc)
-        prompt = HRM_UI_SELECT_SCREEN_PROMPT.format(
-            screen_desc=screen_desc, 
-            chat_history="\n".join(messages[-4:])
-        )
-        llm_model = get_model(**config)
-        response = llm_model.invoke(prompt)
-
-        return response.content
-
-    def __format_user_info(
-        self, 
-        user_info: Dict[str, Any]
-    ) -> str:
-        """
-        Định dạng thông tin người dùng thành chuỗi
-
-        Args:
-            user_info: Thông tin người dùng
-
-        Returns:
-            Chuỗi thông tin người dùng đã được định dạng
-        """
-        if not user_info:
-            return ""
         
-        user_info_str = USER_INFO_PROMPT + "\n"
-        for key, value in user_info.items():
-            user_info_str += f"\n **{key}**: {value}\n"
+        context = ''
 
-        return user_info_str
+        if chat_history is not None:
+            for chat in chat_history[-3:]:
+                if isinstance(chat, HumanMessage):
+                    context += ' '+chat.content
+
+        return context

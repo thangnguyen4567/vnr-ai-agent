@@ -242,7 +242,12 @@ class AgentUI:
     
     def _render_tools(self, agent: Dict[str, Any], agent_idx: int):
         """Hiển thị danh sách tools của agent"""
-        for tool_idx, tool in enumerate(agent["nodes"].get("tools", [])):
+        """Hiển thị danh sách tools của agent"""
+
+        nodes = agent.get("nodes") or {}
+        tools = nodes.get("tools") or []
+
+        for tool_idx, tool in enumerate(tools):
             # Header cho tool
             st.markdown(f"""
             <div class="tool-container">

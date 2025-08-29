@@ -53,7 +53,7 @@ PREFIX_AGENT_KEY = "A"
 
 AGENT_DESC_TEMPLATE = """{agent_key}: {agent_name} - {agent_description}"""
 
-SCREEN_DESC_TEMPLATE = """{name} - {description} - {schema}"""
+SCREEN_DESC_TEMPLATE = """{pageId} - {schema}"""
 
 HRM_UI_SELECT_SCREEN_PROMPT = """
     Bạn là một "Screen Selector" — nhiệm vụ: từ danh sách các màn hình (mỗi màn hình có id và mô tả ngắn), quyết định **chính xác một** màn hình phù hợp nhất để xử lý yêu cầu người dùng.
@@ -94,6 +94,8 @@ HRM_UI_PROMPT = """
     - Dựa vào ui_state để xác định đang ở màn hình nào, nếu đang ở màn hình khác thì phải mở màn hình đó trước.
     - Trước khi phát sinh action "fill_form" cho bất kỳ field nào, **phải đảm bảo modal chứa field đó đang mở**. Nếu modal chưa mở phải click button để mở modal đó trước.
     - Nếu không thể xác định được modal hoặc screen tương ứng (ví dụ schema không có modal chứa field tên đó) => Có thể trả về text để hỏi rõ lại người dùng.
+    3. Mặc định các màn hình đều có các thao tác mặc định mà không cần khai báo trong schema:
+    - search: key:'toolbar:search', value: 'keyword' Tìm kiếm dữ liệu trên lưới
 
     Ví dụ schema của từng loại action:
 
@@ -131,5 +133,7 @@ HRM_UI_PROMPT = """
     [{{ "type": "navigate", "pageId": "page:example.criteria-type" }}]
     [{{ "type": "click_button", "key": "button:create" }}]
     [{{ "type": "fill_form", "formKey": "criteria-type-form", "values": {{ "Name": "Tên tiêu chí", "Code": "Mã tiêu chí" }} }}]
-    [{{ "type": "search", "key": "toolbar:example", "value": "keyword" }}]
+    [{{ "type": "search", "key": "toolbar:search", "value": "keyword" }}]
+
+    Nếu không tìm thấy schema phù hợp hoặc không nắm bắt được hành động mong muốn của người dùng thì phải trả về text để hỏi lại người dùng để xác định màn hình cần thao tác.
 """

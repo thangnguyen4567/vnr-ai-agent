@@ -1,0 +1,768 @@
+[
+    {
+        "pageId": "page:objEval.eva-goal",
+        "route": "/objEval/eva-goal",
+        "forms": [
+            {
+                "formKey": "goal-register-basic-form",
+                "description": "Form tạo mới mục tiêu",
+                "actions": [
+                    {
+                        "id": "button:save",
+                        "description": "Lưu"
+                    },
+                    {
+                        "id": "button:saveTemp",
+                        "description": "Lưu tạm"
+                    },
+                    {
+                        "id": "button:cancel",
+                        "description": "Hủy"
+                    }
+                ],
+                "fields": [
+                    {
+                        "id": "Name",
+                        "type": "text",
+                        "label": "Tên mục tiêu"
+                    },
+                    {
+                        "id": "Code",
+                        "type": "text",
+                        "label": "Mã mục tiêu"
+                    },
+                    {
+                        "id": "MeasurementScaleId",
+                        "type": "dropdown",
+                        "label": "Đơn vị đo lường",
+                        "options": [
+                            "VNĐ"
+                        ]
+                    },
+                    {
+                        "id": "Target",
+                        "type": "number",
+                        "label": "Mục tiêu"
+                    },
+                    {
+                        "id": "Weight",
+                        "type": "number",
+                        "label": "Trọng số"
+                    },
+                    {
+                        "id": "StartDate",
+                        "type": "date",
+                        "label": "Ngày bắt đầu"
+                    },
+                    {
+                        "id": "EndDate",
+                        "type": "date",
+                        "label": "Ngày kết thúc"
+                    }
+                ]
+            }
+        ],
+        "grids": [],
+        "toolbar": [],
+        "description": "Màn hình quản lý mục tiêu",
+        "buttons": [
+            {
+                "id": "button:create-goal",
+                "description": "Mở form tạo mới mục tiêu"
+            },
+            {
+                "id": "button:create-goal-with-ai",
+                "description": "Mở form tạo mới mục tiêu với AI"
+            },
+            {
+                "id": "button:view-department-goal",
+                "description": "Mở lưới mục tiêu của phòng ban"
+            },
+            {
+                "id": "button:view-employee-goal",
+                "description": "Mở lưới mục tiêu của nhân viên"
+            }
+        ]
+    },
+    {
+        "pageId": "page:human-resources",
+        "route": "/human-resources",
+        "forms": [],
+        "grids": [],
+        "toolbar": []
+    },
+    {
+        "pageId": "page:learning",
+        "route": "/learning",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Learning descriptions"
+    },
+    {
+        "pageId": "page:attendance",
+        "route": "/attendance",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Attendance descriptions"
+    },
+    {
+        "pageId": "page:dashboard",
+        "route": "/dashboard",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Default descriptions"
+    },
+    {
+        "pageId": "page:auth",
+        "route": "/auth",
+        "forms": [],
+        "grids": [],
+        "toolbar": []
+    },
+    {
+        "pageId": "page:public",
+        "route": "/public",
+        "forms": [],
+        "grids": [],
+        "toolbar": []
+    },
+    {
+        "pageId": "page:404",
+        "route": "/404",
+        "forms": [],
+        "grids": [],
+        "toolbar": []
+    },
+    {
+        "pageId": "page:**",
+        "route": "/**",
+        "forms": [],
+        "grids": [],
+        "toolbar": []
+    },
+    {
+        "pageId": "page:attendance.test",
+        "route": "attendance.test",
+        "actions": [
+            "navigate",
+            "fill_form",
+            "click_button",
+            "search",
+            "grid_command",
+            "read_state"
+        ],
+        "forms": [],
+        "grids": [],
+        "toolbar": []
+    },
+    {
+        "pageId": "page:example.kanban",
+        "route": "/example/kanban",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Example Kanban"
+    },
+    {
+        "pageId": "page:example.criteria-type",
+        "route": "/example/criteria-type",
+        "forms": [
+            {
+                "formKey": "criteria-type-form",
+                "description": "Form tạo mới loại tiêu chí",
+                "actions": [
+                    {
+                        "id": "button:save",
+                        "description": "Lưu"
+                    },
+                    {
+                        "id": "button:saveTemp",
+                        "description": "Lưu tạm"
+                    },
+                    {
+                        "id": "button:cancel",
+                        "description": "Hủy"
+                    }
+                ],
+                "fields": [
+                    {
+                        "id": "Name",
+                        "type": "text",
+                        "label": "Tên tiêu chí"
+                    },
+                    {
+                        "id": "Code",
+                        "type": "text",
+                        "label": "Mã tiêu chí"
+                    },
+                    {
+                        "id": "Type",
+                        "type": "dropdown",
+                        "label": "Loại tiêu chí"
+                    },
+                    {
+                        "id": "Order",
+                        "type": "number",
+                        "label": "Số thứ tự"
+                    },
+                    {
+                        "id": "Description",
+                        "type": "text",
+                        "label": "Mô tả"
+                    },
+                    {
+                        "id": "IsActive",
+                        "type": "checkbox",
+                        "label": "Trạng thái"
+                    }
+                ]
+            }
+        ],
+        "grids": [],
+        "toolbar": [],
+        "description": "Example Criteria Type",
+        "buttons": [
+            {
+                "id": "button:create-new-criteria-type",
+                "scopeId": "layout:example.criteria-type",
+                "description": "Mở form tạo mới tiêu chí"
+            },
+            {
+                "id": "button:reload",
+                "scopeId": "layout:example.criteria-type",
+                "description": "Tải lại dữ liệu"
+            }
+        ]
+    },
+    {
+        "pageId": "page:example.category",
+        "route": "/example/category",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Example Category"
+    },
+    {
+        "pageId": "page:example.category.category-sub",
+        "route": "/example/category/category-sub",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Example Sub Category 2"
+    },
+    {
+        "pageId": "page:example.grid",
+        "route": "/example/grid",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Example Grid"
+    },
+    {
+        "pageId": "page:example.grid.edit-inline",
+        "route": "/example/grid/edit-inline",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Example Grid Edit Inline"
+    },
+    {
+        "pageId": "page:example.grid.edit-incell",
+        "route": "/example/grid/edit-incell",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Example Grid Edit Incell"
+    },
+    {
+        "pageId": "page:objEval.eva-goal",
+        "route": "/objEval/eva-goal",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Màn hình giao mục tiêu đánh giá hiệu suất"
+    },
+    {
+        "pageId": "page:objEval.eva-goal.progress",
+        "route": "/objEval/eva-goal/progress",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Màn hình theo dõi tiến độ thực hiện mục tiêu"
+    },
+    {
+        "pageId": "page:objEval.eva-goal.result",
+        "route": "/objEval/eva-goal/result",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Màn hình xem kết quả đánh giá mục tiêu"
+    },
+    {
+        "pageId": "page:objEval.eva-appraisals.performance-appraisals.list",
+        "route": "/objEval/eva-appraisals/performance-appraisals/list",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Danh sách các đợt đánh giá hiệu suất"
+    },
+    {
+        "pageId": "page:objEval.eva-appraisals.conduct-assessment.list",
+        "route": "/objEval/eva-appraisals/conduct-assessment/list",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Danh sách đánh giá hiệu suất nhân viên"
+    },
+    {
+        "pageId": "page:objEval.eva-appraisals.rank.list",
+        "route": "/objEval/eva-appraisals/rank/list",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Danh sách xếp hạng đánh giá nhân viên"
+    },
+    {
+        "pageId": "page:objEval.eva-appraisals.proposal.list",
+        "route": "/objEval/eva-appraisals/proposal/list",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Danh sách đề xuất sau đánh giá hiệu suất"
+    },
+    {
+        "pageId": "page:objEval.report",
+        "route": "/objEval/report",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Báo cáo tổng hợp đánh giá hiệu suất"
+    },
+    {
+        "pageId": "page:objEval.setting.goal-template",
+        "route": "/objEval/setting/goal-template",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Cài đặt kho mẫu mục tiêu đánh giá"
+    },
+    {
+        "pageId": "page:objEval.setting.goal-cycle",
+        "route": "/objEval/setting/goal-cycle",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Cài đặt chu kỳ đánh giá mục tiêu"
+    },
+    {
+        "pageId": "page:objEval.setting.criteria",
+        "route": "/objEval/setting/criteria",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Cài đặt kho tiêu chí đánh giá hiệu suất"
+    },
+    {
+        "pageId": "page:objEval.setting.competency",
+        "route": "/objEval/setting/competency",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Cài đặt kho năng lực đánh giá nhân viên"
+    },
+    {
+        "pageId": "page:objEval.setting.eva-template.list",
+        "route": "/objEval/setting/eva-template/list",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Danh sách mẫu biểu đánh giá hiệu suất"
+    },
+    {
+        "pageId": "page:objEval.setting.measurement-unit",
+        "route": "/objEval/setting/measurement-unit",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Cài đặt đơn vị đo lường cho mục tiêu"
+    },
+    {
+        "pageId": "page:objEval.setting.assessment-method",
+        "route": "/objEval/setting/assessment-method",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Cài đặt phương pháp quản trị và đánh giá mục tiêu"
+    },
+    {
+        "pageId": "page:objEval.setting.category",
+        "route": "/objEval/setting/category",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Cài đặt danh mục phân loại đánh giá"
+    },
+    {
+        "pageId": "page:objEval.setting.customize",
+        "route": "/objEval/setting/customize",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Tùy chỉnh giao diện và quy trình đánh giá"
+    },
+    {
+        "pageId": "page:objEval.setting.connect",
+        "route": "/objEval/setting/connect",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Cài đặt kết nối với các hệ thống khác"
+    },
+    {
+        "pageId": "page:objEval.setting.rank",
+        "route": "/objEval/setting/rank",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Cài đặt thang xếp hạng đánh giá nhân viên"
+    },
+    {
+        "pageId": "page:objEval.setting.evaluation-type",
+        "route": "/objEval/setting/evaluation-type",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Cài đặt các loại hình đánh giá hiệu suất"
+    },
+    {
+        "pageId": "page:objEval.setting.score",
+        "route": "/objEval/setting/score",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Cài đặt thang điểm đánh giá hiệu suất"
+    },
+    {
+        "pageId": "page:human-resources.dashboard",
+        "route": "/human-resources/dashboard",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Trang tổng quan quản lý nhân sự"
+    },
+    {
+        "pageId": "page:human-resources.onboarding.list",
+        "route": "/human-resources/onboarding/list",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Danh sách nhân viên đang trong quá trình hội nhập"
+    },
+    {
+        "pageId": "page:human-resources.list-employee",
+        "route": "/human-resources/list-employee",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Danh sách hồ sơ nhân viên"
+    },
+    {
+        "pageId": "page:human-resources.contract.list",
+        "route": "/human-resources/contract/list",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Danh sách hợp đồng và phụ lục hợp đồng"
+    },
+    {
+        "pageId": "page:human-resources.work-history",
+        "route": "/human-resources/work-history",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Tổng quan quá trình làm việc của nhân viên"
+    },
+    {
+        "pageId": "page:human-resources.work-history.appointment",
+        "route": "/human-resources/work-history/appointment",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý quá trình bổ nhiệm nhân viên"
+    },
+    {
+        "pageId": "page:human-resources.work-history.transfer",
+        "route": "/human-resources/work-history/transfer",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý quá trình thuyên chuyển nhân viên"
+    },
+    {
+        "pageId": "page:human-resources.work-history.concurrent",
+        "route": "/human-resources/work-history/concurrent",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý quá trình kiêm nhiệm của nhân viên"
+    },
+    {
+        "pageId": "page:human-resources.work-history.change-salary",
+        "route": "/human-resources/work-history/change-salary",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý lịch sử thay đổi lương của nhân viên"
+    },
+    {
+        "pageId": "page:human-resources.offboarding",
+        "route": "/human-resources/offboarding",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Tổng quan quản lý quy trình nghỉ việc"
+    },
+    {
+        "pageId": "page:human-resources.offboarding.list",
+        "route": "/human-resources/offboarding/list",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Danh sách nhân viên đang trong quá trình nghỉ việc"
+    },
+    {
+        "pageId": "page:human-resources.offboarding.resignation-letter",
+        "route": "/human-resources/offboarding/resignation-letter",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý đơn xin nghỉ việc của nhân viên"
+    },
+    {
+        "pageId": "page:human-resources.offboarding.offboarding-task",
+        "route": "/human-resources/offboarding/offboarding-task",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý các công việc cần thực hiện khi nhân viên nghỉ việc"
+    },
+    {
+        "pageId": "page:human-resources.establishment",
+        "route": "/human-resources/establishment",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý định biên nhân sự trong tổ chức"
+    },
+    {
+        "pageId": "page:human-resources.structure",
+        "route": "/human-resources/structure",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Tổng quan cơ cấu tổ chức doanh nghiệp"
+    },
+    {
+        "pageId": "page:human-resources.structure.department",
+        "route": "/human-resources/structure/department",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý cơ cấu phòng ban trong tổ chức"
+    },
+    {
+        "pageId": "page:human-resources.structure.employee",
+        "route": "/human-resources/structure/employee",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý cơ cấu nhân viên trong tổ chức"
+    },
+    {
+        "pageId": "page:human-resources.structure.position",
+        "route": "/human-resources/structure/position",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý cơ cấu vị trí công việc trong tổ chức"
+    },
+    {
+        "pageId": "page:human-resources.report",
+        "route": "/human-resources/report",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Báo cáo tổng hợp về nhân sự"
+    },
+    {
+        "pageId": "page:human-resources.category",
+        "route": "/human-resources/category",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Tổng quan các danh mục trong quản lý nhân sự"
+    },
+    {
+        "pageId": "page:human-resources.category.contract-type",
+        "route": "/human-resources/category/contract-type",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý danh mục loại hợp đồng lao động"
+    },
+    {
+        "pageId": "page:human-resources.category.department-type",
+        "route": "/human-resources/category/department-type",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý danh mục loại phòng ban trong tổ chức"
+    },
+    {
+        "pageId": "page:human-resources.category.cat-job-title",
+        "route": "/human-resources/category/cat-job-title",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý danh mục chức danh trong tổ chức"
+    },
+    {
+        "pageId": "page:human-resources.category.cat-position",
+        "route": "/human-resources/category/cat-position",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý danh mục vị trí công việc trong tổ chức"
+    },
+    {
+        "pageId": "page:human-resources.category.cat-orgstructure",
+        "route": "/human-resources/category/cat-orgstructure",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý danh mục cơ cấu phòng ban trong tổ chức"
+    },
+    {
+        "pageId": "page:human-resources.category.work-change-type",
+        "route": "/human-resources/category/work-change-type",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý danh mục hình thức thay đổi công việc"
+    },
+    {
+        "pageId": "page:human-resources.category.geographic-info",
+        "route": "/human-resources/category/geographic-info",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý danh mục thông tin địa lý (tỉnh/thành, quận/huyện)"
+    },
+    {
+        "pageId": "page:human-resources.category.cat-work-history",
+        "route": "/human-resources/category/cat-work-history",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Quản lý danh mục quá trình làm việc của nhân viên"
+    },
+    {
+        "pageId": "page:human-resources.settings.employee-tasks.list",
+        "route": "/human-resources/settings/employee-tasks/list",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Danh sách công việc cần thực hiện cho nhân viên"
+    },
+    {
+        "pageId": "page:human-resources.settings.customize",
+        "route": "/human-resources/settings/customize",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Tùy chỉnh giao diện và quy trình quản lý nhân sự"
+    },
+    {
+        "pageId": "page:human-resources.settings.connect",
+        "route": "/human-resources/settings/connect",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Cài đặt kết nối hệ thống nhân sự với các hệ thống khác"
+    },
+    {
+        "pageId": "page:attendance.dashboard",
+        "route": "/attendance/dashboard",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Trang tổng quan quản lý chấm công và điểm danh"
+    },
+    {
+        "pageId": "page:recruitment.dashboard",
+        "route": "/recruitment/dashboard",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Trang tổng quan quản lý tuyển dụng"
+    },
+    {
+        "pageId": "page:recruitment",
+        "route": "/recruitment",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Tổng quan hệ thống quản lý tuyển dụng nhân sự"
+    },
+    {
+        "pageId": "page:succession.dashboard",
+        "route": "/succession/dashboard",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Trang tổng quan quản lý kế hoạch kế nhiệm"
+    },
+    {
+        "pageId": "page:succession",
+        "route": "/succession",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Tổng quan hệ thống quản lý kế hoạch kế nhiệm"
+    },
+    {
+        "pageId": "page:insurance.dashboard",
+        "route": "/insurance/dashboard",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Trang tổng quan quản lý bảo hiểm nhân viên"
+    },
+    {
+        "pageId": "page:insurance",
+        "route": "/insurance",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Tổng quan hệ thống quản lý bảo hiểm nhân viên"
+    },
+    {
+        "pageId": "page:salary.dashboard",
+        "route": "/salary/dashboard",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Trang tổng quan quản lý lương và phúc lợi"
+    },
+    {
+        "pageId": "page:salary",
+        "route": "/salary",
+        "forms": [],
+        "grids": [],
+        "toolbar": [],
+        "description": "Tổng quan hệ thống quản lý lương và phúc lợi nhân viên"
+    }
+]
