@@ -7,12 +7,6 @@ from .routers.generate import router as generate_router
 from langfuse import Langfuse
 from src.config import settings
 from src.vectordb.vectordb import VectorDBManager
-from .routers.test_api.attendance import router as attendance_router
-from .routers.test_api.human_resources import router as human_resources_router
-from .routers.test_api.recruit import router as recruit_router
-from .routers.test_api.salary import router as salary_router
-from .routers.test_api.training import router as training_router
-from .routers.test_api.goal import router as goal_router
 import os
 # Cấu hình logging
 
@@ -64,10 +58,3 @@ app.add_middleware(
 app.include_router(chat_router)
 app.include_router(generate_router)
 app.include_router(health_router)
-# Test api
-app.include_router(attendance_router)
-app.include_router(human_resources_router)
-app.include_router(recruit_router)
-app.include_router(salary_router)
-app.include_router(training_router)
-app.include_router(goal_router)
