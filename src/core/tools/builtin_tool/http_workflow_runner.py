@@ -5,7 +5,8 @@ import httpx
 import time
 import logging
 from src.config import settings
-from src.core.tools.builtin_tool.http_request_runner import is_token_valid, get_new_token
+from src.core.tools.builtin_tool.http_request_runner import apply_authentication
+import copy
 
 # Cấu hình logger
 logger = logging.getLogger(__name__)
@@ -13,6 +14,8 @@ logger = logging.getLogger(__name__)
 async def do_async_http_workflow_request(
     url: str,
     query_params: Optional[Dict[str, Any]] = None,
+    auth_method: Optional[str] = 'bearer',
+    auth_params: Optional[Dict[str, Any]] = {},
     timeout: Optional[int] = None,
     headers: Optional[Dict[str, Any]] = None,
 ) -> APIResponse:
@@ -20,9 +23,9 @@ async def do_async_http_workflow_request(
     Thực hiện HTTP request
     """
     # Kiểm tra token hợp lệ
-    if not is_token_valid(settings.API_TOKEN):
-        settings.API_TOKEN = await get_new_token()
-        settings.update_api_token(settings.API_TOKEN)
+    safe_headers = copy.deepcopy(headers)
+    if auth_method:
+        await apply_authentication(safe_headers, auth_method, auth_params)
 
     query_params["inputs"]["token"] = settings.API_TOKEN
 

@@ -180,10 +180,6 @@ async def apply_authentication(
     Returns:
         Dict[str, Any]: Headers đã được cập nhật với thông tin xác thực
     """
-    auth_method = settings.MULTI_AGENT_CONFIG['auth']['method']
-    auth_params = {
-        "token": settings.MULTI_AGENT_CONFIG['auth']['token'] if auth_method == "bearer" else settings.API_TOKEN
-    }   
 
     headers = headers or {}
     
@@ -208,7 +204,7 @@ async def apply_authentication(
         if is_token_valid(auth_params['token']):
             headers["Authorization"] = f"Bearer {auth_params['token']}"
         else:
-            auth_params['token'] = await get_new_token()
+            auth_params['token'] = await get_new_token(auth_params)
             settings.update_api_token(auth_params['token'])
             headers["Authorization"] = f"Bearer {auth_params['token']}"
    
@@ -232,19 +228,19 @@ def is_token_valid(token: str) -> bool:
         print(e)
         return False
 
-async def get_new_token() -> str:
-    auth_header = requests.auth._basic_auth_str(settings.AUTH_CONFIG['client_id'], settings.AUTH_CONFIG['client_secret'])
+async def get_new_token(auth_params: Dict[str, Any]) -> str:
+    auth_header = requests.auth._basic_auth_str(auth_params['client_id'], auth_params['client_secret'])
     headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "Authorization": auth_header
     }
     data = {
         "grant_type": "password",
-        "username": settings.AUTH_CONFIG['username'],
-        "password": settings.AUTH_CONFIG['password']
+        "username": auth_params['username'],
+        "password": auth_params['password']
     }
     try:
-        response = requests.post(settings.AUTH_CONFIG['token_url'], headers=headers, data=data, verify=False)
+        response = requests.post(auth_params['token_url'], headers=headers, data=data, verify=False)
         response.raise_for_status()
         logger.info(f"Lấy token mới thành công")
         return response.json()['access_token']

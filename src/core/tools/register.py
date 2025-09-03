@@ -176,6 +176,17 @@ class ToolInitializer:
         http_tool_registry = {}
         store_tool_registry = {}
         workflow_tool_registry = {}
+        # Khởi tạo các thông số xác thực
+        auth_method = settings.MULTI_AGENT_CONFIG["settings"]["auth_method"]
+        auth_params = {
+                        "token": settings.API_TOKEN if settings.API_TOKEN else settings.MULTI_AGENT_CONFIG["settings"].get("token", ""),
+                        "url_endpoint": settings.MULTI_AGENT_CONFIG["settings"].get("url_endpoint", ""),
+                        "username": settings.MULTI_AGENT_CONFIG["settings"].get("username", ""),
+                        "password": settings.MULTI_AGENT_CONFIG["settings"].get("password", ""),
+                        "token_url": settings.MULTI_AGENT_CONFIG["settings"].get("token_url", ""),
+                        "client_id": settings.MULTI_AGENT_CONFIG["settings"].get("client_id", ""),
+                        "client_secret": settings.MULTI_AGENT_CONFIG["settings"].get("client_secret", ""),
+                    }
 
         if raw_tools:
             for tool in raw_tools:
@@ -190,16 +201,13 @@ class ToolInitializer:
                     tool_schema = self.convert_http_tool_to_schema(tool,llm_provider)
                     tools.append(tool_schema)
                     http_tool_registry[tool["name"]] = {
-                        "url": settings.MULTI_AGENT_CONFIG["auth"]["url_endpoint"] + tool["tool_path"],
+                        "url": settings.MULTI_AGENT_CONFIG["settings"]["url_endpoint"] + tool["tool_path"],
                         "method": tool.get("method", "GET"),
                         "provider": tool.get("provider"),
                         "input_params": tool.get("input_params",[]),
                         "output_params": tool.get("output_params",[]),
-                        "auth_method": settings.MULTI_AGENT_CONFIG["auth"]["method"],
-                        "auth_params": {
-                            "token": settings.MULTI_AGENT_CONFIG["auth"]["token"],
-                            "url_endpoint": settings.MULTI_AGENT_CONFIG["auth"]["url_endpoint"]
-                        }
+                        "auth_method": auth_method,
+                        "auth_params": auth_params,
                     }
 
                 # Chuyển đổi tool workflow thành schema ( là tool để gọi workflow )
@@ -207,12 +215,14 @@ class ToolInitializer:
                     tool_schema = self.convert_http_tool_to_schema(tool,llm_provider)
                     tools.append(tool_schema)
                     workflow_tool_registry[tool["name"]] = {
-                        "url": settings.DIFY_WORKFLOW_CONFIG["url"],
+                        "url": settings.MULTI_AGENT_CONFIG["settings"]["workflow_url"],
                         "method": "POST",
                         "provider": tool.get("provider"),
                         "token_workflow": tool.get("token_workflow", ""),
                         "input_params": tool.get("input_params",[]),
                         "output_params": tool.get("output_params",[]),
+                        "auth_params": auth_params,
+                        "auth_method": auth_method,
                     }
 
                 # Chuyển đổi tool dynamic store thành schema ( là tool để lấy dữ liệu từ store )
@@ -221,22 +231,19 @@ class ToolInitializer:
                     tools.append(tool_schema)
                     # Kiểm tra loại store là dynamic hay standard thì sẽ có url khác nhau
                     if tool.get("tool_type") == "dynamic":
-                        store_url = settings.MULTI_AGENT_CONFIG["auth"]["url_endpoint"] + 'proxy/shared/api/v1/Dynamic/GetDataSourceByDynamicStore'
+                        store_url = settings.MULTI_AGENT_CONFIG["settings"]["url_endpoint"] + 'proxy/shared/api/v1/Dynamic/GetDataSourceByDynamicStore'
                     elif tool.get("tool_type") == "standard":
-                        store_url = settings.MULTI_AGENT_CONFIG["auth"]["url_endpoint"] + 'proxy/shared/api/v1/Dynamic/GetDataSourceByStandardStore'
+                        store_url = settings.MULTI_AGENT_CONFIG["settings"]["url_endpoint"] + 'proxy/shared/api/v1/Dynamic/GetDataSourceByStandardStore'
 
                     store_tool_registry[tool["name"]] = {
                         "url": store_url,
                         "method": "POST",
                         "provider": tool.get("provider"),
-                        "auth_method": settings.MULTI_AGENT_CONFIG["auth"]["method"],
                         "input_params": tool.get("input_params",[]),
                         "output_params": tool.get("output_params",[]),
                         "store_name": tool.get("store_name", ""),   
-                        "auth_params": {
-                            "token": settings.MULTI_AGENT_CONFIG["auth"]["token"],
-                            "url_endpoint": settings.MULTI_AGENT_CONFIG["auth"]["url_endpoint"]
-                        }
+                        "auth_method": auth_method,
+                        "auth_params": auth_params,
                     }
                 else:
                     raise ValueError(f"Tool type {tool['type']} is not supported")

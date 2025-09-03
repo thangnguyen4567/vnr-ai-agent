@@ -52,3 +52,7 @@ class VectorDBManager:
         print(f"Thời gian tìm kiếm: {execution_time:.4f} giây")
         
         return results
+
+    def delete_index(self, index_name):
+        """Xóa index trong vector database"""
+        self.provider.delete_index(index_name)

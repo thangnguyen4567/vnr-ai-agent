@@ -36,11 +36,14 @@ class WorkflowToolHandler(BaseToolHandler):
                     "Content-Type": "application/json",
                     "Authorization": "Bearer " + workflow_tool.get("token_workflow", "")
                 }
+
                 #gửi request và lấy kết quả
                 result = await do_async_http_workflow_request(
                     url=workflow_tool.get("url", ""),
                     query_params=params,
                     headers=headers,
+                    auth_method=workflow_tool.get("auth_method", "oauth2"),
+                    auth_params=workflow_tool.get("auth_params", {})
                 )
 
                 output_params = workflow_tool.get("output_params", [])

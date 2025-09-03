@@ -6,6 +6,7 @@ from typing import Dict, Any
 from src.core.tools.builtin_tool import built_in_tools_name
 from src.config import settings
 from src.core.config_loader import agent_config_loader
+from src.utils.save_schema import save_schema
 
 class ConfigManager:
     """Lớp quản lý cấu hình"""
@@ -34,8 +35,8 @@ class ConfigManager:
             "name": "Multi Agent",
             "type": "multi",
             "sub_agents": [],
-            "auth": {
-                "method": "",
+            "settings": {
+                "auth_method": "oauth2",
                 "token": "",
                 "url_endpoint": "http://localhost:8000/"
             }
@@ -164,13 +165,26 @@ class AgentUI:
             st.rerun()
 
         # Nhập url endpoint
-        with st.expander(f"🔑 Xác thực", expanded=False):
-            self.url_endpoint = st.text_input("URL Endpoint", value=self.config_manager.get_config()["auth"]["url_endpoint"])
-            auth_method = self.config_manager.get_config()["auth"]["method"]
-            auth_method_options = ["bearer", "basic", "api_key", "oauth2"]
+        with st.expander(f"🔑 Cấu hình thực thi", expanded=False):
+            self.url_endpoint = st.text_input("URL Endpoint", value=self.config_manager.get_config().get("settings", {}).get("url_endpoint", ""))
+            self.workflow_url = st.text_input("Workflow URL", value=self.config_manager.get_config().get("settings", {}).get("workflow_url", ""))
+            auth_method = self.config_manager.get_config().get("settings", {}).get("auth_method", "oauth2")
+            auth_method_options = ["bearer", "basic", "oauth2"]
             default_index = auth_method_options.index(auth_method) if auth_method in auth_method_options else 0
             self.authentication_method = st.selectbox("Phương thức xác thực", options=auth_method_options, index=default_index)
-            self.token = st.text_input("Token", value=self.config_manager.get_config()["auth"]["token"])
+
+            if self.authentication_method == "oauth2":
+                self.token_url = st.text_input("Token URL", value=self.config_manager.get_config().get("settings", {}).get("token_url", ""))
+                self.client_id = st.text_input("Client ID", value=self.config_manager.get_config().get("settings", {}).get("client_id", ""))
+                self.client_secret = st.text_input("Client Secret", value=self.config_manager.get_config().get("settings", {}).get("client_secret", ""))
+                self.username = st.text_input("Username", value=self.config_manager.get_config().get("settings", {}).get("username", ""))
+                self.password = st.text_input("Password", value=self.config_manager.get_config().get("settings", {}).get("password", ""))
+            elif self.authentication_method == "bearer":
+                self.token = st.text_input("Token", value=self.config_manager.get_config().get("settings", {}).get("token", ""))
+            elif self.authentication_method == "basic":
+                self.username = st.text_input("Username", value=self.config_manager.get_config().get("settings", {}).get("username", ""))
+                self.password = st.text_input("Password", value=self.config_manager.get_config().get("settings", {}).get("password", ""))
+
         
         # Hiển thị danh sách agents
         self._render_agent_list()
@@ -180,9 +194,20 @@ class AgentUI:
         # Nút lưu cấu hình
         col1, col2 = st.columns(2)
         if col1.button("💾 Lưu vào YAML", help=f"Lưu cấu hình vào file {self.config_manager.config_path}"):
-            st.session_state.agent_config["auth"]["token"] = self.token
-            st.session_state.agent_config["auth"]["url_endpoint"] = self.url_endpoint
-            st.session_state.agent_config["auth"]["method"] = self.authentication_method
+            st.session_state.agent_config["settings"]["url_endpoint"] = self.url_endpoint
+            st.session_state.agent_config["settings"]["auth_method"] = self.authentication_method
+            st.session_state.agent_config["settings"]["workflow_url"] = self.workflow_url  
+            if self.authentication_method == "oauth2":  
+                st.session_state.agent_config["settings"]["token_url"] = self.token_url
+                st.session_state.agent_config["settings"]["client_id"] = self.client_id
+                st.session_state.agent_config["settings"]["client_secret"] = self.client_secret
+                st.session_state.agent_config["settings"]["username"] = self.username
+                st.session_state.agent_config["settings"]["password"] = self.password
+            if self.authentication_method == "bearer":
+                st.session_state.agent_config["settings"]["token"] = self.token
+            if self.authentication_method == "basic":
+                st.session_state.agent_config["settings"]["username"] = self.username
+                st.session_state.agent_config["settings"]["password"] = self.password
             save_success = self.config_manager.save_config()
             if save_success:
                 st.success(f"Đã lưu cấu hình vào file {self.config_manager.config_path}")
@@ -204,9 +229,6 @@ class AgentUI:
                     # Cập nhật tên và mô tả
                     new_name = col1.text_input("Tên agent", value=agent.get("name", ""), key=f"name_{idx}")
                     agent["name"] = new_name
-                    
-                    agent["type"] = 'fc'
-                    
                     # Đảm bảo cấu trúc nodes
                     self._ensure_agent_structure(agent)
                     
@@ -214,14 +236,32 @@ class AgentUI:
                     new_description = col2.text_input("Mô tả agent", value=agent.get("description", ""), key=f"desc_{idx}")
                     agent["description"] = new_description
                     
-                    # Hiển thị tools
-                    st.markdown("### Tools")
-                    self._render_tools(agent, idx)
-                    
-                    # Nút thêm tool
-                    if st.button("➕ Thêm Tool", key=f"add_tool_{idx}"):
-                        self.config_manager.create_tool(idx)
-                        st.rerun()
+      
+                    # Xử lý riêng cho agent type ui nhập schema
+                    if agent['type'] == 'ui':
+                        try:
+                            with open('settings/ui_schema.json', 'r') as file:
+                                lines = file.readlines()
+                                logs = ''.join(lines) if lines else ""
+                        except Exception as e:
+                            logs = f"Lỗi khi đọc file schema: {str(e)}"
+                        schema_text = st.text_area('Schema', logs, height=700)
+                        if st.button("Lưu Schema", key=f"save_schema_{idx}"):
+                            with open('settings/ui_schema.json', 'w') as file:
+                                file.write(schema_text)
+                            save_schema()
+                            st.success("Đã lưu schema")
+
+                    else:
+                        # Hiển thị tools cho các agent type khác
+                        st.markdown("### Tools")
+                        self._render_tools(agent, idx)
+                        
+                        # Nút thêm tool
+                        if st.button("➕ Thêm Tool", key=f"add_tool_{idx}"):
+                            self.config_manager.create_tool(idx)
+                            st.rerun()
+
                     
                     # Nút xóa agent
                     if st.button("❌ Xóa Sub-agent", key=f"del_agent_{idx}"):

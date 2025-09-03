@@ -1,5 +1,6 @@
 from src.vectordb.provider.base import VectorDB
 from langchain_redis import RedisConfig, RedisVectorStore
+from redis import Redis
 
 class RedisVectorDB(VectorDB):
     def __init__(self):
@@ -39,3 +40,10 @@ class RedisVectorDB(VectorDB):
         )
         
         return results
+
+    def delete_index(self, index_name):
+        """Xóa index trong Redis vector database"""
+        r = Redis(host=self.host, port=self.port, decode_responses=True)
+        # Xóa index + tất cả key/doc trong đó
+        r.ft(index_name).dropindex(delete_documents=True)
+    

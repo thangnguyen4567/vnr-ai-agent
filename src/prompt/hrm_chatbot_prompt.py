@@ -81,7 +81,7 @@ HRM_UI_PROMPT = """
     Luôn phải dựa vào (bắt buộc):
     1. screen_schema: định nghĩa tất cả màn hình, popup (modal), form và field. 
     {screen_schema}
-    2. current_screen: Là màn hình hiện tại của người dùng.
+    2. current_screen: {current_screen} Là màn hình hiện tại của người dùng.
     QUY TẮC NGHIÊM NGẶT (bắt buộc tuân thủ):
     - Output bắt buộc là **một mảng JSON (JSON array)** gồm các action theo thứ tự thực thi. KHÔNG kèm giải thích hay văn bản nào khác ngoài mảng JSON.
     - Các action hợp lệ: 
