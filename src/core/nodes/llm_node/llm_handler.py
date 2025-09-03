@@ -9,7 +9,7 @@ from src.prompt import HRM_CHATBOT_PROMPT, SYSTEM_INFO_PROMPT, USER_INFO_PROMPT
 
 class LLMHandler(BaseNode):
 
-    async def process(
+    def process(
         self, 
         state: AgentState, 
         config: RunnableConfig

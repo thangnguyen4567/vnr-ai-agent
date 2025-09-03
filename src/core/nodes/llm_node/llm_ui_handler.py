@@ -13,7 +13,7 @@ class LLMUIHandler(BaseNode):
         self.vector_db = VectorDBManager()
         self.screen_schema = {}
 
-    async def process(
+    def process(
         self, 
         state: AgentState, 
         config: RunnableConfig
