@@ -20,7 +20,7 @@ def get_hdsd(search: str, config: RunnableConfig = None) -> str:
     try:
         vector_db = VectorDBManager()
 
-        documents = vector_db.get_documents(search, k=8, index_name='system', index_schema=index_schema)
+        documents = vector_db.get_documents(search, k=8, index_name='system')
         
         result = ''
         for doc in documents:

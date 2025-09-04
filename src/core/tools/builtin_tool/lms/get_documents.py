@@ -23,7 +23,7 @@ def get_documents(search: str, config: RunnableConfig = None) -> str:
 
         vector_db = VectorDBManager()
 
-        documents = vector_db.get_documents(search, k=8, index_name=collection, index_schema=index_schema)
+        documents = vector_db.get_documents(search, k=8, index_name=collection)
 
         result = ''
         for doc in documents:

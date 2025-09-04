@@ -45,5 +45,9 @@ class RedisVectorDB(VectorDB):
         """Xóa index trong Redis vector database"""
         r = Redis(host=self.host, port=self.port, decode_responses=True)
         # Xóa index + tất cả key/doc trong đó
-        r.ft(index_name).dropindex(delete_documents=True)
+        try:
+            r.ft(index_name).dropindex(delete_documents=True)
+            print(f"✅ Đã xóa thành công index: {index_name}")
+        except Exception as e:
+            print(f"❌ Lỗi khi xóa index {index_name}: {e}")
     
