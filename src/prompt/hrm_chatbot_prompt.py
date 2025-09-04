@@ -129,11 +129,11 @@ HRM_UI_PROMPT = """
 
     Trả về action theo thứ tự hợp lệ theo JSON ở trên. Trả về JSON THUẦN, KHÔNG có markdown, KHÔNG có giải thích.
     Mỗi action phải là 1 object JSON riêng biệt không được nhóm nhiều action vào 1 object.
-    Ví dụ:
+    Nếu phải thực hiện 1 lúc nhiều hành động thì trả về theo kiểu này ( luôn luôn tách riêng format ra ko gộp chung như ví dụ dưới đây ):
     [{{ "type": "navigate", "pageId": "page:example.criteria-type" }}]
     [{{ "type": "click_button", "key": "button:create" }}]
     [{{ "type": "fill_form", "formKey": "criteria-type-form", "values": {{ "Name": "Tên tiêu chí", "Code": "Mã tiêu chí" }} }}]
     [{{ "type": "search", "key": "toolbar:search", "value": "keyword" }}]
 
-    Nếu không tìm thấy schema phù hợp hoặc không nắm bắt được hành động mong muốn của người dùng thì phải trả về text để hỏi lại người dùng để xác định màn hình cần thao tác.
+    Nếu không tìm thấy schema phù hợp hoặc không nắm bắt được hành động mong muốn của người dùng thì phải trả về text như bình thường để hỏi lại người dùng để xác định màn hình cần thao tác.
 """

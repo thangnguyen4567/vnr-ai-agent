@@ -19,7 +19,9 @@ def get_courses(search: str, config: RunnableConfig = None) -> str:
         ]
     }
     try:
-        documents = VectorDBManager().connect_vectordb(collection_name=collection,index_schema=index_schema).similarity_search(search,k=6)
+        vector_db = VectorDBManager()
+
+        documents = vector_db.get_documents(search, k=6, index_name=collection, index_schema=index_schema)
 
         result = ''
         for doc in documents:

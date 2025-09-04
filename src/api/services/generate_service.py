@@ -11,7 +11,7 @@ from langfuse.langchain import CallbackHandler
 class GenerateService:
     def __init__(self):
         self.model = ChatOpenAI(
-            model="gpt-4.1",
+            model="gpt-4.1-mini",
             temperature=settings.LLM_CONFIG["openai"]["temperature"],
             api_key=settings.LLM_CONFIG["openai"]["api_key"],
             max_tokens=2000,

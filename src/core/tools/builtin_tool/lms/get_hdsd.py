@@ -18,7 +18,10 @@ def get_hdsd(search: str, config: RunnableConfig = None) -> str:
     }
 
     try:
-        documents = VectorDBManager().connect_vectordb(collection_name='system',index_schema=index_schema).similarity_search(search,k=8)
+        vector_db = VectorDBManager()
+
+        documents = vector_db.get_documents(search, k=8, index_name='system', index_schema=index_schema)
+        
         result = ''
         for doc in documents:
             result += re.sub(r"[{}]", "", doc.page_content)
