@@ -3,12 +3,23 @@ from typing import Dict
 import time
 import psutil
 import platform
+from src.core.config_loader import AgentConfigLoader
+from src.config import settings
 
 # Tạo router
 router = APIRouter(
     tags=["Health"],
     responses={404: {"description": "Not found"}},
 )
+
+@router.get("/update-config")
+def update_config():
+    """
+    Reload cấu hình agent
+    """
+    settings.reload_multi_agent_config()
+    AgentConfigLoader()._load_config()  # reload ngay trong process FastAPI
+    return {"status": "ok"}
 
 
 @router.get("/", status_code=status.HTTP_200_OK)

@@ -7,7 +7,7 @@ import yaml
 
 from src.config import settings
 from src.core.config_loader import agent_config_loader
-
+import requests
 
 class ConfigManager:
     """Lớp quản lý cấu hình"""
@@ -56,7 +56,7 @@ class ConfigManager:
                 )
 
             settings.reload_multi_agent_config()
-            agent_config_loader._load_config()
+            requests.get("http://agent-api:8000/update-config")
             return True
         except Exception as e:
             st.error(f"Lỗi khi lưu cấu hình: {str(e)}")

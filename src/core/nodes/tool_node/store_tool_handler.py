@@ -106,11 +106,14 @@ class StoreToolHandler(BaseToolHandler):
             args,
             query_params,
         )
-
+        # Lấy page và pageSize từ query_params
+        page = query_params.get("page", 1)
+        pageSize = query_params.get("pageSize", 5)
+    
         params = {
             "DataFormSearch": query_params,
             "StoreName": store_tool.get("store_name", ""),
-            "dataSourceRequestString": "page=1&pageSize=5"
+            "dataSourceRequestString": f"page={page}&pageSize={pageSize}"
         }
 
         return params
@@ -168,7 +171,3 @@ class StoreToolHandler(BaseToolHandler):
                 query_params[param_name] = param_value
 
         return query_params
-            
-            
-        
-    

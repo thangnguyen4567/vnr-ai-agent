@@ -187,6 +187,21 @@ class ToolInitializer:
                         "client_id": settings.MULTI_AGENT_CONFIG["settings"].get("client_id", ""),
                         "client_secret": settings.MULTI_AGENT_CONFIG["settings"].get("client_secret", ""),
                     }
+        # Thêm page và pageSize vào properties mặc định cho tất cả http tool
+        default_input_params = [
+            {
+                "name": "page",
+                "description": "Số trang , khi cần lấy thêm dữ liệu thì tăng page lên",
+                "type": "number",
+                "default": 1
+            },
+            {
+                "name": "pageSize",
+                "description": "Số lượng dữ liệu trên mỗi trang",
+                "type": "number",
+                "default": 5
+            }
+        ]
 
         if raw_tools:
             for tool in raw_tools:
@@ -201,7 +216,7 @@ class ToolInitializer:
                     tool_schema = self.convert_http_tool_to_schema(tool,llm_provider)
                     tools.append(tool_schema)
                     http_tool_registry[tool["name"]] = {
-                        "url": settings.MULTI_AGENT_CONFIG["settings"]["url_endpoint"] + tool["tool_path"],
+                        "url": tool["tool_path"],
                         "method": tool.get("method", "GET"),
                         "provider": tool.get("provider"),
                         "input_params": tool.get("input_params",[]),
@@ -212,6 +227,7 @@ class ToolInitializer:
 
                 # Chuyển đổi tool workflow thành schema ( là tool để gọi workflow )
                 elif tool["type"] == "workflow":
+                    tool["input_params"] = tool.get("input_params", []) + default_input_params
                     tool_schema = self.convert_http_tool_to_schema(tool,llm_provider)
                     tools.append(tool_schema)
                     workflow_tool_registry[tool["name"]] = {
@@ -219,7 +235,7 @@ class ToolInitializer:
                         "method": "POST",
                         "provider": tool.get("provider"),
                         "token_workflow": tool.get("token_workflow", ""),
-                        "input_params": tool.get("input_params",[]),
+                        "input_params": tool.get("input_params", []),
                         "output_params": tool.get("output_params",[]),
                         "auth_params": auth_params,
                         "auth_method": auth_method,
@@ -227,6 +243,7 @@ class ToolInitializer:
 
                 # Chuyển đổi tool dynamic store thành schema ( là tool để lấy dữ liệu từ store )
                 elif tool["type"] == "store":
+                    tool["input_params"] = tool.get("input_params", []) + default_input_params
                     tool_schema = self.convert_http_tool_to_schema(tool,llm_provider)
                     tools.append(tool_schema)
                     # Kiểm tra loại store là dynamic hay standard thì sẽ có url khác nhau
@@ -239,7 +256,7 @@ class ToolInitializer:
                         "url": store_url,
                         "method": "POST",
                         "provider": tool.get("provider"),
-                        "input_params": tool.get("input_params",[]),
+                        "input_params": tool.get("input_params", []),
                         "output_params": tool.get("output_params",[]),
                         "store_name": tool.get("store_name", ""),   
                         "auth_method": auth_method,

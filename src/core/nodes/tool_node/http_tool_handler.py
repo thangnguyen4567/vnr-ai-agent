@@ -95,6 +95,7 @@ class HttpToolHandler(BaseToolHandler):
         headers = {}
         body = {}
         query_params = {}
+        path_params = {}
 
         input_params = http_tool.get("input_params", {})
         args = tool_call_info.get("args", {})
