@@ -6,7 +6,6 @@ import streamlit as st
 import yaml
 
 from src.config import settings
-from src.core.config_loader import agent_config_loader
 import requests
 
 class ConfigManager:
@@ -25,6 +24,18 @@ class ConfigManager:
             if os.path.exists(self.config_path):
                 with open(self.config_path, 'r', encoding='utf-8') as file:
                     config = yaml.safe_load(file)
+                    if "settings" not in config:
+                        config["settings"] = {
+                            "auth_method": "oauth2",
+                            "token": "",
+                            "url_endpoint": "http://localhost:8000/",
+                            "workflow_url": "http://localhost:8000/",
+                            "token_url": "",
+                            "client_id": "",
+                            "client_secret": "",
+                            "username": "",
+                            "password": "",
+                        }
                     if config:
                         return config
         except Exception as e:

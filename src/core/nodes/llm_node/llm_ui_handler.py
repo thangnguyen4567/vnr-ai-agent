@@ -5,9 +5,8 @@ from typing import Dict, Any
 from src.core.nodes.utils.model_utils import get_model
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from src.core.nodes.utils.message_utils import organize_messages, extract_text_content
-from src.prompt import SYSTEM_INFO_PROMPT, HRM_UI_PROMPT, SCREEN_DESC_TEMPLATE
+from src.prompt import SYSTEM_INFO_PROMPT, HRM_UI_PROMPT
 from src.vectordb.vectordb import VectorDBManager
-
 class LLMUIHandler(BaseNode):
     def __init__(self):
         self.vector_db = VectorDBManager()
@@ -35,21 +34,10 @@ class LLMUIHandler(BaseNode):
         agent_id = state.get("agent_id")
         agent_config = state.get("configs",{}).get(agent_id)
         llm_config = agent_config["nodes"]["llm"]
-        # Chọn màn hình phù hợp nhất để xử lý yêu cầu người dùng
-        # screen_name = self.__screen_selector(state, llm_config)
-
-        context = self.aggregation_question_context(state["messages"])
-        screen_desc = []
-        self.screen_schema = self.vector_db.get_documents(context, k=10, index_name="ui_schema")
-        for a in self.screen_schema:
-            screen_desc.append(SCREEN_DESC_TEMPLATE.format(pageId=a.metadata["pageId"], schema=a))
-
-        sys_config["screen_schema"] = "\n".join(screen_desc)
+        tools = agent_config.get("tools",[])
+        
         sys_config["current_screen"] = user_info.get("current_screen","")
 
-        if not agent_config:
-            raise ValueError(f"Agent config not found for agent_id: {agent_id}")
-        
         # Lấy cấu hình LLM từ cấu hình xml
         system_prompt =  HRM_UI_PROMPT + SYSTEM_INFO_PROMPT
         max_turns = llm_config.get("max_turns", 15)
@@ -66,24 +54,8 @@ class LLMUIHandler(BaseNode):
 
         prompt = system_prompt.format(**sys_config)
         # Thêm Prompt hệ thống vào đầu tin nhắn
-        messages = [SystemMessage(content=prompt)] + new_messages
-
+        messages = [SystemMessage(content=prompt)] + new_messages        
         llm_model = get_model(**llm_config)
-        response = llm_model.invoke(messages)
+        response = llm_model.invoke(messages,tools=tools)
 
         return {"messages": [response]}
-
-
-    def aggregation_question_context(self,chat_history: list) -> str:
-        """
-        Hợp nhất lịch sử chat và câu hỏi thành chuỗi để tìm kiếm schema
-        """
-        
-        context = ''
-
-        if chat_history is not None:
-            for chat in chat_history[-3:]:
-                if isinstance(chat, HumanMessage):
-                    context += ' '+chat.content
-
-        return context

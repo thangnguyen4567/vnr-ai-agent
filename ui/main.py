@@ -26,7 +26,6 @@ with st.sidebar:
 
     st.markdown("[Monitor Agent](http://localhost:3000/langfuse)", unsafe_allow_html=True)
     st.markdown("[Config Workflow](http://localhost:8000/dify)", unsafe_allow_html=True)
-    st.markdown("[Vector Database](http://localhost:8001)", unsafe_allow_html=True)
 
 
 if st.session_state.page == "agent":

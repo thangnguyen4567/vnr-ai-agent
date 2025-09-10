@@ -270,8 +270,6 @@ def execution_config():
     auth_method_options = ["bearer", "basic", "oauth2"]
     default_index = auth_method_options.index(auth_method) if auth_method in auth_method_options else 0
     authentication_method = st.selectbox("Phương thức xác thực", options=auth_method_options, index=default_index)
-    
-    
 
     token_url = client_id = client_secret = username = password = token = ""
     if authentication_method == "oauth2":
