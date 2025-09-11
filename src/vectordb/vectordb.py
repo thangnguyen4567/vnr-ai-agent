@@ -36,7 +36,7 @@ class VectorDBManager:
         """Kết nối đến vector database"""
         return self.provider.connect_vectordb(index_name, index_schema)
     
-    def get_documents(self, query: str, k: int = 2, index_name: str = None, filter=None):
+    def get_documents(self, query: str, k: int = 2, index_name: str = None, filter=None, index_schema=None):
         """Tìm kiếm documents tương tự với query"""
         import time
         
@@ -44,7 +44,7 @@ class VectorDBManager:
         start_time = time.time()
         
         # Thực hiện tìm kiếm
-        results = self.provider.similarity_search(query, k=k, index_name=index_name, filter=filter)
+        results = self.provider.similarity_search(query, k=k, index_name=index_name, filter=filter, index_schema=index_schema)
         
         # Kết thúc đo thời gian và tính toán
         end_time = time.time()

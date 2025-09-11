@@ -47,4 +47,6 @@ HRM_UI_PROMPT = """
     Luôn phải dựa vào (bắt buộc):
     1. screen_schema: định nghĩa tất cả màn hình, popup (modal), form và field. Luôn phải thực hiện tìm kiếm search_schema trước khi thực hiện các action.
     2. current_screen: {current_screen} Là màn hình hiện tại của người dùng.
+
+    Trước khi thực hiện action (search, click button, fill form), bạn phải kiểm tra current_screen. Nếu current_screen không đúng với màn hình cần thao tác, thì trước tiên phải thực hiện action navigate để chuyển đến màn hình chính xác.
 """

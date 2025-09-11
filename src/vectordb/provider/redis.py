@@ -9,11 +9,21 @@ class RedisVectorDB(VectorDB):
 
     def connect_vectordb(self, index_name, index_schema=None):
         """Kết nối đến Redis vector database"""
+
+        # Mẫu schema của redis , cần thiết nếu muốn sử dụng filter
+        # index_schema = {
+        #     {"name": "category", "type": "tag"},
+        #     {"name": "author", "type": "text"},
+        #     {"name": "year", "type": "number"},
+        #     {"name": "published", "type": "boolean"},
+        # }
+
         config = RedisConfig(
             index_name=index_name,
             redis_url=self.redis_url,
-            metadata_schema=index_schema
+            metadata_schema=index_schema,
         )
+ 
         vector_store = RedisVectorStore(self.embeddings, config=config)
         return vector_store
 
@@ -22,21 +32,15 @@ class RedisVectorDB(VectorDB):
         vector_store = self.connect_vectordb(index_name, index_schema)
         vector_store.add_documents(documents)
     
-    def similarity_search(self, query, k=2, filter=None, index_name=None):
+    def similarity_search(self, query, k=2, filter=None, index_name=None, index_schema=None):
         """Tìm kiếm các documents tương tự từ Redis vector database"""
         # Kết nối đến database
-        vector_db = self.connect_vectordb(index_name)
-        
-        # Redis sử dụng filter theo cách khác, cần chuyển đổi format filter
-        redis_filter = None
-        if filter and isinstance(filter, list):
-            redis_filter = {"metadata.source": {"$in": filter}}
-            
+        vector_db = self.connect_vectordb(index_name, index_schema)
         # Thực hiện tìm kiếm
         results = vector_db.similarity_search(
             query, 
             k=k,
-            filter=redis_filter
+            filter=filter
         )
         
         return results

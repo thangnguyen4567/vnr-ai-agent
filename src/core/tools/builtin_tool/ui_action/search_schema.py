@@ -1,6 +1,7 @@
 from langchain_core.tools import tool
 from src.vectordb.vectordb import VectorDBManager
 from typing import Literal
+from redisvl.query.filter import Text
 
 SCREEN_DESC_TEMPLATE = "{content} - {metadata}" # content: nội dung của schema, metadata: metadata của schema
 
@@ -16,7 +17,8 @@ async def search_screen_schema(screen_name: str, type_screen: Literal['human-res
     """
 
     vector_db = VectorDBManager()
-    screen_schema = vector_db.get_documents(screen_name, k=8, index_name="ui_schema")
+    filter_condition = Text("pageId") == type_screen
+    screen_schema = vector_db.get_documents(screen_name, k=8, index_name="ui_schema", filter=filter_condition)
     screen_desc = []
 
     for a in screen_schema:

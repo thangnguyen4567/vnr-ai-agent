@@ -88,7 +88,7 @@ def chatbot():
                 if st.session_state.debug_mode:
                     for tool_call in event['data']['chunk'].additional_kwargs.get('tool_calls', []):
                         if tool_call['function']['name'] != None:
-                            yield f"🛠️ **Sử dụng Tool:** `{tool_call['function']['name']}` - **Tham số:** "
+                            yield f"\n\n🛠️ **Sử dụng Tool:** `{tool_call['function']['name']}` - **Tham số:** "
                     # Hiển thị tool call chunks (xử lý tool call)
                     if event['data']['chunk'].tool_call_chunks:
                         if event['data']['chunk'].tool_call_chunks[0]['args']:

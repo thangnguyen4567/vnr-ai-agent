@@ -39,9 +39,12 @@ def convert_to_documents(schema_data: List[Dict[str, Any]]) -> List[Document]:
 
 def save_to_redis_vectordb(documents: List[Document], collection_name: str = "ui_schema"):
     """Lưu documents vào Redis Vector DB"""
+    index_schema = [
+        {"name": "pageId", "type": "text"},
+    ]
     vector_db = VectorDBManager()
     vector_db.delete_index(collection_name)
-    vector_db.add_documents(documents, collection_name)
+    vector_db.add_documents(documents, collection_name, index_schema)
     print(f"Đã lưu {len(documents)} documents vào Redis Vector DB trong collection '{collection_name}'")
 
 def save_schema():
