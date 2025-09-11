@@ -5,10 +5,7 @@ from .hrm_chatbot_prompt import (
     USER_INFO_PROMPT,
     HRM_CHATBOT_PROMPT,
     ROUTER_AGENT_PROMPT,
-    PREFIX_AGENT_KEY,
-    AGENT_DESC_TEMPLATE,
     HRM_UI_PROMPT,
-    SCREEN_DESC_TEMPLATE,
 )
 
 __all__ = [
@@ -18,8 +15,5 @@ __all__ = [
     "SYSTEM_INFO_PROMPT", 
     "USER_INFO_PROMPT",
     "ROUTER_AGENT_PROMPT",
-    "PREFIX_AGENT_KEY",
-    "AGENT_DESC_TEMPLATE",
     "HRM_UI_PROMPT",
-    "SCREEN_DESC_TEMPLATE",
 ]

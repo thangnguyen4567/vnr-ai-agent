@@ -3,7 +3,7 @@ from typing import Literal
 
 @tool("ui_action",return_direct=False)
 async def ui_action(
-        action: Literal['navigate', 'fill_form', 'click_button', 'search'], 
+        action: Literal['navigate', 'fill_form', 'click_button', 'search:toolbar'], 
         value_search: str = '',
         key_button: str = '',
         pageId: str = '',
@@ -12,7 +12,7 @@ async def ui_action(
 
     ) -> str:
     """
-    Chỉ thực hiện khi đã có danh sách screen_schema
+    Chỉ thực hiện khi đã có danh sách các screen được tìm kiếm từ tool search_screen_schema
     Thực hiện các hành động trên màn hình dựa vào schema màn hình ( Mở màn hình, điền thông tin vào form, click button, tìm kiếm )
     Args:
         action: Hành động trên màn hình
@@ -27,45 +27,21 @@ async def ui_action(
 
     if action == 'navigate':
         if pageId:
-            return f"""
-                {
-                    "type": "navigate", 
-                    "pageId": "{pageId}" 
-                }
-            """
+            return 'Chuyển màn hình thành công'
         else:
             return 'Không tìm thấy màn hình'
     elif action == 'fill_form':
-        if form_values:
-            return f"""
-                {
-                    "type": "fill_form",
-                    "formKey": "{form_key}", 
-                    "values": {
-                        {form_values}
-                    }
-                }
-            """
+        if form_values and form_key:
+            return 'Điền thông tin vào form thành công'
         else:
             return 'Không tìm thấy form'
     elif action == 'click_button':
         if key_button:
-            return f"""
-                {
-                    "type": "click_button",
-                    "key": "{key_button}"
-                }
-            """
+            return 'Click button thành công'
         else:
             return 'Không tìm thấy button'
-    elif action == 'search':
+    elif action == 'search:toolbar':
         if value_search:
-            return f"""
-                {
-                    "type": "search",
-                    "key": "toolbar:search",
-                    "value": "{value_search}"
-                }
-            """
+            return 'Tìm kiếm thành công'
         else:
-            return 'Không tìm thấy giá trị tìm kiếm'        
+            return 'Không tìm thấy giá trị tìm kiếm'

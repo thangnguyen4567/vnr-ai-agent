@@ -29,27 +29,16 @@ SYSTEM_INFO_PROMPT = """
 USER_INFO_PROMPT = """# *Thông tin người dùng đang trò chuyện:*"""
 
 ROUTER_AGENT_PROMPT = """
-Bạn là một hệ thống điều phối thông minh. Nhiệm vụ của bạn là phân tích đoạn hội thoại giữa người dùng và hệ thống để xác định chính xác agent nào cần tham gia xử lý tiếp theo.
+Nhiệm vụ của bạn là phân tích lịch sử hội thoại sau đây và dự đoán tiếp theo nên thuộc về Agent nào và trả về chính xác một trong các giá trị trong list sau:
+{agent_keys}
 
-- Danh sách các agent hiện có: {agent_keys}
-- Mô tả từng agent:
 {agent_desc}
-
-Hướng dẫn:
-- Trả về kết quả là list JSON hợp lệ, KHÔNG giải thích gì thêm.
-- Bắt buộc phải chọn 1 agent để xử lý tiếp theo. chỉ được chọn tối đa 1 agent.
 
 Lịch sử hội thoại:
 {chat_history}
 
-Hãy phân tích kỹ ngữ cảnh và chỉ trả về agent cần thiết theo đúng định dạng JSON: {format_instructions}
+Trả về chính xác một trong các giá trị trong list sau: {agent_keys} và KHÔNG CẦN giải thích gì thêm.
 """
-
-PREFIX_AGENT_KEY = "A"
-
-AGENT_DESC_TEMPLATE = """{agent_key}: {agent_name} - {agent_description}"""
-
-SCREEN_DESC_TEMPLATE = """{pageId} - {schema}"""
 
 HRM_UI_PROMPT = """
     Bạn là UI Action Agent.
@@ -58,29 +47,4 @@ HRM_UI_PROMPT = """
     Luôn phải dựa vào (bắt buộc):
     1. screen_schema: định nghĩa tất cả màn hình, popup (modal), form và field. Luôn phải thực hiện tìm kiếm search_schema trước khi thực hiện các action.
     2. current_screen: {current_screen} Là màn hình hiện tại của người dùng.
-    QUY TẮC NGHIÊM NGẶT (bắt buộc tuân thủ):
-    - Output bắt buộc là **một mảng JSON (JSON array)** gồm các action theo thứ tự thực thi. KHÔNG kèm giải thích hay văn bản nào khác ngoài mảng JSON.
-    - Các action hợp lệ: 
-
-        "navigate" # Điều hướng đến màn hình cụ thể
-        "fill_form" # Điền thông tin vào form
-        "click_button" # Click button 
-        "search" # Tìm kiếm Dữ liệu trên lưới
-
-    - Dựa vào ui_state để xác định đang ở màn hình nào, nếu đang ở màn hình khác thì phải mở màn hình đó trước.
-    - Trước khi phát sinh action "fill_form" cho bất kỳ field nào, **phải đảm bảo modal chứa field đó đang mở**. Nếu modal chưa mở phải click button để mở modal đó trước.
-    - Nếu không thể xác định được modal hoặc screen tương ứng (ví dụ schema không có modal chứa field tên đó) => Có thể trả về text để hỏi rõ lại người dùng.
-    3. Mặc định các màn hình đều có các thao tác mặc định mà không cần khai báo trong schema:
-    - search: key:'toolbar:search', value: 'keyword' Tìm kiếm dữ liệu trên lưới
-
-    Mỗi action phải là 1 object JSON riêng biệt không được nhóm nhiều action vào 1 object.
-    Nếu phải thực hiện 1 lúc nhiều hành động thì trả về theo kiểu này ( luôn luôn tách riêng format ra ko gộp chung như ví dụ dưới đây ):
-    
-    [{{ "type": "navigate", "pageId": "page:example.criteria-type" }}]
-    [{{ "type": "click_button", "key": "button:create" }}]
-    [{{ "type": "fill_form", "formKey": "criteria-type-form", "values": {{ "Name": "Tên tiêu chí", "Code": "Mã tiêu chí" }} }}]
-    [{{ "type": "search", "key": "toolbar:search", "value": "keyword" }}]
-
-    Trả về action theo thứ tự hợp lệ theo JSON ở trên. KHÔNG có giải thích.
-    Nếu không tìm thấy schema phù hợp hoặc không nắm bắt được hành động mong muốn của người dùng thì phải trả về text như bình thường để hỏi lại người dùng hoặc trả lời lại bình thường.
 """

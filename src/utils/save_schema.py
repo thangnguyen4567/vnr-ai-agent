@@ -20,7 +20,7 @@ def convert_to_documents(schema_data: List[Dict[str, Any]]) -> List[Document]:
         page_id = item.get("pageId", "unknown")
         
         # Chuyển đổi object thành text
-        content = item.get("description", "") + ' - ID màn hình: ' + page_id
+        content = item.get("description", "") + ' - ID: ' + page_id
         
         # Tạo metadata để dễ dàng tìm kiếm sau này
         metadata = {

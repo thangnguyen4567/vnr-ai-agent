@@ -8,9 +8,6 @@ from src.core.nodes.utils.message_utils import organize_messages, extract_text_c
 from src.prompt import SYSTEM_INFO_PROMPT, HRM_UI_PROMPT
 from src.vectordb.vectordb import VectorDBManager
 class LLMUIHandler(BaseNode):
-    def __init__(self):
-        self.vector_db = VectorDBManager()
-        self.screen_schema = {}
 
     def process(
         self, 

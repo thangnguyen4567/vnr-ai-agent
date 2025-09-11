@@ -56,6 +56,8 @@ class ChatService:
         elif config["agent_type"] == AgentType.MULTI_AGENT.value:
             graph = multi_agent_graph
 
+        call_args = False
+        
         async for event in graph.astream_events(input, config=config, version="v2"):
             kind = event["event"]
 
@@ -66,6 +68,16 @@ class ChatService:
             elif kind == "on_chat_model_stream" and event["metadata"].get(
                 "langgraph_node"
             ) not in ["research", "reflection", "router_agent"]:
+                # Kiểm tra xem có tool call nào là ui_action không
+                for tool_call in event['data']['chunk'].additional_kwargs.get('tool_calls', []):
+                    if tool_call['function']['name'] != None and tool_call['function']['name'] == "ui_action":
+                        call_args = True
+                # Nếu có tool call là ui_action thì trả về args
+                if call_args:
+                    if event['data']['chunk'].tool_call_chunks:
+                        if event['data']['chunk'].tool_call_chunks[0]['args']:
+                            print(event['data'])
+                            yield event['data']['chunk'].tool_call_chunks[0]['args']
                 answer_content = event["data"]["chunk"].content
                 if answer_content:
                     yield answer_content

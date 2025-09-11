@@ -16,10 +16,6 @@ def load_config_from_file(file_path):
 class GlobalConfig(BaseSettings):
     """Cấu hình toàn cục kết hợp cấu hình từ file và biến môi trường"""
 
-    MONGO_CONFIG: Dict[str, Any] = Field(
-        default_factory=lambda: load_config_from_file("settings/mongodb.yaml")
-    )
-
     LANGFUSE_CONFIG: Dict[str, Any] = Field(
         default_factory=lambda: load_config_from_file("settings/langfuse.yaml")
     )
@@ -44,16 +40,8 @@ class GlobalConfig(BaseSettings):
         default=True
     )
 
-    AUTH_CONFIG: Dict[str, Any] = Field(
-        default_factory=lambda: load_config_from_file("settings/auth.yaml")
-    )
-
     API_TOKEN: str = Field(
         default=""
-    )
-
-    DIFY_WORKFLOW_CONFIG: Dict[str, Any] = Field(
-        default_factory=lambda: load_config_from_file("settings/dify_workflow.yaml")
     )
 
     def reload_multi_agent_config(self):

@@ -6,16 +6,13 @@ from langchain_openai import ChatOpenAI
 import copy
 from langchain_core.messages import AIMessage, ToolMessage, HumanMessage
 from src.config import settings
-from pydantic import BaseModel
-from typing import List
-from langchain_core.output_parsers import JsonOutputParser
-import asyncio
-from src.prompt import ROUTER_AGENT_PROMPT, PREFIX_AGENT_KEY, AGENT_DESC_TEMPLATE
-from langchain_google_genai import ChatGoogleGenerativeAI
+from src.prompt import ROUTER_AGENT_PROMPT
 
-class AgentList(BaseModel):
-    agents: List[str]
-    
+PREFIX_AGENT_KEY = "A"
+
+AGENT_DESC_TEMPLATE = """{agent_key}: {agent_name} - {agent_description}"""
+
+
 class RouterNode(BaseNode):
     def __init__(self):
         super().__init__()
@@ -27,14 +24,6 @@ class RouterNode(BaseNode):
             api_key=settings.LLM_CONFIG["router"]["api_key"],
             max_tokens=20,
         )
-
-        # self.llm_router_agent = ChatGoogleGenerativeAI(
-        #     model=settings.LLM_CONFIG["google"]["model"],
-        #     api_key=settings.LLM_CONFIG["google"]["api_key"],
-        #     temperature=settings.LLM_CONFIG["google"]["temperature"],
-        #     max_tokens=settings.LLM_CONFIG["google"]["max_tokens"],
-        #     stream_usage=True,
-        # )
 
     async def process(
         self, state: AgentState, config: RunnableConfig
@@ -91,7 +80,6 @@ class RouterNode(BaseNode):
             elif isinstance(msg, HumanMessage) and msg.content:
                 messages.append(f"user: {msg.content}")
 
-        parser = JsonOutputParser(pydantic_object=AgentList)
         new_messages = [
             (
                 "human",
@@ -99,24 +87,24 @@ class RouterNode(BaseNode):
                     agent_keys=str(agent_keys),
                     agent_desc=agent_desc_str,
                     chat_history="\n".join(messages[-4:]),
-                    format_instructions=parser.get_format_instructions()
                 ),
             )
         ]
 
-        chain = self.llm_router_agent | parser
-        res = chain.invoke(new_messages)
+        response = self.llm_router_agent.invoke(new_messages)
 
         try:
-            next_agent = []
-            agent_id = []
+            res = response.content.upper()
+            next_agent = default_agent["code"]
+            agent_id = default_agent["agent_id"]
 
             for k, v in subgraph_mapping.items():
-                if k in res['agents']:
-                    next_agent.append(k)
+                if k in res:
+                    next_agent = k
 
-            goto = [subgraph_mapping[k]["code"] for k in next_agent]
-            agent_id = [subgraph_mapping[k]["id"] for k in next_agent]
+            goto = subgraph_mapping[next_agent]["code"]
+            agent_id = subgraph_mapping[next_agent]["id"]
+            
         except:
             goto = default_agent["code"]
             agent_id = default_agent["id"]
@@ -137,7 +125,6 @@ class RouterNode(BaseNode):
         from src.core.fc_agent import fc_agent_graph
         from src.core.ui_agent import ui_agent_graph
 
-        tasks = []
         next_agent = state["next"]
         node_state = state.copy()
         node_state["messages"] = []
@@ -154,21 +141,16 @@ class RouterNode(BaseNode):
                 continue
             node_state["messages"].append(msg)
 
-        for agent_id in state["agent_id"]:
-            # clone node_state cho từng agent để tránh ghi đè
-            node_state = dict(state)
-            node_state["agent_id"] = agent_id
-            # Check type của agent để chọn graph phù hợp
-            if state["configs"][agent_id]['type'] == 'ui':
-                task = ui_agent_graph.ainvoke(node_state)
-            else:
-                task = fc_agent_graph.ainvoke(node_state)
-            tasks.append(task)
-        # chờ tất cả các task hoàn thành ( các task có thể chạy song song)
-        results = await asyncio.gather(*tasks)
-
-        for result in results:
-            new_messages.extend(result["messages"][len(node_state["messages"]) :])
+        # clone node_state cho từng agent để tránh ghi đè
+        node_state = dict(state)
+        node_state["agent_id"] = state["agent_id"]
+        # Check type của agent để chọn graph phù hợp
+        if state["configs"][state["agent_id"]]['type'] == 'ui':
+            result = await ui_agent_graph.ainvoke(node_state)
+        else:
+            result = await fc_agent_graph.ainvoke(node_state)
+            
+        new_messages = result["messages"][len(node_state["messages"]):]
 
         # Cập nhật trạng thái với message mới
         new_state = state.copy()

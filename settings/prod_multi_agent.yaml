@@ -29,6 +29,18 @@ sub_agents:
         type: string
         default: ''
         required: false
+      - name: PeriodId
+        description: Chu kì mục tiêu
+        input_method: query
+        type: string
+        default: 1af86e4a-389e-4e05-bc34-445367a1db7e
+        required: false
+      - name: OrgStructureName
+        description: Phòng ban, bộ phận
+        input_method: query
+        type: string
+        default: ''
+        required: false
       method: GET
       store_name: sp_eva_get_goal_department
       tool_type: dynamic
@@ -46,26 +58,19 @@ sub_agents:
       method: GET
       store_name: sp_get_cat_evaluation_period
       tool_type: dynamic
-    - type: store
+    - type: workflow
       name: get_goal_personal
       description: Lấy danh sách mục tiêu hoặc KPI chi tiết của cá nhân
       tool_path: ''
       input_params:
-      - name: AssignedToProfileId
-        description: ID nhân viên
+      - name: employee_name
+        description: Tên nhân viên
         input_method: query
         type: string
-        default: c895f92b-4745-49f8-99a8-8b261294e659
-        required: true
-      - name: PeriodId
-        description: Kỳ mục tiêu
-        input_method: query
-        type: string
-        default: adcb9920-0078-43fe-a02a-e78cc488b87d
+        default: ''
         required: true
       method: GET
-      store_name: sp_eva_get_goal_personal_detail
-      tool_type: dynamic
+      token_workflow: app-aU6c66nJi9FBddCgOEKaJKf1
     - type: store
       name: get_eva_evaluation_person
       description: Lấy phiếu đánh giá của nhân viên
@@ -82,9 +87,93 @@ sub_agents:
       method: GET
       store_name: sp_eva_get_progress_overview
       tool_type: dynamic
-    - type: built_in
+    - type: workflow
       name: register_goal
-      description: Thực hiện giao mục tiêu cho phòng ban bộ phận
+      description: Thực hiện giao mục tiêu cho phòng ban bộ phận hoặc cá nhân, mục
+        tiêu theo năm hoặc quý ( từ đầu năm đến cuối năm hoặc từ đầu quý đến cuối
+        quý)
+      input_params:
+      - name: type
+        description: loại mục tiêu có thể là 1 trong KPI, OKR , SMART
+        input_method: query
+        type: string
+        default: KPI
+        required: true
+      - name: goal_name
+        description: Tên mục tiêu
+        input_method: query
+        type: string
+        default: ''
+        required: true
+      - name: target
+        description: Target cần đạt của mục tiêu
+        input_method: query
+        type: number
+        default: ''
+        required: true
+      - name: weight
+        description: Trọng số mục tiêu
+        input_method: query
+        type: number
+        default: '100'
+        required: true
+      - name: start_date
+        description: 'Ngày bắt đầu '
+        input_method: query
+        type: string
+        default: ''
+        required: true
+      - name: end_date
+        description: Ngày kết thúc
+        input_method: query
+        type: string
+        default: ''
+        required: true
+      - name: department_name
+        description: Tên phòng ban
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      - name: employee_name
+        description: Tên nhân viên
+        input_method: query
+        type: string
+        default: ''
+        required: false
+      - name: scope
+        description: Phạm vi giao mục tiêu Literal['Organization', 'Individual']
+        input_method: query
+        type: string
+        default: Organization
+        required: true
+      - name: measurement_unit
+        description: Đơn vị đo lường mục tiêu Literal['Ngày', 'Giờ', 'VNĐ', 'Phần
+          trăm']
+        input_method: query
+        type: string
+        default: VNĐ
+        required: true
+      token_workflow: app-b2ighC95ZCTmUPRQLgmEDbfb
+    - type: workflow
+      name: confirm_goal
+      description: Thực hiện xác nhận hoặc từ chối mục tiêu
+      tool_path: ''
+      input_params:
+      - name: status
+        description: Trạng thái thực hiện E_CONFIRMED hoặc E_REJECTED
+        input_method: query
+        type: string
+        default: E_CONFIRMED
+        required: true
+      - name: goal_name
+        description: Tên mục tiêu cần thực hiện
+        input_method: query
+        type: string
+        default: ''
+        required: true
+      method: GET
+      token_workflow: app-pv80IrswgvRJShlPU6aL1Bt1
 - agent_id: f73bdfc06c6f2e9741826c1ce81a982b
   name: Training Agent
   description: Agent tìm kiếm thông tin về việc đào tạo, khóa học, tài liệu, bài giảng
@@ -104,7 +193,93 @@ sub_agents:
     - type: built_in
       name: get_hdsd
       description: Lấy tài liệu hướng dẫn sử dụng hệ thống
-auth:
-  method: oauth2
+- agent_id: f73bdfc06c6f2e9741826c1ce81a985a
+  name: UI Agent
+  description: 'Agent Thực hiện các hành động trên giao diện người dùng ( Điều hướng
+    , mở popup, điền thông tin vào form dữ liệu, tìm kiếm thông tin trên lưới...)
+    . Dựa vào các câu lệnh như mở màn hình , chuyển trang , tìm kiếm , search dữ liệu
+    , mở modal , form , thực hiện click vào button nào đó '
+  type: ui
+  nodes:
+    llm:
+      provider: openai
+      agent_prompt: ''
+    tools:
+    - type: built_in
+      name: search_screen_schema
+      description: Tìm kiếm thông tin màn hình trước khi thực hiện action ui
+    - type: built_in
+      name: ui_action
+      description: Thực hiện action ui
+- agent_id: 199e1260-e053-4001-b764-63f6e2f2671c
+  name: Task Agent
+  description: Agent thực hiện giao công việc trên amis + xem ds công việc được giao
+  type: fc
+  nodes:
+    llm:
+      provider: openai
+      agent_prompt: ''
+    tools:
+    - type: workflow
+      name: get_task
+      description: 'Lấy danh sách công việc amis '
+      tool_path: ''
+      input_params: []
+      method: GET
+      token_workflow: app-eBRfr69pz0zJ11zaMJf2AZha
+    - type: workflow
+      name: assign_task
+      description: Giao công việc trên amis
+      tool_path: ''
+      input_params:
+      - name: task_name
+        description: Tên công việc
+        input_method: query
+        type: string
+        default: ''
+        required: true
+      - name: description
+        description: Mô tả công việc
+        input_method: query
+        type: string
+        default: ''
+        required: true
+      - name: employee_name
+        description: Tên nhân viên được giao
+        input_method: query
+        type: string
+        default: ''
+        required: true
+      method: GET
+      token_workflow: app-nrpob9ebu18aTV1weqd9z3Aj
+- agent_id: bc7893fa-7529-4f11-97ba-2810873573cc
+  name: Policy Agent
+  description: Agent tra cứu cách chính sách , quy trình , quy định công ty
+  type: fc
+  nodes:
+    llm:
+      provider: openai
+      agent_prompt: ''
+    tools:
+    - type: workflow
+      name: get_policy
+      description: tra cứu các chính sách , quy trình , quy định công ty
+      tool_path: ''
+      input_params:
+      - name: question
+        description: Câu hỏi
+        input_method: query
+        type: string
+        default: ''
+        required: true
+      method: GET
+      token_workflow: app-S7nINscAMQOgLD6u2QGyvSJX
+settings:
   url_endpoint: https://qc-core.vnrlocal.com:3019/
-  token: eyJhbGciOiJSUzI1NiIsImtpZCI6IjZBNEIxNERDQzEzMjFGQzMzMDM3QUU5QUYyNDQzRjkyIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3NTQ0NzU2NzksImV4cCI6MTc1NDQ3OTI3OSwiaXNzIjoiaHR0cHM6Ly9xYy1jb3JlLnZucmxvY2FsLmNvbTozMDA1IiwiYXVkIjpbInByb2ZpbGUiLCJodHRwczovL3FjLWNvcmUudm5ybG9jYWwuY29tOjMwMDUvcmVzb3VyY2VzIl0sImNsaWVudF9pZCI6IjgwZGRlM2NiYWVkMzRlMDliNDdmMTIxNzI2Y2Y3ZTI1Iiwic3ViIjoiMGJkNTM1M2UtOTMyNS00OGZlLTgwOTEtMDMzYzgxYjQ2ZDNjIiwiYXV0aF90aW1lIjoxNzU0NDc1Njc5LCJpZHAiOiJsb2NhbCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJ2bnIiLCJocm1fdXNlcl9pZCI6IjBiZDUzNTNlLTkzMjUtNDhmZS04MDkxLTAzM2M4MWI0NmQzYyIsImhybV9wcm9maWxlX2lkIjoiNDgwMTBjZTUtODhlZS00ZjZlLWFiNjQtNzhiYzJlYmRlMjcxIiwiaHJtX3VzZXJuYW1lIjoidm5yIiwiaHJtX2lzX2FjdGl2YXRlIjoidHJ1ZSIsImhybV90eXBlX3VzZXIiOiJFX01haW4sRV9Qb3J0YWwiLCJocm1fZnVsbG5hbWUiOiJMw6ogxJDDoG8iLCJocm1fdXNlcl9pbmZvX25hbWUiOiJMw6ogxJDDoG8iLCJocm1fY29kZV9lbXAiOiJWUDAyOTc1IiwiaHJtX2ltYWdlX3BhdGgiOiJQcm9maWxlX2FmMTUxZGU1LTkyMDctNDUyNC1iY2E5LTdkOTBkNGE1MzBjNS5wbmciLCJocm1fZW1haWwiOiJ0ZXN0ZGFuZ2t5dm5yZXNvdXJjZUBnbWFpbC5jb20iLCJocm1faXNfc3VwZXJfYWRtaW4iOiJ0cnVlIiwiaHJtX2xhbmdfY29kZSI6IlZOIiwianRpIjoiNEFGOTNDQTY1NkFCNEUwOTZERkUxQ0JCMjUxMDVDMEYiLCJpYXQiOjE3NTQ0NzU2NzksInNjb3BlIjpbImFwaSIsIm9mZmxpbmVfYWNjZXNzIl0sImFtciI6WyJwYXNzd29yZCJdfQ.gH7LSDpgsULsWz9BN_yHSyoG5oeTHT5RQJYcRPQW9JJg31DmGJ_p1cEAeFy8tvAmZUmplEO6AvAbkoKrM7lBKdlmW9jaXqLfFXI69yUpG0mGd8bboIXrrhm4Eo0tAz6eW-5M3iJ7Nvv8Gvf3-9FYl4cMrLyOcvMnSmbRVd1Qsaj_znkp9lPqqoip2dvtg7XZ4ClrVDKl-XiiK4ow-lwuyl4BhPVxFXzlKQDp8MAeGyAR0oOGJlKfkA1mJHSVJTElmoEkHDGCQ6jNVrg3B5J2RQ5RrUXpChxWQyty3gohLxBShZsLgJ3lbulWDLPHFT9WV0VA1-lXnHtumv7WdZDORw
+  workflow_url: https://qc-core.vnrlocal.com:3111/v1/chat-messages
+  token_url: https://qc-core.vnrlocal.com:3019/identity/connect/token
+  client_id: 80dde3cbaed34e09b47f121726cf7e25
+  client_secret: secret
+  username: superadmin
+  password: Qwerty@2025!
+  auth_method: oauth2
