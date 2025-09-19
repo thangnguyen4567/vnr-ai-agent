@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status
 from typing import Dict
 import time
+from datetime import datetime
 import psutil
 import platform
 from src.core.config_loader import AgentConfigLoader
@@ -31,7 +32,7 @@ async def health_check() -> Dict:
     - **status**: Trạng thái hoạt động của API
     - **timestamp**: Thời gian kiểm tra
     """
-    return {"status": "healthy", "timestamp": time.time()}
+    return {"status": "healthy", "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
 
 @router.get("/details", status_code=status.HTTP_200_OK)
@@ -69,7 +70,7 @@ async def health_details() -> Dict:
                     "usage_percent": disk.percent,
                 },
             },
-            "timestamp": time.time(),
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
     except Exception as e:
         # Nếu không có quyền truy cập vào thông tin hệ thống, trả về thông tin cơ bản
@@ -80,5 +81,5 @@ async def health_details() -> Dict:
                 "python_version": platform.python_version(),
             },
             "error": str(e),
-            "timestamp": time.time(),
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }

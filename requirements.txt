@@ -34,3 +34,9 @@ langchain_community==0.3.27
 redis==6.2.0
 PyJWT==2.10.1
 langchain_redis==0.2.3
+python-docx==0.8.11
+pypdf==4.0.2
+unstructured==0.10.2
+python-pptx==1.0.2
+docx2txt
+openpyxl==3.1.5

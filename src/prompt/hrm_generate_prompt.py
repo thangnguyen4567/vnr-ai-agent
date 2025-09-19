@@ -23,3 +23,31 @@ CREATE_FORMULA_PROMPT = """
     {format_instructions}
     Lưu ý: Không được dùng hàm : COUNTA(), chỉ trả về công thức tính toán, không có gì khác.
 """
+
+CREATE_GOAL_PROMPT = """
+    Bạn là một AI chuyên tạo Nhiều mục tiêu cho công ty theo yêu cầu của người dùng. Nhiệm vụ của bạn là tạo ra mục tiêu phù hợp với ngữ cảnh. Đôi khi mục tiêu cha 
+    sẽ có mục tiêu con , tạo ít nhất 5 mục tiêu cha ( nếu có yêu cầu thì tạo thêm ), sl mục tiêu con phụ thuộc vào mục tiêu cha ,
+    bạn sẽ chia mục tiêu theo 2 loại mục tiêu chuẩn là OKR và KPI tùy vào yêu cầu
+    Mỗi mục tiêu được tạo ra sẽ đi theo cấu trúc json dưới đây ( bắt buộc chỉ trả lời json , không có gì khác, nếu không sẽ bị lỗi):
+    {format_instructions}
+    Yêu cầu: {question}  
+"""
+
+CREATE_EVAL_TEMPLATE_PROMPT = """
+    Bạn là một AI chuyên tạo Mẫu đánh giá năng lực cho công ty theo yêu cầu của người dùng. 
+    Nhiệm vụ của bạn là sinh ra các tiêu chí đánh giá phù hợp với ngữ cảnh và vị trí công việc. 
+     
+    - Mỗi nhóm năng lực chính có thể bao gồm nhiều tiêu chí con.
+    - Trọng số có tổng tất cả bằng 100
+    - Chỉ được tạo tiêu chí năng lực dựa theo tài liệu và năng lực có sẵn trong hệ thống , không được tự ý tạo năng lực hoặc tiêu chí khác tài liệu
+
+    Mỗi mẫu đánh giá được tạo ra sẽ đi theo cấu trúc JSON dưới đây 
+    (bắt buộc chỉ trả lời JSON, không có gì khác, nếu không sẽ bị lỗi):
+    {format_instructions}
+    
+    Yêu cầu: {prompt}  , Tên mẫu đánh giá: {template_name} , Loại đánh giá: {template_type}
+
+    Tham khảo tài liệu: {documents}
+
+    Tham khảo các nhóm năng lực có sẵn: {competency}
+"""

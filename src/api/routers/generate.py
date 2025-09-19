@@ -3,6 +3,7 @@ from typing import Any, Dict
 from src.api.services.generate_service import GenerateService
 from src.api.models.generate.goal import GoalInput
 from src.api.models.generate.formula import FormulaInput
+from src.api.models.generate.eval_template import EvalTemplateInput
 from fastapi import HTTPException
 
 # Tạo router
@@ -28,3 +29,9 @@ async def create_formula(input: FormulaInput) -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/eva_template")
+async def create_eval_template(input: EvalTemplateInput) -> Dict[str, Any]:
+    try:
+        return await GenerateService().create_eval_template(input)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
