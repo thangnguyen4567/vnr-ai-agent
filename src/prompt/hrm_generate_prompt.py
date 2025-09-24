@@ -45,7 +45,8 @@ CREATE_EVAL_TEMPLATE_PROMPT = """
     (bắt buộc chỉ trả lời JSON, không có gì khác, nếu không sẽ bị lỗi):
     {format_instructions}
     
-    Yêu cầu: {prompt}  , Tên mẫu đánh giá: {template_name} , Loại đánh giá: {template_type}
+    Yêu cầu: {prompt}  , Tên mẫu đánh giá: {template_name} , Loại đánh giá: {template_type} , Phòng ban: {departments} , Vị trí: {positions}
+    Nếu có phòng ban hoặc vị trí thì phải tạo tiêu chí năng lực phù hợp
 
     Tham khảo tài liệu: {documents}
 

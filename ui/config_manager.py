@@ -14,9 +14,13 @@ class ConfigManager:
     def __init__(self, config_path: str):
         """Khởi tạo ConfigManager với đường dẫn file cấu hình"""
         self.config_path = config_path
-
-        if "agent_config" not in st.session_state:
+        # Reload config nếu chưa có hoặc đường dẫn file thay đổi
+        if (
+            "agent_config" not in st.session_state
+            or st.session_state.get("config_path") != self.config_path
+        ):
             st.session_state.agent_config = self.load_config()
+            st.session_state.config_path = self.config_path
 
     def load_config(self) -> Dict[str, Any]:
         """Load cấu hình từ file YAML"""
@@ -71,6 +75,56 @@ class ConfigManager:
             return True
         except Exception as e:
             st.error(f"Lỗi khi lưu cấu hình: {str(e)}")
+            return False
+
+    @staticmethod
+    def build_default_config(name: str = "Multi Agent") -> Dict[str, Any]:
+        """Sinh cấu hình mặc định cho multi-agent"""
+        return {
+            "agent_id": str(uuid.uuid4()),
+            "name": name,
+            "type": "multi",
+            "sub_agents": [],
+            "settings": {
+                "auth_method": "oauth2",
+                "token": "",
+                "url_endpoint": "http://localhost:8000/",
+                "workflow_url": "http://localhost:8000/",
+                "token_url": "",
+                "client_id": "",
+                "client_secret": "",
+                "username": "",
+                "password": "",
+            },
+        }
+
+    @classmethod
+    def create_new_config(cls, config_path: str, name: str, public_key: str = "", secret_key: str = "") -> bool:
+        """Tạo file cấu hình multi-agent mới với nội dung mặc định"""
+        try:
+            # Đảm bảo thư mục tồn tại
+            os.makedirs(os.path.dirname(config_path), exist_ok=True)
+
+            config = cls.build_default_config(name=name or "Multi Agent")
+            config["settings"]["langfuse_public_key"] = public_key
+            config["settings"]["langfuse_secret_key"] = secret_key
+            with open(config_path, 'w', encoding='utf-8') as file:
+                yaml.dump(
+                    config,
+                    file,
+                    default_flow_style=False,
+                    allow_unicode=True,
+                    sort_keys=False,
+                )
+
+            # Cập nhật session state và thông báo cho backend
+            st.session_state.agent_config = config
+            st.session_state.config_path = config_path
+            settings.reload_multi_agent_config()
+            requests.get("http://agent-api:8000/update-config")
+            return True
+        except Exception as e:
+            st.error(f"Lỗi khi tạo file cấu hình: {str(e)}")
             return False
 
     def create_sub_agent(self):

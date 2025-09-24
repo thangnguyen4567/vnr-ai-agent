@@ -4,6 +4,8 @@ from src.core.fc_agent import fc_agent_graph
 from langfuse.langchain import CallbackHandler
 from dotenv import load_dotenv
 from src.utils.common import AgentType
+from src.config import settings
+from langfuse import Langfuse
 
 load_dotenv()
 
@@ -87,7 +89,7 @@ class ChatService:
         pass
 
     @staticmethod
-    def get_langfuse_handler() -> CallbackHandler:
+    def get_langfuse_handler(project_code: str = "default") -> CallbackHandler:
         """
         Tạo Langfuse handler cho tracking
 
@@ -99,6 +101,19 @@ class ChatService:
         Returns:
             CallbackHandler hoặc None nếu không có đủ thông tin cấu hình
         """
+        # Khởi tạo Langfuse để tracking các request theo project code
+        if project_code == "default":
+            Langfuse(
+                public_key=settings.LANGFUSE_CONFIG["public_key"],
+                secret_key=settings.LANGFUSE_CONFIG["secret_key"],
+                host=settings.LANGFUSE_CONFIG["host"],
+            )
+        else:
+            Langfuse(
+                public_key=settings.MULTI_AGENT_CONFIG[project_code]["settings"]["langfuse_public_key"],
+                secret_key=settings.MULTI_AGENT_CONFIG[project_code]["settings"]["langfuse_secret_key"],
+                host=settings.LANGFUSE_CONFIG["host"],
+            )
 
         langfuse_handler = CallbackHandler()
         return langfuse_handler

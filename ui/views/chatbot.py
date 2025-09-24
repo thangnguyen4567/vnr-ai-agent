@@ -1,5 +1,5 @@
-import streamlit as st
 from src.core.multi_agent import multi_agent_graph as graph
+import streamlit as st
 import asyncio
 from typing import AsyncGenerator
 from src.core.config_loader import agent_config_loader
@@ -12,8 +12,6 @@ import json
 import uuid
 import logging
 import os
-
-# Cấu hình logging
 
 # Tạo thư mục logs nếu chưa tồn tại
 if not os.path.exists("logs"):
@@ -34,14 +32,14 @@ def chatbot():
     # Thêm checkbox cho debug mode trong sidebar
     with st.sidebar:
         st.subheader("Cài đặt")
-        debug_mode = st.checkbox("Hiển thị thông tin tool call", value=False)
+        debug_mode = st.checkbox("Hiển thị thông tin tool call", value=True)
         if "debug_mode" not in st.session_state:
             st.session_state.debug_mode = debug_mode
         else:
             st.session_state.debug_mode = debug_mode
 
     # Thiết lập loại agent là multi_agent
-    agent_config_loader.set_agent_type("multi")
+    agent_config_loader.set_agent_project()
 
     # Khởi tạo chat history trong session state nếu chưa có
     if "messages" not in st.session_state:
@@ -70,7 +68,6 @@ def chatbot():
             "callbacks": [langfuse_handler],
             "recursion_limit": 10,
         }
-
 
     async def process_message():
         full_response = ""

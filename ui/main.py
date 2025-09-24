@@ -1,6 +1,8 @@
 import streamlit as st
-from ui.chatbot import chatbot
-from ui.config_ui import agent_config, execution_config
+from ui.views.chatbot import chatbot
+from ui.views.agents_overview import render_agents_overview
+from ui.views.agent_detail import render_agent_detail
+from ui.views.execution_config import execution_config
 from ui.flowchart import flowchart
 from ui.logs import show_logs
 
@@ -19,8 +21,6 @@ with st.sidebar:
         st.session_state.page = "agent_config"
     if st.button("Cấu hình thực thi"):
         st.session_state.page = "execution_config"
-    # if st.button("Agent Flow"):
-    #     st.session_state.page = "agent_flow"
     if st.button("Log HTTP"):
         st.session_state.page = "logs"
 
@@ -32,7 +32,14 @@ if st.session_state.page == "agent":
     chatbot()
 
 elif st.session_state.page == "agent_config":
-    agent_config()
+
+    if "agent_config_view" not in st.session_state:
+        st.session_state.agent_config_view = "overview"
+        
+    if st.session_state.agent_config_view == "overview":
+        render_agents_overview()
+    else:
+        render_agent_detail()
 
 elif st.session_state.page == "execution_config":
     execution_config()

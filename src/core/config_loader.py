@@ -5,10 +5,10 @@ from src.config import settings
 
 class AgentConfigLoader:
     _instance = None
-    _fc_config = None
     _multi_config = None
     _current_agent_type = None
     _default_agent_id = None
+    _agent_project_code = None
 
     def __new__(cls):
         if cls._instance is None:
@@ -17,69 +17,45 @@ class AgentConfigLoader:
         return cls._instance
 
     def _load_config(self) -> Dict[str, Any]:
-        self._fc_config = settings.FC_AGENT_CONFIG
-        self._multi_config = settings.MULTI_AGENT_CONFIG
+        """Load cấu hình agent"""
+        # Thiết lập mã dự án mặc định
+        self._agent_project_code = "default"
+        self._multi_config_project = settings.MULTI_AGENT_CONFIG
 
-        if self._fc_config and "agent_id" in self._fc_config:
-            self._fc_default_agent_id = self._fc_config["agent_id"]
+        if "default" in self._multi_config_project:
+            self._multi_default_agent = self._multi_config_project["default"]
 
-        if self._multi_config and "agent_id" in self._multi_config:
-            self._multi_default_agent_id = self._multi_config["agent_id"]
+    def get_agent_project_code(self) -> str:
+        """Lấy mã dự án hiện tại"""
+        return self._agent_project_code
 
-    def set_agent_type(self, agent_type: str):
+    def set_agent_project(self, agent_project_code: str = "default"):
         """Thiết lập loại agent hiện tại"""
-        if agent_type not in ["fc", "multi"]:
-            raise ValueError("Invalid agent type")
-        self._current_agent_type = agent_type
+        self._agent_project_code = agent_project_code
+        # Lấy cấu hình agent mặc định
+        self._multi_default_agent = self._multi_config_project[agent_project_code]
 
-        if agent_type == "fc" and hasattr(self, "_fc_default_agent_id"):
-            self._fc_default_agent_id = self._fc_default_agent_id
-        elif agent_type == "multi" and hasattr(self, "_multi_default_agent_id"):
-            self._fc_default_agent_id = self._multi_default_agent_id
-
-    def get_agent_type(self) -> str:
-        return self._current_agent_type
-
-    def get_current_config(self) -> Dict[str, Any]:
-        """Lấy cấu hình agent hiện tại"""
-        if self._current_agent_type == "fc":
-            return self._fc_config
-        elif self._current_agent_type == "multi":
-            return self._multi_config
-        else:
-            raise ValueError("Invalid agent type")
-
-    def get_default_agent_id(self) -> str:
-
-        if not self._default_agent_id:
-
-            current_config = self.get_current_config()
-            self._default_agent_id = current_config.get("agent_id")
-
-        return self._default_agent_id
 
     def get_config_for_agent_id(self, agent_id: str = None) -> Dict[str, Any]:
 
-        if agent_id is None:
-            agent_id = self.get_default_agent_id()
+        # Lấy cấu hình agent mặc định
+        current_config = self._multi_default_agent
 
-        current_config = self.get_current_config()
-
-        if self._current_agent_type == "fc":
+        if agent_id == current_config.get("agent_id"):
+            # Nếu agent_id trùng với agent_id mặc định thì trả về cấu hình agent mặc định
             return current_config
         else:
-            if agent_id == current_config.get("agent_id"):
+            # Nếu agent_id không trùng với agent_id mặc định thì kiểm tra trong sub_agents
+            if agent_id in current_config.get("agent_id"):
                 return current_config
-            else:
-                if agent_id in current_config.get("agent_id"):
-                    return current_config
 
-                sub_agents = current_config.get("sub_agents", {})
-                for sub_agent in sub_agents:
-                    if sub_agent.get("agent_id") == agent_id:
-                        return sub_agent
+            # Nếu agent_id không trùng với agent_id mặc định thì kiểm tra trong sub_agents
+            sub_agents = current_config.get("sub_agents", {})
+            for sub_agent in sub_agents:
+                if sub_agent.get("agent_id") == agent_id:
+                    return sub_agent
 
-                return current_config
+            return current_config
 
 
 agent_config_loader = AgentConfigLoader()

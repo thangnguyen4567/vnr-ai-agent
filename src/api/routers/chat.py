@@ -30,11 +30,10 @@ async def dispatch(request_body: PayloadRequest) -> Dict[str, Any]:
     config = jsonable_encoder(request_body.config)
 
     # Thiết lập loại agent dựa trên config đầu vào
-    agent_type = config.get("agent_type", "multi")
-    agent_config_loader.set_agent_type("single" if agent_type == "fc" else agent_type)
+    agent_config_loader.set_agent_project(config["project_code"])
 
     # Cấu hình Langfuse từ global_config
-    langfuse_handler = ChatService.get_langfuse_handler()
+    langfuse_handler = ChatService.get_langfuse_handler(config["project_code"])
 
     # Bổ sung cấu hình
     config["callbacks"] = [langfuse_handler] if langfuse_handler else []

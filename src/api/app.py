@@ -20,12 +20,7 @@ logging.basicConfig(
     filename="logs/dev.log",        # 👈 Ghi log vào file app.log
     filemode="a"               # "a" để ghi tiếp, "w" để ghi đè
 )
-# Khởi tạo Langfuse để tracking các request
-Langfuse(
-    public_key=settings.LANGFUSE_CONFIG["public_key"],
-    secret_key=settings.LANGFUSE_CONFIG["secret_key"],
-    host=settings.LANGFUSE_CONFIG["host"],
-)
+
 # Khởi tạo VectorDBManager
 VectorDBManager()
 

@@ -1,5 +1,6 @@
+from re import L
 from pydantic import BaseModel, Field
-from typing import List, Literal, Union, Dict, Any
+from typing import List, Literal, Union, Dict, Any, Optional
 from datetime import datetime
 import uuid
 
@@ -30,6 +31,7 @@ class Configurable(BaseModel):
 class Config(BaseModel):
     recursion_limit: int = Field(10, description="Giới hạn đệ quy")
     agent_type: Literal["multi", "fc"] = Field("multi", description="Loại agent")
+    project_code: Optional[str] = Field("default", description="Mã dự án")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Metadata")
     configurable: Configurable = Field(..., description="Cấu hình")
 
