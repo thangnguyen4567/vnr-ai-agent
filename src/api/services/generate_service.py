@@ -78,7 +78,7 @@ class GenerateService:
 
         if input.is_use_system_data:
             async_result = await do_async_http_request(
-                url=settings.MULTI_AGENT_CONFIG["settings"].get("url_endpoint")+"proxy/shared/api/v1/Dynamic/GetDataSourceByDynamicStore",
+                url=settings.MULTI_AGENT_CONFIG[input.project_code]["settings"].get("url_endpoint")+"proxy/shared/api/v1/Dynamic/GetDataSourceByDynamicStore",
                 method="POST",
                 query_params={
                     "StoreName": "sp_get_cat_criteria",

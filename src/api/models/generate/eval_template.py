@@ -15,6 +15,7 @@ class EvalTemplateInput(BaseModel):
     chat_history: Optional[list[ChatHistory]] = Field(default=None, description="Lịch sử chat")
     is_use_system_data: Optional[bool] = Field(default=False, description="Sử dụng dữ liệu hệ thống")
     columns: Optional[list[str]] = Field(default=None, description="Cột động")
+    project_code: Optional[str] = Field(default="default", description="Mã dự án")
 
 class EvalTemplateDetail(BaseModel):
     GroupName: str = Field(description="Tên nhóm")
