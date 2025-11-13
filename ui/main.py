@@ -5,6 +5,7 @@ from ui.views.agent_detail import render_agent_detail
 from ui.views.execution_config import execution_config
 from ui.flowchart import flowchart
 from ui.logs import show_logs
+from ui.import_excel import import_excel
 
 # --- Page config ---
 st.set_page_config(layout="wide")
@@ -17,6 +18,8 @@ with st.sidebar:
     st.markdown("## 📋 Menu")
     if st.button("Test Agent Chatbot"):
         st.session_state.page = "agent"
+    if st.button("Import Excel"):
+        st.session_state.page = "import_excel"
     if st.button("Cấu hình Agent"):
         st.session_state.page = "agent_config"
     if st.button("Cấu hình thực thi"):
@@ -46,6 +49,9 @@ elif st.session_state.page == "execution_config":
 
 elif st.session_state.page == "agent_flow":
     flowchart()
+
+elif st.session_state.page == "import_excel":
+    import_excel()
 
 elif st.session_state.page == "logs":
     show_logs()
