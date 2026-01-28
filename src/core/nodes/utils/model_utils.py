@@ -29,6 +29,7 @@ def _get_openai_model(**config: Dict[str, Any]):
         Model OpenAI
     """
     model = ChatOpenAI(
+        base_url=settings.LLM_CONFIG["openai"]["base_url"],
         model=settings.LLM_CONFIG["openai"]["model"],
         api_key=settings.LLM_CONFIG["openai"]["api_key"],
         temperature=settings.LLM_CONFIG["openai"]["temperature"],

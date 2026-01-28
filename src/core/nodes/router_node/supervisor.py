@@ -18,6 +18,7 @@ class RouterNode(BaseNode):
         super().__init__()
         
         self.llm_router_agent = ChatOpenAI(
+            base_url=settings.LLM_CONFIG["router"]["base_url"],
             model=settings.LLM_CONFIG["router"]["model"],
             temperature=settings.LLM_CONFIG["router"]["temperature"],
             stream_usage=True,

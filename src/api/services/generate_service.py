@@ -17,9 +17,10 @@ from pydantic import Field
 class GenerateService:
     def __init__(self):
         self.model = ChatOpenAI(
-            model="gpt-4.1-mini",
+            model=settings.LLM_CONFIG["openai"]["model"],
             temperature=settings.LLM_CONFIG["openai"]["temperature"],
             api_key=settings.LLM_CONFIG["openai"]["api_key"],
+            base_url=settings.LLM_CONFIG["openai"]["base_url"],
             max_tokens=2000,
             # reasoning_effort="minimal"
         )

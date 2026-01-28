@@ -1,21 +1,21 @@
 router:
-  base_url: 'https://api.openai.com/v1'
-  api_key: 'your-api-key'
-  model: 'gpt-4o-mini'
+  base_url: "https://ai.misa.vn/nlp/llm-gateway/v1"
+  api_key: "misa_vnr_00t82qk8_1GgoTP3e3Nuhn2x8TbVevYul_cwjwpa0y"
+  model: "gpt-4.1-mini"
   temperature: 0
-  provider: 'openai'
+  provider: "openai"
 
 gemini:
-  model: 'gemini-2.0-flash-001'
-  provider: 'google'
+  model: "gemini-2.0-flash-001"
+  provider: "google"
   temperature: 0
-  api_key: 'your-api-key'
+  api_key: "your-api-key"
   max_tokens: 1000
 
 openai:
-  model: 'gpt-4o-mini'
-  provider: 'openai'
+  base_url: "https://ai.misa.vn/nlp/llm-gateway/v1"
+  model: "gpt-4.1-mini"
+  provider: "openai"
   temperature: 0
-  api_key: 'your-api-key'
+  api_key: "misa_vnr_00t82qk8_1GgoTP3e3Nuhn2x8TbVevYul_cwjwpa0y"
   max_tokens: 1000
-
