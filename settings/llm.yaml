@@ -1,6 +1,6 @@
 router:
-  base_url: "https://ai.misa.vn/nlp/llm-gateway/v1"
-  api_key: "misa_vnr_00t82qk8_1GgoTP3e3Nuhn2x8TbVevYul_cwjwpa0y"
+  base_url: 'https://api.openai.com/v1'
+  api_key: 'proj-C91jMZZ_u74LH3XVvvvRnauT87PXdsVNNNht0So46TSi3j38qIDbl0dsJK2ty4lEMY__gLLErxT3BlbkFJ2LqR5rtfjNJLjaFDAaOWNCGQMys3XwpGFiuHwo5p9N9WwPKaUP4sP-tTznPMUB6yRcKKv1Q20A'
   model: "gpt-4.1-mini"
   temperature: 0
   provider: "openai"
@@ -13,9 +13,9 @@ gemini:
   max_tokens: 1000
 
 openai:
-  base_url: "https://ai.misa.vn/nlp/llm-gateway/v1"
+  base_url: 'https://api.openai.com/v1'
+  api_key: "proj-C91jMZZ_u74LH3XVvvvRnauT87PXdsVNNNht0So46TSi3j38qIDbl0dsJK2ty4lEMY__gLLErxT3BlbkFJ2LqR5rtfjNJLjaFDAaOWNCGQMys3XwpGFiuHwo5p9N9WwPKaUP4sP-tTznPMUB6yRcKKv1Q20A"
   model: "gpt-4.1-mini"
   provider: "openai"
   temperature: 0
-  api_key: "misa_vnr_00t82qk8_1GgoTP3e3Nuhn2x8TbVevYul_cwjwpa0y"
   max_tokens: 1000
