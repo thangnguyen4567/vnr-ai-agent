@@ -14,7 +14,7 @@ from pdf2image import convert_from_path
 from pptx import Presentation
 
 from src.api.services.training.base_training import Training
-from src.utils.common import generate_random_string
+from src.utils.read_file import generate_random_string
 
 
 class TrainingResource(Training):
