@@ -3,120 +3,69 @@ from pathlib import Path
 
 import pytesseract
 import requests
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import (
     Docx2txtLoader,
     PyPDFLoader,
     UnstructuredURLLoader,
 )
 from langchain_core.documents import Document
+from langchain_openai import ChatOpenAI
 from pdf2image import convert_from_path
 from pptx import Presentation
 
 from src.api.services.training.base_training import Training
+from src.config import settings
 from src.utils.read_file import generate_random_string
 
 
 class TrainingResource(Training):
+    # Giới hạn số ký tự đọc để tóm tắt. Tài liệu quá lớn chỉ đọc phần đầu
+    # trong phạm vi này để tránh vượt context/chi phí LLM. Có thể tinh chỉnh.
+    MAX_SUMMARY_CHARS = 15000
+
     def __init__(self):
         super().__init__()
-        self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
         self.columns = ["title", "content", "coursemoduleid", "courseid", "source", "coursename"]
+        self.model = ChatOpenAI(
+            model=settings.LLM_CONFIG["openai"]["model"],
+            temperature=settings.LLM_CONFIG["openai"]["temperature"],
+            api_key=settings.LLM_CONFIG["openai"]["api_key"],
+            base_url=settings.LLM_CONFIG["openai"]["base_url"],
+            max_tokens=1500,
+        )
 
     def save_training_data(self, data):
 
-        finaldocx = []
         path = Path(data["source"])
         typefile = path.suffix.lower()
         collection = self.get_collection_name(data)
 
         try:
 
-            if typefile == ".pdf":
-                docs = PyPDFLoader(data["source"])
-                text = ""
-                for doc in docs.load():
-                    text += doc.page_content
-                if text != "":
-                    all_splits = [Document(page_content=split, metadata={}) for split in self.text_splitter.split_text(text)]
-                else:
-                    # Xử lý cho case file pdf toàn là hình ảnh
-                    response = requests.get(data["source"])
-                    random_string = generate_random_string()
-                    name = random_string + ".pdf"
-
-                    with open(name, "wb") as file:
-                        file.write(response.content)
-
-                    images = convert_from_path(name)
-                    extracted_text = ""
-
-                    for image in images:
-                        text = pytesseract.image_to_string(image, lang="vie")
-                        extracted_text += text + "\n"
-
-                    all_splits = [Document(page_content=split, metadata={}) for split in self.text_splitter.split_text(extracted_text)]
-
-                    os.remove(name)
-
-            elif typefile == ".docx":
-
-                response = requests.get(data["source"])
-                random_string = generate_random_string()
-                name = random_string + ".docx"
-
-                with open(name, "wb") as file:
-                    file.write(response.content)
-
-                docs = Docx2txtLoader(name)
-                all_splits = self.text_splitter.split_documents(docs.load())
-
-                os.remove(name)
-
-            elif typefile == ".pptx":
-
-                response = requests.get(data["source"])
-                random_string = generate_random_string()
-                name = random_string + ".pptx"
-
-                with open(name, "wb") as file:
-                    file.write(response.content)
-
-                full_text = ""
-                presentation = Presentation(name)
-                for slide in presentation.slides:
-                    for shape in slide.shapes:
-                        if hasattr(shape, "text"):
-                            full_text += shape.text
-
-                all_splits = self.text_splitter.split_text(full_text)
-                os.remove(name)
-
-            else:
-                docs = UnstructuredURLLoader(urls=[data["source"]])
-                all_splits = self.text_splitter.split_documents(docs.load())
+            # 1. Đọc toàn bộ text của tài liệu (pdf/docx/pptx/url), có OCR cho PDF ảnh
+            full_text = self._extract_text(data["source"], typefile)
 
             metadata = {}
-
             for key, value in data.items():
                 if key in self.columns:
                     metadata[key] = value
 
+            # 2. Xóa record cũ cùng coursemoduleid (mỗi tài liệu chỉ giữ 1 record)
             for key in self.redis_client.scan_iter(self._doc_key_pattern(collection)):
                 coursemoduleid = self.redis_client.hget(key, "coursemoduleid")
                 if coursemoduleid is not None and coursemoduleid.decode() == metadata["coursemoduleid"]:
                     self.redis_client.delete(key)
 
-            for doc in all_splits:
-                content = "Tài liệu: " + metadata["title"]
-                content += "Thuộc lớp học: " + metadata["coursename"]
-                if hasattr(doc, "page_content"):
-                    content += doc.page_content
-                else:
-                    content += doc
-                finaldocx.append(Document(page_content=content, metadata=metadata))
+            # 3. Tóm tắt tài liệu bằng AI rồi lưu thành 1 chunk duy nhất
+            summary = self._summarize(full_text, metadata)
 
-            self.vector_db.add_documents(finaldocx, collection)
+            content = "Tài liệu: " + metadata["title"]
+            content += "Thuộc lớp học: " + metadata["coursename"]
+            content += summary
+
+            document = Document(page_content=content, metadata=metadata)
+
+            self.vector_db.add_documents([document], collection)
 
             self.response["error"] = False
             self.response["message"] = "Training thành công"
@@ -131,6 +80,93 @@ class TrainingResource(Training):
             self.response["message"] = f"Training thất bại: {str(e)}"
 
             return self.response
+
+    def _extract_text(self, source, typefile):
+        """Đọc toàn bộ nội dung text của tài liệu theo từng loại file."""
+
+        if typefile == ".pdf":
+            docs = PyPDFLoader(source)
+            text = ""
+            for doc in docs.load():
+                text += doc.page_content
+
+            if text != "":
+                return text
+
+            # Xử lý cho case file pdf toàn là hình ảnh -> OCR
+            response = requests.get(source)
+            name = generate_random_string() + ".pdf"
+            with open(name, "wb") as file:
+                file.write(response.content)
+
+            images = convert_from_path(name)
+            extracted_text = ""
+            for image in images:
+                extracted_text += pytesseract.image_to_string(image, lang="vie") + "\n"
+
+            os.remove(name)
+            return extracted_text
+
+        elif typefile == ".docx":
+            response = requests.get(source)
+            name = generate_random_string() + ".docx"
+            with open(name, "wb") as file:
+                file.write(response.content)
+
+            docs = Docx2txtLoader(name).load()
+            os.remove(name)
+            return "".join(doc.page_content for doc in docs)
+
+        elif typefile == ".pptx":
+            response = requests.get(source)
+            name = generate_random_string() + ".pptx"
+            with open(name, "wb") as file:
+                file.write(response.content)
+
+            full_text = ""
+            presentation = Presentation(name)
+            for slide in presentation.slides:
+                for shape in slide.shapes:
+                    if hasattr(shape, "text"):
+                        full_text += shape.text + "\n"
+
+            os.remove(name)
+            return full_text
+
+        else:
+            docs = UnstructuredURLLoader(urls=[source]).load()
+            return "".join(doc.page_content for doc in docs)
+
+    def _summarize(self, text, metadata):
+        """Dùng AI tóm tắt tài liệu. Chỉ đọc trong phạm vi MAX_SUMMARY_CHARS."""
+
+        text = (text or "").strip()
+        if text == "":
+            return ""
+
+        # Giới hạn phạm vi đọc để tóm tắt với tài liệu quá lớn
+        text = text[: self.MAX_SUMMARY_CHARS]
+
+        system_prompt = (
+            "Bạn là trợ lý tóm tắt tài liệu đào tạo. "
+            "Hãy tóm tắt nội dung tài liệu bên dưới bằng tiếng Việt, "
+            "bao quát đầy đủ các ý chính, khái niệm và từ khóa quan trọng "
+            "để phục vụ tìm kiếm ngữ nghĩa. "
+            "Chỉ trả về nội dung tóm tắt, không thêm lời dẫn."
+        )
+        human_prompt = (
+            f"Tên tài liệu: {metadata.get('title', '')}\n"
+            f"Thuộc lớp học: {metadata.get('coursename', '')}\n\n"
+            f"Nội dung tài liệu:\n{text}"
+        )
+
+        result = self.model.invoke(
+            [
+                ("system", system_prompt),
+                ("human", human_prompt),
+            ]
+        )
+        return result.content
 
     def delete_training_data(self, data):
 
