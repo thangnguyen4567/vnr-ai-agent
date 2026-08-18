@@ -50,13 +50,7 @@ class TrainingResource(Training):
                 if key in self.columns:
                     metadata[key] = value
 
-            # 2. Xóa record cũ cùng coursemoduleid (mỗi tài liệu chỉ giữ 1 record)
-            for key in self.redis_client.scan_iter(self._doc_key_pattern(collection)):
-                coursemoduleid = self.redis_client.hget(key, "coursemoduleid")
-                if coursemoduleid is not None and coursemoduleid.decode() == metadata["coursemoduleid"]:
-                    self.redis_client.delete(key)
-
-            # 3. Tóm tắt tài liệu bằng AI rồi lưu thành 1 chunk duy nhất
+            # 2. Tóm tắt tài liệu bằng AI (làm trước để nếu lỗi thì record cũ vẫn còn)
             summary = self._summarize(full_text, metadata)
 
             content = "Tài liệu: " + metadata["title"]
@@ -65,6 +59,14 @@ class TrainingResource(Training):
 
             document = Document(page_content=content, metadata=metadata)
 
+            # 3. Nếu tài liệu đã tồn tại (cùng coursemoduleid) thì xóa record cũ để
+            #    cập nhật lại; chưa có thì tạo mới. Mỗi tài liệu chỉ giữ 1 record.
+            for key in self.redis_client.scan_iter(self._doc_key_pattern(collection)):
+                coursemoduleid = self.redis_client.hget(key, "coursemoduleid")
+                if coursemoduleid is not None and coursemoduleid.decode() == metadata["coursemoduleid"]:
+                    self.redis_client.delete(key)
+
+            # 4. Ghi record mới (ghi đè nếu đã tồn tại)
             self.vector_db.add_documents([document], collection)
 
             self.response["error"] = False
