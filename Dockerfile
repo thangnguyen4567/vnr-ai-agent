@@ -1,7 +1,7 @@
 FROM python:3.13-slim
 
-# Cài đặt Git
-RUN apt-get update && apt-get install -y git
+# Cài đặt Git + poppler (pdf2image) + tesseract OCR (pytesseract, gói tiếng Việt)
+RUN apt-get update && apt-get install -y git poppler-utils tesseract-ocr tesseract-ocr-vie
 
 # Set working directory
 WORKDIR /app

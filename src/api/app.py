@@ -4,6 +4,7 @@ import logging
 from .routers.chat import router as chat_router
 from .routers.health import router as health_router
 from .routers.generate import router as generate_router
+from .routers.training import router as training_router
 from langfuse import Langfuse
 from src.config import settings
 from src.vectordb.vectordb import VectorDBManager
@@ -52,4 +53,5 @@ app.add_middleware(
 # Import các router
 app.include_router(chat_router)
 app.include_router(generate_router)
+app.include_router(training_router)
 app.include_router(health_router)
